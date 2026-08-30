@@ -31,14 +31,15 @@ async function fetchRates(base: string): Promise<Record<string, number>> {
 }
 
 // Convert an amount (in cents of `from`) to cents of `to`.
-// Returns { converted, rate }. If conversion fails, returns rate=1 (no-op).
+// Returns { converted, rate, ok }. On FX failure ok=false — the caller must
+// keep the original currency/amount, never relabel unconverted money.
 async function convert(
   amount: number,
   from: string,
   to: string,
   ratesCache: Map<string, Record<string, number>>
-): Promise<{ converted: number; rate: number }> {
-  if (from === to) return { converted: amount, rate: 1 };
+): Promise<{ converted: number; rate: number; ok: boolean }> {
+  if (from === to) return { converted: amount, rate: 1, ok: true };
   let rates = ratesCache.get(from);
   if (!rates) {
     rates = await fetchRates(from);
@@ -46,10 +47,9 @@ async function convert(
   }
   const rate = rates[to];
   if (!rate || !Number.isFinite(rate) || rate <= 0) {
-    // Fallback: store the original value, mark rate 1 so at least it saves
-    return { converted: amount, rate: 1 };
+    return { converted: amount, rate: 1, ok: false };
   }
-  return { converted: Math.round(amount * rate), rate };
+  return { converted: Math.round(amount * rate), rate, ok: true };
 }
 
 Deno.serve(async (req) => {
@@ -90,7 +90,8 @@ Deno.serve(async (req) => {
     // Free tier: 10 AI scans/month per couple (receipt + statement share the pool).
     // Premium couples bypass. Counted server-side across both partners (service_role).
     const admin = createAdminClient();
-    if (!(await isPremium(admin, profile.couple_id))) {
+    const premium = await isPremium(admin, profile.couple_id);
+    if (!premium) {
       const quota = await checkMonthlyQuota(
         admin,
         profile.couple_id,
@@ -107,12 +108,19 @@ Deno.serve(async (req) => {
       .eq("id", profile.couple_id)
       .single();
     const primaryCurrency: string = (couple?.primary_currency ?? "BRL").toUpperCase();
-    const autoConvert: boolean = couple?.auto_convert_currency ?? true;
+    // The original-currency ledger (auto-convert OFF) is a Premium feature.
+    // Enforce it HERE, not in the UI: free couples always convert to the
+    // primary currency no matter what the couples flag says.
+    const autoConvert: boolean = premium ? (couple?.auto_convert_currency ?? true) : true;
 
     const body = await req.json();
     const { image } = body;
     const requestedMode = body?.mode === "personal" ? "personal" : "couple";
     if (!image) return jsonResponse({ error: "Image required" }, 400);
+    // Bound the base64 payload (~10MB decoded) before buffering/forwarding it.
+    if (typeof image !== "string" || image.length > 14_000_000) {
+      return jsonResponse({ error: "Image too large" }, 413);
+    }
 
     // Personal mode must exclude the partner's personal categories — sending
     // those names to Gemini would leak private data through the prompt.
@@ -158,7 +166,7 @@ Identify ALL visible transactions and return ONLY a valid JSON:
 {
   "transactions": [
     {
-      "amount": number in cents, ALWAYS POSITIVE (e.g. 1500 for 15.00 - never negative, use "type" to distinguish),
+      "amount": number in cents, ALWAYS POSITIVE (e.g. 1500 for 15.00 - never negative, use "type" to distinguish). The convention is the printed value multiplied by 100 for ALL currencies, INCLUDING zero-decimal currencies like JPY and KRW (e.g. a ¥1500 line -> 150000),
       "currency": "ISO 4217 code of the currency for this line (e.g. BRL, USD, EUR, GBP, UAH, RUB, ARS, MXN, JPY). Detect it from symbols (R$ = BRL, $ = USD unless another country context is clear, € = EUR, £ = GBP, ₴ = UAH, ₽ = RUB, ¥ = JPY or CNY depending on context) or from account labels like 'Conta virtual USD'. If the statement header or account name shows a currency, use that for all lines unless a specific line shows a different one. Default to BRL if truly unknown.",
       "description": "transaction description",
       "category": "one of: ${categoryList}. Pick the closest match in any language; the client will normalize the name.",
@@ -244,50 +252,78 @@ CRITICAL: SKIP CANCELLED AND DENIED TRANSACTIONS ENTIRELY.
       }
     }
 
-    const rawTransactions = parsed?.transactions ?? [];
+    const rawTransactions = Array.isArray(parsed?.transactions) ? parsed.transactions : [];
     const ratesCache = new Map<string, Record<string, number>>();
 
-    // Convert each transaction to the couple's primary currency.
-    const converted = await Promise.all(
-      rawTransactions.map(async (tx) => {
-        const rawAmount = Math.abs(Number(tx.amount) || 0);
-        const rawCurrency = String(tx.currency ?? primaryCurrency)
-          .toUpperCase()
-          .slice(0, 3) || primaryCurrency;
+    // Whitelist + validate each row before returning it — the image content is
+    // attacker-controlled (prompt injection via OCR text), so no field is
+    // forwarded unvalidated and unknown keys are dropped.
+    const sanitized = rawTransactions.map((tx) => ({
+      rawAmount: Math.round(Math.abs(Number(tx.amount) || 0)),
+      rawCurrency: String(tx.currency ?? primaryCurrency).toUpperCase().slice(0, 3) || primaryCurrency,
+      description: typeof tx.description === "string" ? tx.description.trim().slice(0, 300) : null,
+      category: typeof tx.category === "string" ? tx.category.trim().slice(0, 120) : null,
+      date: typeof tx.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(tx.date) ? tx.date : null,
+      type: tx.type === "income" ? "income" : "expense",
+      confidence: Math.min(1, Math.max(0, Number(tx.confidence) || 0)),
+    }));
 
-        const { converted: convertedAmount, rate } = autoConvert
-          ? await convert(rawAmount, rawCurrency, primaryCurrency, ratesCache)
-          : { converted: rawAmount, rate: 1 };
-
-        return {
-          ...tx,
-          amount: convertedAmount,
-          currency: autoConvert ? primaryCurrency : rawCurrency,
-          original_amount: rawAmount,
-          original_currency: rawCurrency,
-          exchange_rate: rate,
-        };
-      })
-    );
-
-    // Log usage (fire-and-forget)
-    supabase
+    // Log usage AWAITED, right after the billable Gemini call and before the
+    // FX work/response: a fire-and-forget insert can be dropped when the
+    // isolate is torn down, undercounting the quota/rate meters. On insert
+    // failure we still return the result (metering must never break the feature).
+    const { error: usageError } = await supabase
       .from("usage_stats")
       .insert({
         profile_id: profile.id,
         couple_id: profile.couple_id,
         action: "scan_statement",
         metadata: {
-          transactions_count: converted.length,
+          transactions_count: sanitized.length,
           primary_currency: primaryCurrency,
           currencies_detected: Array.from(
-            new Set(converted.map((t) => t.original_currency))
+            new Set(sanitized.map((t) => t.rawCurrency))
           ),
         },
-      })
-      .then((res: { error: unknown }) => {
-        if (res.error) console.error("usage log failed:", res.error);
       });
+    if (usageError) console.error("usage log failed:", usageError);
+
+    // Convert each transaction to the couple's primary currency. On FX failure
+    // keep the ORIGINAL currency and amount and flag the row — relabeling
+    // unconverted money as the primary currency would corrupt the ledger.
+    const converted = await Promise.all(
+      sanitized.map(async (tx) => {
+        let amount = tx.rawAmount;
+        let currency = tx.rawCurrency;
+        let exchangeRate: number | null = 1;
+        let conversionFailed = false;
+        if (autoConvert) {
+          const fx = await convert(tx.rawAmount, tx.rawCurrency, primaryCurrency, ratesCache);
+          if (fx.ok) {
+            amount = fx.converted;
+            currency = primaryCurrency;
+            exchangeRate = fx.rate;
+          } else {
+            exchangeRate = null;
+            conversionFailed = true;
+          }
+        }
+
+        return {
+          amount,
+          currency,
+          original_amount: tx.rawAmount,
+          original_currency: tx.rawCurrency,
+          exchange_rate: exchangeRate,
+          conversion_failed: conversionFailed,
+          description: tx.description,
+          category: tx.category,
+          date: tx.date,
+          type: tx.type,
+          confidence: tx.confidence,
+        };
+      })
+    );
 
     return jsonResponse({ transactions: converted, primary_currency: primaryCurrency });
   } catch (error) {

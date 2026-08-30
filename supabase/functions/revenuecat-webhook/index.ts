@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { timingSafeEqualStr } from "../_shared/crypto.ts";
 
 // RevenueCat -> Supabase webhook. Propagates Premium to the couple (one pays ->
 // both Premium). The mobile app logs into RevenueCat with the couple_id as the
@@ -35,9 +36,11 @@ Deno.serve(async (req) => {
 
   try {
     // 1) Authenticate the webhook itself (shared secret from the RC dashboard).
+    //    Constant-time compare — this header is the sole auth on a
+    //    service_role entitlement writer.
     const expected = Deno.env.get("REVENUECAT_WEBHOOK_SECRET");
     const got = req.headers.get("Authorization");
-    if (!expected || got !== expected) {
+    if (!expected || !got || !timingSafeEqualStr(got, expected)) {
       return json({ error: "Unauthorized" }, 401);
     }
 
@@ -66,23 +69,50 @@ Deno.serve(async (req) => {
     // 3) Idempotency: skip an event we've already applied.
     const { data: existing } = await admin
       .from("subscriptions")
-      .select("rc_last_event_id")
+      .select("rc_last_event_id, updated_at")
       .eq("couple_id", coupleId)
       .maybeSingle();
     if (existing?.rc_last_event_id === event.id) {
       return json({ ok: true, idempotent: true });
     }
 
+    // 3b) Ordering: RevenueCat does not guarantee delivery order, and a delayed
+    //     retry of an OLDER event (e.g. an annual RENEWAL with a still-future
+    //     expiry) must not overwrite a newer EXPIRATION. There is no stored
+    //     event-timestamp column, so we compare the event's timestamp against
+    //     the row's updated_at (the time we processed the previous RC event —
+    //     the updated_at trigger stamps now() on every write) and skip events
+    //     strictly older than it. Limits: updated_at is processing time, not
+    //     event time, so two legitimate events emitted seconds apart and
+    //     delivered in order are unaffected, but an event whose timestamp
+    //     predates our processing of the previous one is treated as stale.
+    //     Only applies once at least one RC event was processed
+    //     (rc_last_event_id set) — the free row's updated_at predates any event.
+    const eventTsMs: number | null =
+      typeof event.event_timestamp_ms === "number" ? event.event_timestamp_ms : null;
+    if (
+      existing?.rc_last_event_id &&
+      eventTsMs != null &&
+      existing.updated_at &&
+      eventTsMs < Date.parse(existing.updated_at)
+    ) {
+      return json({ ok: true, ignored: "stale_event" });
+    }
+
     // 4) Derive entitlement from the event. Any event whose entitlement is still
     //    in the future means Premium; EXPIRATION or a past expiry means expired.
     //    period_type TRIAL/INTRO -> trialing. CANCELLATION still has a future
-    //    expiry (auto-renew off, active until period end) so it stays Premium.
+    //    expiry (auto-renew off, active until period end) so it stays Premium —
+    //    EXCEPT when the cancellation is a refund (cancel_reason
+    //    CUSTOMER_SUPPORT): the money went back, so entitlement ends now.
     const expMs: number | null = event.expiration_at_ms ?? null;
     const inFuture = expMs != null && expMs > Date.now();
     const isTrial = event.period_type === "TRIAL" || event.period_type === "INTRO";
+    const isRefund =
+      event.type === "CANCELLATION" && event.cancel_reason === "CUSTOMER_SUPPORT";
 
     let status: "free" | "trialing" | "active" | "expired";
-    if (event.type === "EXPIRATION") status = "expired";
+    if (event.type === "EXPIRATION" || isRefund) status = "expired";
     else if (inFuture) status = isTrial ? "trialing" : "active";
     else status = "expired";
 

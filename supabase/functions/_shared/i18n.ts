@@ -4,19 +4,21 @@
 // (a workspace package resolved by the bundler), so this module is the
 // Supabase-side home for any user-facing copy a function emits. Add new
 // message groups and locales here rather than hardcoding strings inside a
-// function. Portuguese is the safe fallback (see `resolveLang`).
+// function. English is the fallback (see `resolveLang`) — it must match the
+// app-wide default (DEFAULT_LOCALE = 'en' in packages/shared/src/i18n and the
+// profiles.language column default).
 
 export type Lang = "pt" | "en" | "ru" | "uk";
 
 /**
  * Maps a raw `profiles.language` value to a supported {@link Lang}. Anything
  * that isn't an explicitly supported locale — empty, null, undefined, or
- * garbage — falls back to Portuguese.
+ * garbage — falls back to English, the app-wide default locale.
  */
 export function resolveLang(language?: string | null): Lang {
   const code = (language ?? "").slice(0, 2).toLowerCase();
-  if (code === "en" || code === "ru" || code === "uk") return code;
-  return "pt";
+  if (code === "pt" || code === "ru" || code === "uk") return code;
+  return "en";
 }
 
 export type BudgetAlertKey =
@@ -116,4 +118,48 @@ export function budgetAlert(
 ): { title: string; body: string } {
   const copy = BUDGET_ALERTS[lang][key];
   return { title: copy.title, body: copy.body(pct) };
+}
+
+/**
+ * All localized titles for one budget-alert variant, across every supported
+ * language. Titles are static per (lang, key), so check-budgets uses this set
+ * as a dedup key: if the recipient already has a notification this month with
+ * any of these titles, the same threshold alert was already sent (robust to
+ * the user switching language mid-month).
+ */
+export function budgetAlertTitles(key: BudgetAlertKey): string[] {
+  return Object.values(BUDGET_ALERTS).map((copy) => copy[key].title);
+}
+
+export type AdviceVerdict = "go" | "wait" | "avoid";
+
+const ADVISOR_FALLBACK: Record<Lang, Record<AdviceVerdict, string>> = {
+  pt: {
+    go: "Os números batem: cabe no mês sem apertar as contas.",
+    wait: "Não é proibido, mas esse mês ia ficar apertado. Vale esperar um pouco.",
+    avoid: "Esse mês não dá, não. O saldo ou o orçamento não cobrem essa compra.",
+  },
+  en: {
+    go: "The numbers check out: it fits this month without squeezing the bills.",
+    wait: "It's not off the table, but this month would get tight. Worth waiting a bit.",
+    avoid: "Not this month. The balance or the budget just doesn't cover this purchase.",
+  },
+  ru: {
+    go: "Цифры сходятся: покупка вписывается в этот месяц без ущерба для счетов.",
+    wait: "Не запрещено, но в этом месяце будет впритык. Стоит немного подождать.",
+    avoid: "В этом месяце не получится: баланс или бюджет не покрывают эту покупку.",
+  },
+  uk: {
+    go: "Цифри сходяться: покупка вписується в цей місяць без шкоди для рахунків.",
+    wait: "Не заборонено, але цього місяця буде впритул. Варто трохи зачекати.",
+    avoid: "Цього місяця не вийде: баланс або бюджет не покривають цю покупку.",
+  },
+};
+
+/**
+ * Localized last-resort advisor reasoning, used when the AI call fails or
+ * returns empty text so the user always sees an explanation in their language.
+ */
+export function advisorFallback(lang: Lang, verdict: AdviceVerdict): string {
+  return ADVISOR_FALLBACK[lang][verdict];
 }
