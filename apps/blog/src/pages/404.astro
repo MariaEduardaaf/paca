@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Página não encontrada"
+  description="A página que você procura não existe ou mudou de endereço."
+>
+  <div class="mx-auto flex max-w-3xl flex-col items-center px-4 py-24 text-center sm:px-6">
+    <div
+      class="flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-50 via-pink-100 to-pink-200 dark:from-pink-900/50 dark:via-gray-800 dark:to-pink-900/30"
+      aria-hidden="true"
+    >
+      <span class="text-6xl">🔍</span>
+    </div>
+    <h1 class="mt-8 font-display text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
+      Página não encontrada
+    </h1>
+    <p class="mt-4 max-w-md text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+      A página que você procura não existe ou mudou de endereço. Que tal voltar
+      para o começo?
+    </p>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <a
+        href="/"
+        class="rounded-xl bg-pink-primary px-6 py-3 font-semibold text-gray-900 shadow-sm transition-colors hover:bg-pink-400"
+      >
+        Ir para o início
+      </a>
+      <a
+        href="/blog"
+        class="rounded-xl border border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 transition-colors hover:border-pink-300 hover:text-pink-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-600 dark:hover:text-pink-300"
+      >
+        Ver o blog
+      </a>
+    </div>
+  </div>
+</BaseLayout>

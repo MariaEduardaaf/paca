@@ -1,0 +1,65 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CTABox from "../components/CTABox.astro";
+import { APP_URL } from "../consts";
+---
+
+<BaseLayout
+  title="Sobre o blog"
+  description="Quem escreve o blog do Paca Finance, como o conteúdo é produzido e o que você pode esperar dos nossos guias de finanças para casais."
+>
+  <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <h1 class="font-display text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">Sobre o blog</h1>
+
+    <div class="prose-paca mt-8">
+      <p>
+        Este blog é escrito pelo <strong>time do Paca Finance</strong>, um app
+        brasileiro criado para casais organizarem o dinheiro juntos. A gente
+        passa o dia pensando em finanças a dois — gastos compartilhados,
+        divisão de contas, orçamento e metas — e traz para cá o que aprendemos
+        construindo o produto e conversando com casais de verdade.
+      </p>
+
+      <h2>Nosso compromisso editorial</h2>
+      <ul>
+        <li>
+          <strong>Conteúdo prático:</strong> todo artigo termina com algo que
+          vocês conseguem aplicar ainda hoje, mesmo sem usar o Paca.
+        </li>
+        <li>
+          <strong>Sem jargão:</strong> escrevemos como quem explica para um
+          amigo, não como manual de banco.
+        </li>
+        <li>
+          <strong>Revisado:</strong> cada texto passa por revisão do time antes
+          de ser publicado, e atualizamos os artigos quando algo muda.
+        </li>
+      </ul>
+
+      <h2>Sobre o Paca Finance</h2>
+      <p>
+        O Paca é um app de finanças compartilhadas para casais: os dois
+        registram gastos que aparecem em tempo real para o parceiro, dividem
+        contas do jeito que fizer sentido (meio a meio ou proporcional),
+        definem orçamento por categoria e acompanham metas em conjunto. Você
+        pode <a href={APP_URL}>conhecer o app aqui</a>.
+      </p>
+
+      <h2>Transparência</h2>
+      <p>
+        O blog é mantido pela equipe do Paca Finance e, naturalmente,
+        recomendamos o nosso app quando ele resolve o problema do artigo. Fora
+        isso, o conteúdo é independente: não publicamos texto patrocinado nem
+        recebemos comissão de produtos citados. Dúvidas ou sugestões? Fale com a
+        gente pelo <a href={`${APP_URL}/support`}>suporte</a>.
+      </p>
+      <p>
+        Veja também a nossa
+        <a href={`${APP_URL}/privacy`}>Política de Privacidade</a> e os
+        <a href={`${APP_URL}/terms`}>Termos de Uso</a>.
+      </p>
+    </div>
+
+    <CTABox />
+  </div>
+</BaseLayout>

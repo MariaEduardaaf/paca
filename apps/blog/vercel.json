@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd ../.. && npm run build -- --filter=blog",
+  "outputDirectory": "dist",
+  "installCommand": "cd ../.. && npm install",
+  "framework": null,
+  "cleanUrls": true
+}
