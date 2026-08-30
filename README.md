@@ -21,7 +21,8 @@ Built as a **Turborepo monorepo** with a web app, mobile app, and shared package
 paca/
 ├── apps/
 │   ├── web/          # React + Vite web app
-│   └── mobile/       # Expo + React Native mobile app
+│   ├── mobile/       # Expo + React Native mobile app
+│   └── blog/         # Astro static blog (pt-BR SEO: finanças para casais)
 ├── packages/
 │   ├── api/          # Supabase client, React hooks, i18n provider
 │   └── shared/       # Types, validations, constants, translations

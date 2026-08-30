@@ -1,11 +1,24 @@
 # Paca Finance — TODO (board vivo)
 
-> **Fonte de verdade:** STATUS = código (verificado **2026-06-27**, typecheck verde nas 4 packages) · ESCOPO + `#número` = **GitHub Issues** (`madualvesfr/paca`) · DOCS = hipóteses. Em conflito, o código vence.
+> **Fonte de verdade:** STATUS = código (verificado **2026-08-31**, typecheck verde nas 5 packages) · ESCOPO + `#número` = **GitHub Issues** (`madualvesfr/paca`) · DOCS = hipóteses. Em conflito, o código vence.
 > **Legenda:** `#NN` = GitHub Issue · `(untracked)` = sem issue · ✅ Done · 🟡 In Progress · ⛔ Blocked.
-> Atualizado **2026-06-27**. Substitui o TODO de 2026-06-24 (estava pré-merge do PR #2 e das PRs #23–28).
+> Atualizado **2026-08-31** (branch `feat/hardening-and-blog`). Substitui o TODO de 2026-06-27.
 
 ## Estado em uma frase
-Código essencialmente construído e com typecheck verde — **web pronto/deployado**, **backend** (8 edge functions) e **DB** (22 migrations) no ar; falta **glue nativo do mobile** (compra RevenueCat, captura de push token, login social) e **trabalho operacional de loja** — tudo já rastreado em Issues abertas.
+Código construído, **auditado (80 falhas confirmadas e corrigidas em 2026-08-31)** e com typecheck verde — web pronto, backend (8 edge functions) e DB (22 migrations aplicadas + **8 novas 00023–00030 pendentes de aplicar**), **blog SEO novo em `apps/blog`** pronto pra deploy; falta glue nativo do mobile (RevenueCat, push token, login social) e trabalho operacional (migrations novas, secrets, lojas) — ver ⛔.
+
+## Hardening 2026-08-31 (auditoria multi-agente → 80 correções)
+- **Dinheiro:** parser único `parseMoneyInput`/`centsToInput` em `@paca/shared` (antes: 2 convenções incompatíveis corrompiam valores 10x/100x em Budget/Bills/Transactions/Advisor web+mobile); somas nunca misturam moedas (breakdown por moeda quando auto-convert off); datas locais (`getTodayLocal`) em vez de UTC.
+- **Segurança DB (migrations 00023–00030, NÃO aplicadas ainda):** RPCs `create_couple`/`join_couple_with_code` (o join antigo estava QUEBRADO por RLS e o vínculo de casal era sequestrável via update direto de `profiles.couple_id` — agora bloqueado); `search_path` pinado em todas as SECURITY DEFINER; `usage_stats`/`partner_offer_clicks` com checagem de casal; colunas imutáveis em `couples`; tabela `admin_users`; FK `created_by` corrigida (deleção de conta do criador do casal FALHAVA); idioma do signup vem do device.
+- **Edge functions:** `check-budgets` agora exige `CRON_SECRET` (fail-closed) + dedup de alertas; quota com expiração de premium espelhada (webhook perdido não deixa premium eterno, 24h de graça); multi-moeda forçada server-side pra free; uso aguardado antes da resposta; webhook RevenueCat com comparação constant-time + ordenação de eventos; validação/clamp da saída do Gemini; limite de imagem 10MB; `translate-category` com teto mensal.
+- **Apps:** sign-out limpa cache (dados do usuário anterior não vazam); erros de mutação tratados com toast/alert (web+mobile); dark mode persistido (web) e tab bar mobile no tema; 402 de quota mostra paywall (não "erro de imagem"); scan em lote com retry sem duplicar; usuário sem casal roteia pro onboarding (mobile); locale do device na 1ª execução; PDF/CSV export localizados + escape anti-injeção; a11y labels nos arquivos tocados.
+- Relatórios completos: auditoria e correções nos scratchpads da sessão; typecheck 7/7 verde pós-tudo.
+
+## Blog (novo, 2026-08-31) — `apps/blog`
+- **Astro 5 estático** (zero JS de cliente além do toggle de tema), marca Paca (rosa/Bricolage/DM Sans), claro+escuro.
+- **11 posts pt-BR** (10 artigos SEO ~2.000 palavras + boas-vindas), pesquisados por keyword (Serasa/IBGE citados com fonte, sem estatística inventada), pilar `como-dividir-contas-casal` + cluster interno, CTAs pro app.
+- SEO completo: sitemap, RSS, canonical, OG (imagem 1200×630 gerada — fonte em `og-image-source.html`), JSON-LD (BlogPosting, BreadcrumbList, FAQPage), robots.txt, 5 categorias, /sobre E-E-A-T.
+- `vercel.json` pronto (novo projeto Vercel apontando pra `apps/blog`). **Domínio é placeholder** (`blog.pacafinance.com`) em `astro.config.mjs`/`consts.ts`/`robots.txt` — trocar quando decidir o real.
 
 ## Bandas (rubrica: subsistema **Done** = ligado ponta-a-ponta no código, sem stub)
 - **Construído: 4/5 subsistemas de código Done** — `web` ✅, `packages (api+shared)` ✅, `backend/edge-functions` ✅, `db/migrations` ✅.
@@ -42,6 +55,10 @@ Código essencialmente construído e com typecheck verde — **web pronto/deploy
 - [ ] `(untracked)` 🧪 **Cobertura de testes** — não há testes no repo (só typecheck). Priorizar o que é financeiro/sensível: quota por casal (`_shared/quota.ts`), RLS de `subscriptions`/`usage_stats`, cálculo de saldo + conversão multimoeda, idempotência do `revenuecat-webhook`. Runner sugerido: **Vitest** (packages + web) e **`deno test`** (edge functions). *(ver ⚠️ Riscos)*
 
 ### ⛔ Blocked (infra/config externa — não é código)
+- [ ] `(untracked)` 🆕 **Aplicar migrations 00023–00030** no Supabase (`db push` ou SQL Editor, em ordem) e **depois** redeployar as edge functions atualizadas (`generate-invite`, `check-budgets`, `scan-receipt`, `scan-statement`, `advise-purchase`, `revenuecat-webhook`, `translate-category`) e o web. **Ordem importa** — runbook completo em `supabase/RUNBOOK.md`; resumo: migrations → functions → clients. 00025 fecha o sequestro de casal (clientes antigos de create/join param — nenhum foi shipado, então sem impacto).
+- [ ] `(untracked)` 🆕 **Setar `CRON_SECRET`** nos secrets das functions + configurar o scheduler do `check-budgets` com header `Authorization: Bearer <CRON_SECRET>` (função responde 503 até existir o secret — proposital).
+- [ ] `(untracked)` 🆕 **Seed do admin**: após 00028, `insert into admin_users (user_id) select id from auth.users where email = '<seu email>';` (dashboard admin fica vazio até isso).
+- [ ] `(untracked)` 🆕 **Deploy do blog**: criar projeto Vercel apontando pra `apps/blog` (config já em `apps/blog/vercel.json`), escolher domínio real e trocar o placeholder em `astro.config.mjs` + `src/consts.ts` + `public/robots.txt`; depois Google Search Console + submeter sitemap.
 - [ ] `#6` **Desligar "Confirm email"** no Supabase (senão signup não loga). Auth → Providers → Email.
 - [ ] `#3` **Config login Google (web)** — consent screen + OAuth client + colar Client ID/Secret no Supabase. *(sem isso, o botão chama `signInWithOAuth` e o Supabase retorna erro)*
 - [ ] `#4` **Config login Apple (web)** — Service ID + chave no Apple Developer.
