@@ -7,6 +7,7 @@ import {
   useCouple,
   useUpdateCouple,
   useDeleteAccount,
+  useIsPremium,
   supabase,
   useI18n,
 } from "@paca/api";
@@ -17,6 +18,7 @@ import {
 } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { useToast } from "@/components/ui/Toast";
 import {
   Heart,
   User,
@@ -44,10 +46,12 @@ export function ProfilePage() {
   const { signOut, user } = useAuth();
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
+  const isPremium = useIsPremium();
   const updateProfile = useUpdateProfile();
   const updateCouple = useUpdateCouple();
   const deleteAccount = useDeleteAccount();
   const { t, dateLocale, locale, setLocale, currency, setCurrency, translateCategory } = useI18n();
+  const { toast } = useToast();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const [deleteError, setDeleteError] = useState("");
@@ -63,8 +67,15 @@ export function ProfilePage() {
   };
 
   const handleLanguageChange = async (newLocale: Locale) => {
+    const previous = locale;
     setLocale(newLocale);
-    await updateProfile.mutateAsync({ language: newLocale });
+    try {
+      await updateProfile.mutateAsync({ language: newLocale });
+    } catch {
+      // Revert so the UI doesn't disagree with the stored profile language
+      setLocale(previous);
+      toast(t.common.errorBoundaryMessage, "error");
+    }
   };
 
   const handleCurrencyChange = async (newCurrency: string) => {
@@ -101,20 +112,35 @@ export function ProfilePage() {
 
   const handleSaveName = async () => {
     if (!newName.trim()) return;
-    await updateProfile.mutateAsync({ display_name: newName.trim() });
-    setEditingName(false);
+    try {
+      await updateProfile.mutateAsync({ display_name: newName.trim() });
+      setEditingName(false);
+    } catch {
+      toast(t.common.errorBoundaryMessage, "error");
+    }
   };
 
   const handleCopyCode = async () => {
     if (!couple?.invite_code) return;
-    await navigator.clipboard.writeText(couple.invite_code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(couple.invite_code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast(t.common.errorBoundaryMessage, "error");
+    }
   };
 
   const toggleDarkMode = () => {
-    document.documentElement.classList.toggle("dark");
-    setDarkMode(!darkMode);
+    const next = !darkMode;
+    document.documentElement.classList.toggle("dark", next);
+    setDarkMode(next);
+    try {
+      // Read at boot by the inline script in index.html (no-flash init)
+      localStorage.setItem("paca_theme", next ? "dark" : "light");
+    } catch {
+      // storage unavailable — the in-memory toggle still applies
+    }
   };
 
   const handleSignOut = async () => {
@@ -133,12 +159,21 @@ export function ProfilePage() {
 
     if (!data || data.length === 0) return;
 
+    // Escape quotes and neutralize formula injection (=, +, -, @ prefixes are
+    // executed by Excel/Sheets; descriptions/categories are partner-authored).
+    const csv = (v: unknown) => {
+      let s = String(v ?? "");
+      if (/^[=+\-@]/.test(s)) s = "'" + s;
+      return `"${s.replace(/"/g, '""')}"`;
+    };
+
     const header = t.profile.csvHeader + "\n";
     const rows = data
       .map((row: any) => {
         const val = (row.amount / 100).toFixed(2);
         const cat = translateCategory(row.category?.name);
-        return `${row.date},"${row.description}",${row.type === "income" ? t.profile.csvIncome : t.profile.csvExpense},${val},"${cat}"`;
+        const typeLabel = row.type === "income" ? t.profile.csvIncome : t.profile.csvExpense;
+        return `${row.date},${csv(row.description)},${csv(typeLabel)},${val},${csv(cat)}`;
       })
       .join("\n");
 
@@ -258,6 +293,7 @@ export function ProfilePage() {
           action={
             <button
               onClick={toggleDarkMode}
+              aria-label={t.profile.darkMode}
               className={`relative w-12 h-7 rounded-full transition-colors ${
                 darkMode ? "bg-pink-primary" : "bg-gray-200 dark:bg-gray-700"
               }`}
@@ -315,21 +351,39 @@ export function ProfilePage() {
         <SettingRow
           icon={<Repeat className="w-5 h-5" />}
           label={t.profile.autoConvertCurrency}
-          hint={t.profile.autoConvertCurrencyHint}
+          hint={
+            isPremium
+              ? t.profile.autoConvertCurrencyHint
+              : t.premium.subtitleMultiCurrency
+          }
           action={
-            <button
-              onClick={handleToggleAutoConvert}
-              aria-label={t.profile.autoConvertCurrency}
-              className={`relative w-12 h-7 rounded-full transition-colors ${
-                couple?.auto_convert_currency ? "bg-pink-primary" : "bg-gray-200 dark:bg-gray-700"
-              }`}
-            >
-              <div
-                className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${
-                  couple?.auto_convert_currency ? "translate-x-5" : "translate-x-0.5"
+            <div className="flex items-center gap-2">
+              {!isPremium && (
+                <span className="rounded-full bg-pink-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase text-pink-600 dark:text-pink-300">
+                  {t.premium.badge}
+                </span>
+              )}
+              <button
+                onClick={handleToggleAutoConvert}
+                aria-label={t.profile.autoConvertCurrency}
+                disabled={!isPremium}
+                className={`relative w-12 h-7 rounded-full transition-colors ${
+                  !isPremium
+                    ? "cursor-not-allowed bg-gray-200 opacity-60 dark:bg-gray-700"
+                    : couple?.auto_convert_currency
+                      ? "bg-pink-primary"
+                      : "bg-gray-200 dark:bg-gray-700"
                 }`}
-              />
-            </button>
+              >
+                <div
+                  className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${
+                    isPremium && couple?.auto_convert_currency
+                      ? "translate-x-5"
+                      : "translate-x-0.5"
+                  }`}
+                />
+              </button>
+            </div>
           }
         />
 

@@ -9,8 +9,15 @@ import {
   supabase,
   useI18n,
   useAppStore,
+  QuotaExceededError,
 } from "@paca/api";
-import { DEFAULT_CATEGORIES, type Category } from "@paca/shared";
+import {
+  DEFAULT_CATEGORIES,
+  parseMoneyInput,
+  centsToInput,
+  getTodayLocal,
+  type Category,
+} from "@paca/shared";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import {
@@ -49,12 +56,15 @@ export function ScanReceiptPage() {
   const addTransaction = useAddTransaction();
   const scanReceipt = useScanReceipt();
   const scanStatement = useScanStatement();
-  const { t, translateCategory } = useI18n();
+  const { t, dateLocale, translateCategory } = useI18n();
 
   const [mode, setMode] = useState<Mode>("choose");
   const [step, setStep] = useState<ScanStep>("upload");
   const [preview, setPreview] = useState<string | null>(null);
   const [scannedItems, setScannedItems] = useState<ScannedTransaction[]>([]);
+  // Per-row free-typing drafts for the amount editor — committed on blur so a
+  // controlled reformat never fights the cursor or drops comma decimals.
+  const [amountDrafts, setAmountDrafts] = useState<Record<number, string>>({});
   const [categories, setCategories] = useState<Category[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -113,6 +123,7 @@ export function ScanReceiptPage() {
 
     const allItems: ScannedTransaction[] = [];
     let failures = 0;
+    let quotaHit = false;
 
     // Process images sequentially so we can stream progress and keep the
     // AI backend from hitting its rate limit on a big batch.
@@ -134,7 +145,13 @@ export function ScanReceiptPage() {
             });
           }
         }
-      } catch {
+      } catch (err) {
+        // Monthly quota reached: stop burning requests and show the limit
+        // message instead of pretending the image couldn't be read.
+        if (err instanceof QuotaExceededError) {
+          quotaHit = true;
+          break;
+        }
         failures++;
       } finally {
         setScanProgress((prev) => ({ ...prev, done: prev.done + 1 }));
@@ -142,17 +159,39 @@ export function ScanReceiptPage() {
     }
 
     if (allItems.length === 0) {
-      setError(t.scan.imageError);
+      setError(quotaHit ? t.premium.subtitleScan : t.scan.imageError);
       setStep("upload");
       return;
     }
 
+    // Quota hit mid-batch: keep the results that already consumed quota so
+    // the user can still review and save them.
     setScannedItems(allItems);
-    if (failures > 0) {
+    setAmountDrafts({});
+    if (quotaHit) {
+      setError(t.premium.subtitleScan);
+    } else if (failures > 0) {
       setError(t.scan.imageError);
     }
     setStep("review");
   };
+
+  // RU/UK need three plural forms (one/few/many) — a binary n === 1 check
+  // produces wrong grammar for counts ending in 2-4.
+  const pluralRules = new Intl.PluralRules(dateLocale);
+  const transactionWord = (n: number): string => {
+    const cat = pluralRules.select(n);
+    if (cat === "one") return t.scan.transaction;
+    if (cat === "few") return t.scan.transactionFew;
+    return t.scan.transactions;
+  };
+  const foundLabel = (n: number): string => {
+    const cat = pluralRules.select(n);
+    const template =
+      cat === "one" ? t.scan.foundOne : cat === "few" ? t.scan.foundFew : t.scan.foundMany;
+    return template.replace("{count}", String(n));
+  };
+  const selectedCount = scannedItems.filter((item) => item.selected).length;
 
   const getCategoryId = (categoryName: string): string => {
     const target = categoryName.toLowerCase().trim();
@@ -172,39 +211,57 @@ export function ScanReceiptPage() {
 
     // Filter out any scanned row with an invalid amount — the DB has
     // CHECK (amount > 0), so zero/NaN would fail the whole batch.
-    const selected = scannedItems.filter(
-      (it) => it.selected && Number.isFinite(it.amount) && Math.abs(it.amount) > 0
-    );
-    if (selected.length === 0) {
+    const isSavable = (it: ScannedTransaction) =>
+      Boolean(it.selected) && Number.isFinite(it.amount) && Math.abs(it.amount) > 0;
+    if (!scannedItems.some(isSavable)) {
       setError(t.scan.saveError);
       setSaving(false);
       return;
     }
 
-    try {
-      for (const it of selected) {
+    // Save items individually and track which succeeded, so a mid-batch
+    // failure never leaves already-saved rows in the list (retry = duplicates).
+    const savedIdx = new Set<number>();
+    let failures = 0;
+
+    for (let i = 0; i < scannedItems.length; i++) {
+      const it = scannedItems[i];
+      if (!isSavable(it)) continue;
+      try {
         await addTransaction.mutateAsync({
           couple_id: profile!.couple_id!,
           paid_by: profile!.id,
           scope: financeMode,
           type: it.type,
-          amount: Math.abs(it.amount),
+          // AI amounts can come back fractional — round before the bigint column
+          amount: Math.round(Math.abs(it.amount)),
           currency: it.currency,
-          original_amount: it.original_amount != null ? Math.abs(it.original_amount) : null,
+          original_amount:
+            it.original_amount != null ? Math.round(Math.abs(it.original_amount)) : null,
           original_currency: it.original_currency,
           exchange_rate: it.exchange_rate,
           description: it.description,
           category_id: getCategoryId(it.category),
-          date: it.date ?? new Date().toISOString().split("T")[0],
+          date: /^\d{4}-\d{2}-\d{2}$/.test(it.date ?? "") ? it.date : getTodayLocal(),
           ai_scanned: true,
         });
+        savedIdx.add(i);
+      } catch {
+        failures++;
       }
-      navigate("/transactions");
-    } catch {
-      setError(t.scan.saveError);
-    } finally {
-      setSaving(false);
     }
+
+    setSaving(false);
+
+    if (failures === 0) {
+      navigate("/transactions");
+      return;
+    }
+
+    // Keep only the rows that did NOT save, so retrying can't duplicate.
+    setScannedItems((prev) => prev.filter((_, i) => !savedIdx.has(i)));
+    setAmountDrafts({});
+    setError(t.scan.partialSaveError);
   };
 
   const toggleItem = (index: number) => {
@@ -234,11 +291,13 @@ export function ScanReceiptPage() {
               setMode("choose");
               setPreview(null);
               setScannedItems([]);
+              setAmountDrafts({});
               setError("");
             } else {
               navigate(-1);
             }
           }}
+          aria-label={t.common.back}
           className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
         >
           <ArrowLeft className="w-5 h-5 text-gray-500" />
@@ -376,7 +435,7 @@ export function ScanReceiptPage() {
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-pink-primary" />
               <h3 className="text-lg font-display font-bold text-gray-800 dark:text-gray-100">
-                {scannedItems.length} {t.scan.transactionsFound}
+                {foundLabel(scannedItems.length)}
               </h3>
             </div>
             <span className="text-xs text-gray-400">
@@ -398,6 +457,8 @@ export function ScanReceiptPage() {
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <button
                       onClick={() => toggleItem(i)}
+                      aria-label={item.description || t.scan.transaction}
+                      aria-pressed={!!item.selected}
                       className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all shrink-0 ${
                         item.selected
                           ? "bg-pink-primary border-pink-primary"
@@ -415,21 +476,32 @@ export function ScanReceiptPage() {
                       <p className="text-xs text-gray-400 truncate">
                         {translateCategory(item.category)} · {item.date} ·{" "}
                         <span className="text-pink-primary">
-                          {Math.round(item.confidence * 100)}% {t.scan.confidence}
+                          {Math.round((item.confidence ?? 0) * 100)}% {t.scan.confidence}
                         </span>
                       </p>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
                     <input
-                      value={(Math.abs(item.amount) / 100).toFixed(2)}
+                      inputMode="decimal"
+                      aria-label={t.transactions.amountLabel}
+                      value={amountDrafts[i] ?? centsToInput(Math.round(Math.abs(item.amount)))}
                       onChange={(e) =>
-                        updateItem(
-                          i,
-                          "amount",
-                          Math.round(parseFloat(e.target.value || "0") * 100)
-                        )
+                        setAmountDrafts((prev) => ({ ...prev, [i]: e.target.value }))
                       }
+                      onBlur={() => {
+                        const draft = amountDrafts[i];
+                        if (draft == null) return;
+                        // Commit on blur via the shared parser (handles both
+                        // "," and "." decimals); revert when unparseable.
+                        const cents = parseMoneyInput(draft);
+                        if (cents != null) updateItem(i, "amount", cents);
+                        setAmountDrafts((prev) => {
+                          const next = { ...prev };
+                          delete next[i];
+                          return next;
+                        });
+                      }}
                       className={`text-sm font-bold text-right bg-transparent border-none outline-none w-24 ${
                         item.type === "expense"
                           ? "text-red-primary"
@@ -455,13 +527,13 @@ export function ScanReceiptPage() {
                 <div className="w-full h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full ${
-                      item.confidence >= 0.9
+                      (item.confidence ?? 0) >= 0.9
                         ? "bg-emerald-400"
-                        : item.confidence >= 0.7
+                        : (item.confidence ?? 0) >= 0.7
                           ? "bg-amber-400"
                           : "bg-red-400"
                     }`}
-                    style={{ width: `${item.confidence * 100}%` }}
+                    style={{ width: `${(item.confidence ?? 0) * 100}%` }}
                   />
                 </div>
               </div>
@@ -475,6 +547,7 @@ export function ScanReceiptPage() {
                 setStep("upload");
                 setPreview(null);
                 setScannedItems([]);
+                setAmountDrafts({});
               }}
             >
               {t.scan.scanAnother}
@@ -485,7 +558,7 @@ export function ScanReceiptPage() {
               onClick={handleSave}
               disabled={!scannedItems.some((item) => item.selected)}
             >
-              {t.scan.saveCount} {scannedItems.filter((item) => item.selected).length} {scannedItems.filter((item) => item.selected).length === 1 ? t.scan.transaction : t.scan.transactions}
+              {t.scan.saveCount} {selectedCount} {transactionWord(selectedCount)}
             </Button>
           </div>
         </div>

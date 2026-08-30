@@ -9,7 +9,9 @@ import {
   supabase,
   useI18n,
   useAppStore,
+  QuotaExceededError,
 } from "@paca/api";
+import { parseMoneyInput } from "@paca/shared";
 import type { PurchaseAdvice, AdviceUrgency, AdviceVerdict, Category } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -99,9 +101,8 @@ export function AdvisorPage() {
       setError(t.advisor.missingItem);
       return;
     }
-    const parsed = parseFloat(amount.replace(/\./g, "").replace(",", "."));
-    const cents = Math.round(parsed * 100);
-    if (!cents || Number.isNaN(cents) || cents <= 0) {
+    const cents = parseMoneyInput(amount);
+    if (cents == null) {
       setError(t.advisor.missingAmount);
       return;
     }
@@ -118,15 +119,25 @@ export function AdvisorPage() {
         mode,
       });
       setResult(response);
-    } catch {
-      setError(t.advisor.genericError);
+    } catch (err) {
+      // Monthly quota reached: say so instead of a generic failure
+      if (err instanceof QuotaExceededError) {
+        setError(t.premium.subtitleAdvisor);
+      } else {
+        setError(t.advisor.genericError);
+      }
     }
   };
 
   const handleShare = async () => {
     if (!result) return;
-    const updated = await share.mutateAsync({ id: result.id, shared: true });
-    setResult(updated);
+    setError("");
+    try {
+      const updated = await share.mutateAsync({ id: result.id, shared: true });
+      setResult(updated);
+    } catch {
+      setError(t.advisor.genericError);
+    }
   };
 
   const pastAdvices = useMemo(() => history ?? [], [history]);
@@ -153,14 +164,14 @@ export function AdvisorPage() {
         </div>
       </div>
 
+      {error && (
+        <div className="mb-5 p-4 rounded-xl bg-red-50 dark:bg-red-primary/10 border border-red-200 dark:border-red-primary/20 text-red-primary text-sm">
+          {error}
+        </div>
+      )}
+
       {!result ? (
         <form onSubmit={handleSubmit} className="space-y-5 mb-10">
-          {error && (
-            <div className="p-4 rounded-xl bg-red-50 dark:bg-red-primary/10 border border-red-200 dark:border-red-primary/20 text-red-primary text-sm">
-              {error}
-            </div>
-          )}
-
           <Input
             label={t.advisor.itemLabel}
             placeholder={t.advisor.itemPlaceholder}

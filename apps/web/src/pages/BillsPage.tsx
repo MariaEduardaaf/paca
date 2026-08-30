@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useProfile, useBills, useCreateBill, useToggleBill, useDeleteBill, useI18n } from "@paca/api";
 import {
   getCurrentMonth,
+  parseMoneyInput,
   type BillWithPayment,
 } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
@@ -42,20 +43,29 @@ export function BillsPage() {
   };
 
   const handleToggle = async (bill: BillWithPayment) => {
+    if (!profile) return;
     const newPaid = !bill.payment?.paid;
-    await toggleBill.mutateAsync({
-      billId: bill.id,
-      month,
-      paid: newPaid,
-      profileId: profile!.id,
-    });
-    toast(newPaid ? `${bill.name} ${t.bills.paid}` : `${bill.name} ${t.bills.unmarked}`);
+    try {
+      await toggleBill.mutateAsync({
+        billId: bill.id,
+        month,
+        paid: newPaid,
+        profileId: profile.id,
+      });
+      toast(newPaid ? `${bill.name} ${t.bills.paid}` : `${bill.name} ${t.bills.unmarked}`);
+    } catch {
+      toast(t.common.errorBoundaryMessage, "error");
+    }
   };
 
   const handleDelete = async (bill: BillWithPayment) => {
     if (!confirm(t.bills.deleteConfirm)) return;
-    await deleteBill.mutateAsync(bill.id);
-    toast(t.bills.removed);
+    try {
+      await deleteBill.mutateAsync(bill.id);
+      toast(t.bills.removed);
+    } catch {
+      toast(t.common.errorBoundaryMessage, "error");
+    }
   };
 
   // Summary
@@ -285,8 +295,8 @@ function NewBillForm({
 
     if (!name.trim()) { setError(t.bills.nameRequired); return; }
 
-    const amountCents = Math.round(parseFloat(amount.replace(/\./g, "").replace(",", ".")) * 100);
-    if (!amountCents || isNaN(amountCents) || amountCents <= 0) {
+    const amountCents = parseMoneyInput(amount);
+    if (amountCents == null) {
       setError(t.bills.invalidAmount);
       return;
     }

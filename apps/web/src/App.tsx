@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useI18n } from "@paca/api";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { GuestRoute } from "@/components/auth/GuestRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -21,6 +23,18 @@ import { SupportPage } from "@/pages/SupportPage";
 import { RecommendationsPage } from "@/pages/RecommendationsPage";
 
 export function App() {
+  const { dateLocale } = useI18n();
+
+  // Keep <html lang> in sync with the active locale so screen readers use the
+  // right pronunciation rules (the static attribute only covers first paint).
+  useEffect(() => {
+    try {
+      document.documentElement.lang = dateLocale;
+    } catch {
+      // non-DOM environment — ignore
+    }
+  }, [dateLocale]);
+
   return (
     <Routes>
       {/* Public routes (legal + support) — no auth required */}

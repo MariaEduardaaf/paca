@@ -4,6 +4,9 @@ import { useProfile, useUpdateTransaction, useI18n } from "@paca/api";
 import { supabase } from "@paca/api";
 import {
   transactionUpdateSchema,
+  parseMoneyInput,
+  centsToInput,
+  type FinanceScope,
   type TransactionType,
   type Category,
 } from "@paca/shared";
@@ -33,19 +36,28 @@ export function EditTransactionPage() {
   const [currency, setCurrencyCode] = useState<string>("");
   const [originalAmount, setOriginalAmount] = useState<number | null>(null);
   const [originalCurrency, setOriginalCurrency] = useState<string | null>(null);
+  const [txScope, setTxScope] = useState<FinanceScope | null>(null);
 
-  // Fetch categories
+  // Fetch categories for the transaction's scope (same query as NewTransactionPage)
   useEffect(() => {
     const fetchCategories = async () => {
-      const { data } = await supabase
-        .from("categories")
-        .select("*")
-        .or(`is_default.eq.true,couple_id.eq.${profile?.couple_id}`)
-        .order("name");
+      let query = supabase.from("categories").select("*").order("name");
+      if (txScope === "couple") {
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${profile?.couple_id})`
+        );
+      } else if (txScope === "personal" && profile?.id) {
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${profile.id})`
+        );
+      } else {
+        query = query.eq("is_default", true);
+      }
+      const { data } = await query;
       if (data) setCategories(data);
     };
-    if (profile?.couple_id) fetchCategories();
-  }, [profile?.couple_id]);
+    if (profile?.couple_id && txScope) fetchCategories();
+  }, [profile?.couple_id, profile?.id, txScope]);
 
   // Fetch existing transaction
   useEffect(() => {
@@ -64,7 +76,8 @@ export function EditTransactionPage() {
       }
 
       setType(data.type);
-      setAmount((data.amount / 100).toFixed(2).replace(".", ","));
+      setTxScope((data.scope as FinanceScope) ?? "couple");
+      setAmount(centsToInput(data.amount));
       setDescription(data.description);
       setCategoryId(data.category_id);
       setDate(data.date);
@@ -83,7 +96,11 @@ export function EditTransactionPage() {
 
     if (!id) return;
 
-    const amountCents = Math.round(parseFloat(amount.replace(",", ".")) * 100);
+    const amountCents = parseMoneyInput(amount);
+    if (amountCents == null) {
+      setError(t.transactions.invalidAmount);
+      return;
+    }
 
     // If transaction was auto-converted and user changed the converted amount,
     // recompute exchange_rate to keep original_amount * rate ≈ amount.
@@ -134,6 +151,7 @@ export function EditTransactionPage() {
       <div className="flex items-center gap-2 sm:gap-4 mb-6 sm:mb-8 min-w-0">
         <button
           onClick={() => navigate(-1)}
+          aria-label={t.common.back}
           className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
         >
           <ArrowLeft className="w-5 h-5 text-gray-500" />

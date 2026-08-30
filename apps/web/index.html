@@ -1,7 +1,19 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Apply the persisted theme (or the OS preference) before first paint to
+      // avoid a light-mode flash. Kept in sync by the Profile dark-mode toggle.
+      (function () {
+        try {
+          var t = localStorage.getItem("paca_theme");
+          if (t === "dark" || (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Paca Finance</title>

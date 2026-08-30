@@ -53,7 +53,7 @@ export function CategoriesPage() {
       setColor(PALETTE[0]);
       setAdding(false);
     } catch {
-      // swallow — server error will surface via console
+      toast(t.common.errorBoundaryMessage, "error");
     }
   };
 
@@ -62,7 +62,7 @@ export function CategoriesPage() {
     try {
       await deleteCategory.mutateAsync({ id: cat.id, is_default: cat.is_default });
     } catch {
-      // ignore
+      toast(t.common.errorBoundaryMessage, "error");
     }
   };
 
@@ -76,7 +76,7 @@ export function CategoriesPage() {
           type="button"
           onClick={() => navigate(-1)}
           className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
-          aria-label="Back"
+          aria-label={t.common.back}
         >
           <ArrowLeft className="w-5 h-5 text-gray-500" />
         </button>
@@ -199,6 +199,7 @@ function CategoryRow({
   onDelete?: () => void;
   defaultBadge?: string;
 }) {
+  const { t } = useI18n();
   return (
     <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-50 dark:border-gray-700/50 last:border-b-0">
       <div
@@ -222,7 +223,7 @@ function CategoryRow({
           type="button"
           onClick={onDelete}
           className="p-2 text-gray-400 hover:text-red-primary rounded-lg hover:bg-red-50 dark:hover:bg-red-primary/10 transition-colors"
-          aria-label="Delete"
+          aria-label={t.common.delete}
         >
           <Trash2 className="w-4 h-4" />
         </button>

@@ -3,6 +3,8 @@ import { useProfile, useBudget, useCreateBudget, useI18n, useAppStore } from "@p
 import { supabase } from "@paca/api";
 import {
   getCurrentMonth,
+  parseMoneyInput,
+  centsToInput,
   BUDGET_THRESHOLDS,
   type Category,
   type BudgetWithCategories,
@@ -70,13 +72,13 @@ export function BudgetPage() {
 
       {/* Month nav */}
       <div className="flex items-center justify-between gap-2 bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 border border-gray-100 dark:border-gray-700 mb-6">
-        <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0">
+        <button onClick={prevMonth} aria-label={t.format.previousMonth} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0">
           <ChevronLeft className="w-5 h-5 text-gray-500" />
         </button>
         <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 capitalize truncate">
           {formatMonthYear(month)}
         </span>
-        <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0">
+        <button onClick={nextMonth} aria-label={t.format.nextMonth} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0">
           <ChevronRight className="w-5 h-5 text-gray-500" />
         </button>
       </div>
@@ -236,7 +238,7 @@ function BudgetSetup({
   const { t, translateCategory } = useI18n();
   const createBudget = useCreateBudget();
   const [totalAmount, setTotalAmount] = useState(
-    existingBudget ? String(existingBudget.total_amount / 100) : ""
+    existingBudget ? centsToInput(existingBudget.total_amount) : ""
   );
   const [categories, setCategories] = useState<Category[]>([]);
   const [allocations, setAllocations] = useState<Record<string, string>>({});
@@ -303,7 +305,7 @@ function BudgetSetup({
         if (existingBudget) {
           const allocs: Record<string, string> = {};
           for (const bc of existingBudget.categories) {
-            allocs[bc.category_id] = String(bc.allocated_amount / 100);
+            allocs[bc.category_id] = centsToInput(bc.allocated_amount);
           }
           setAllocations(allocs);
         }
@@ -315,19 +317,18 @@ function BudgetSetup({
   const handleSave = async () => {
     setError("");
 
-    const parsed = parseFloat(totalAmount.replace(/\./g, "").replace(",", "."));
-    const totalCents = Math.round(parsed * 100);
-    if (!totalCents || isNaN(totalCents) || totalCents <= 0) {
+    const totalCents = parseMoneyInput(totalAmount);
+    if (totalCents == null) {
       setError(t.budget.invalidTotal);
       return;
     }
 
     const cats = Object.entries(allocations)
-      .filter(([, val]) => parseFloat(val.replace(/\./g, "").replace(",", ".")) > 0)
       .map(([categoryId, val]) => ({
         category_id: categoryId,
-        allocated_amount: Math.round(parseFloat(val.replace(/\./g, "").replace(",", ".")) * 100),
-      }));
+        allocated_amount: parseMoneyInput(val) ?? 0,
+      }))
+      .filter((c) => c.allocated_amount > 0);
 
     try {
       await createBudget.mutateAsync({
@@ -429,7 +430,7 @@ function BudgetSetup({
               <button
                 key={color}
                 type="button"
-                aria-label={`Cor ${color}`}
+                aria-label={`${t.categoryManager.color} ${color}`}
                 onClick={() => setNewCatColor(color)}
                 className={`w-7 h-7 rounded-full transition-all ${
                   newCatColor === color

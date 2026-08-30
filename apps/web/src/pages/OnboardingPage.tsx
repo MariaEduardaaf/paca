@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useCreateCouple, useJoinCouple, useProfile, useI18n } from "@paca/api";
 import { isValidInviteCode, normalizeInviteCode } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
@@ -21,10 +21,11 @@ export function OnboardingPage() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // If user already has a couple, redirect
-  if (profile?.couple_id) {
-    navigate("/", { replace: true });
-    return null;
+  // If user already has a couple, redirect — except on the "create" step:
+  // creating a couple sets couple_id via the profile refetch, and the user
+  // still needs to read/copy the invite code before leaving.
+  if (profile?.couple_id && step !== "create") {
+    return <Navigate to="/" replace />;
   }
 
   const handleCreate = async () => {
@@ -33,8 +34,12 @@ export function OnboardingPage() {
       const result = await createCouple.mutateAsync();
       setGeneratedCode(result.invite_code);
       setStep("create");
-    } catch {
-      setError(t.onboarding.createError);
+    } catch (err) {
+      setError(
+        err instanceof Error && err.message.includes("ALREADY_IN_COUPLE")
+          ? t.onboarding.alreadyInCouple
+          : t.onboarding.createError
+      );
     }
   };
 
@@ -50,15 +55,23 @@ export function OnboardingPage() {
     try {
       await joinCouple.mutateAsync(normalized);
       navigate("/");
-    } catch {
-      setError(t.onboarding.codeNotFound);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "";
+      if (message.includes("COUPLE_FULL")) setError(t.onboarding.coupleFull);
+      else if (message.includes("ALREADY_IN_COUPLE"))
+        setError(t.onboarding.alreadyInCouple);
+      else setError(t.onboarding.codeNotFound);
     }
   };
 
   const copyCode = async () => {
-    await navigator.clipboard.writeText(generatedCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(generatedCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable — the code stays visible for manual copy
+    }
   };
 
   return (
