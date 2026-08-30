@@ -26,6 +26,7 @@ export const ru: TranslationKeys = {
     tryAgain: "Попробовать снова",
     errorBoundaryMessage: "Что-то пошло не так. Попробуйте снова.",
     loadError: "Не удалось загрузить данные.",
+    actionError: "Не удалось выполнить действие. Проверьте подключение и попробуйте ещё раз.",
   },
 
   nav: {
@@ -169,6 +170,7 @@ export const ru: TranslationKeys = {
     addFirstMonth: "Добавьте первую транзакцию за месяц",
     noResults: "Нет результатов",
     scan: "Фото / Скриншот",
+    otherCurrenciesNote: "Другие валюты (не входят в итоги):",
   },
 
   budget: {
@@ -285,7 +287,9 @@ export const ru: TranslationKeys = {
     joinCouple: "Присоединиться к паре",
     enterCode: "Введите полученный код",
     enterCodeFromPartner: "Введите код, который отправил вам партнёр",
-    invalidCode: "Неверный код. Формат: PACA-XXXX",
+    invalidCode: "Неверный код. Проверьте формат (PACA-...).",
+    coupleFull: "В этой паре уже два человека.",
+    alreadyInCouple: "Вы уже состоите в паре.",
     codeNotFound: "Код не найден. Уточните у партнёра.",
     createError: "Ошибка создания пары. Попробуйте снова.",
     enter: "Войти",
@@ -309,22 +313,36 @@ export const ru: TranslationKeys = {
     aiExtractingSingle: "из транзакции",
     aiExtractingMulti: "из транзакций",
     transactionsFound: "транзакция(й) найдено",
+    foundOne: "Найдена {count} транзакция",
+    foundFew: "Найдены {count} транзакции",
+    foundMany: "Найдено {count} транзакций",
     reviewBeforeSave: "Проверьте перед сохранением",
     confidence: "уверенность",
     scanAnother: "Сканировать другое",
     saveCount: "Сохранить",
     transaction: "транзакция",
+    transactionFew: "транзакции",
     transactions: "транзакций",
     imageError: "Ошибка анализа изображения. Попробуйте снова.",
     saveError: "Ошибка сохранения транзакций",
+    partialSaveError:
+      "Некоторые транзакции не удалось сохранить. Сохранённые убраны из списка — нажмите «Сохранить» ещё раз, чтобы повторить остальные.",
     takePhoto: "Сделать фото",
     chooseGallery: "Выбрать из галереи",
     another: "Другое",
+    permissionError: "Доступ к камере или фото запрещён. Разрешите доступ в настройках, чтобы сканировать чеки.",
+    openSettings: "Открыть настройки",
   },
 
   format: {
     previousMonth: "Предыдущий месяц",
     nextMonth: "Следующий месяц",
+  },
+
+  pdf: {
+    monthlyReport: "Отчёт за месяц",
+    type: "Тип",
+    generatedAt: "Сформировано",
   },
 
   notifications: {

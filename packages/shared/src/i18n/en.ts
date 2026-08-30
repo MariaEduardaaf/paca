@@ -25,6 +25,7 @@ export const en = {
     tryAgain: "Try again",
     errorBoundaryMessage: "Something went wrong. Please try again.",
     loadError: "Couldn't load your data.",
+    actionError: "The action failed. Check your connection and try again.",
   },
 
   // Navigation
@@ -172,6 +173,7 @@ export const en = {
     addFirstMonth: "Add your first transaction this month",
     noResults: "No results",
     scan: "Photo / Screenshot",
+    otherCurrenciesNote: "Other currencies (not included in totals):",
   },
 
   // Budget
@@ -292,7 +294,9 @@ export const en = {
     joinCouple: "Join couple",
     enterCode: "Enter the code you received",
     enterCodeFromPartner: "Enter the code your partner sent you",
-    invalidCode: "Invalid code. Format: PACA-XXXX",
+    invalidCode: "Invalid code. Check the format (PACA-...).",
+    coupleFull: "This couple already has two people.",
+    alreadyInCouple: "You are already in a couple.",
     codeNotFound: "Code not found. Check with your partner.",
     createError: "Error creating couple. Try again.",
     enter: "Enter",
@@ -317,23 +321,38 @@ export const en = {
     aiExtractingSingle: "from the transaction",
     aiExtractingMulti: "from the transactions",
     transactionsFound: "transaction(s) found",
+    foundOne: "{count} transaction found",
+    foundFew: "{count} transactions found",
+    foundMany: "{count} transactions found",
     reviewBeforeSave: "Review before saving",
     confidence: "confidence",
     scanAnother: "Scan another",
     saveCount: "Save",
     transaction: "transaction",
+    transactionFew: "transactions",
     transactions: "transactions",
     imageError: "Error analyzing image. Try again.",
     saveError: "Error saving transactions",
+    partialSaveError:
+      "Some transactions couldn't be saved. The saved ones were removed from the list — save again to retry the rest.",
     takePhoto: "Take photo",
     chooseGallery: "Choose from gallery",
     another: "Another",
+    permissionError: "Camera or photo access was denied. Allow access in Settings to scan receipts.",
+    openSettings: "Open settings",
   },
 
   // Formatting
   format: {
     previousMonth: "Previous month",
     nextMonth: "Next month",
+  },
+
+  // PDF export
+  pdf: {
+    monthlyReport: "Monthly Report",
+    type: "Type",
+    generatedAt: "Generated on",
   },
 
   notifications: {
