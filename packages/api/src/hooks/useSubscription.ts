@@ -31,12 +31,15 @@ export function useSubscription() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Não autenticado");
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("couple_id")
         .eq("user_id", user.id)
         .single();
 
+      // Throw instead of caching "no couple" (which strips Premium gating)
+      // on a transient failure.
+      if (profileError) throw profileError;
       if (!profile?.couple_id) return null;
 
       const { data, error } = await supabase
@@ -46,9 +49,21 @@ export function useSubscription() {
         .maybeSingle();
 
       if (error) throw error;
-      return (data as Subscription | null) ?? freeSubscription(profile.couple_id);
+      const sub = (data as Subscription | null) ?? freeSubscription(profile.couple_id);
+      return { ...sub, is_premium: isEntitled(sub) };
     },
   });
+}
+
+// Mirrors the server-side check in supabase/functions/_shared/quota.ts: the
+// generated is_premium column trusts `status` alone, so a couple whose
+// EXPIRATION webhook was lost would keep Premium UI while the server denies.
+const EXPIRY_GRACE_MS = 24 * 60 * 60 * 1000;
+
+function isEntitled(sub: Subscription): boolean {
+  if (sub.status !== "active" && sub.status !== "trialing") return false;
+  if (!sub.current_period_end) return true;
+  return new Date(sub.current_period_end).getTime() + EXPIRY_GRACE_MS > Date.now();
 }
 
 /** Convenience: is the current couple Premium right now? Defaults to false. */

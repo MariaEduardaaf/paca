@@ -47,7 +47,7 @@ export function useBudget(options: UseBudgetOptions) {
       // owner so a personal budget doesn't get charged with couple spending.
       let txQuery = supabase
         .from("transactions")
-        .select("category_id, amount")
+        .select("category_id, amount, currency")
         .eq("couple_id", coupleId)
         .eq("scope", mode)
         .eq("type", "expense")
@@ -58,10 +58,22 @@ export function useBudget(options: UseBudgetOptions) {
         txQuery = txQuery.eq("paid_by", ownerId);
       }
 
-      const { data: transactions } = await txQuery;
+      const [{ data: transactions, error: txError }, { data: couple, error: coupleError }] =
+        await Promise.all([
+          txQuery,
+          supabase.from("couples").select("primary_currency").eq("id", coupleId).single(),
+        ]);
 
+      // A swallowed error here would show spent = 0 for every category.
+      if (txError) throw txError;
+      if (coupleError) throw coupleError;
+
+      // Unconverted foreign-currency rows (auto-convert off) can't be added to
+      // primary-currency cents — leave them out of the spent totals.
+      const primaryCurrency = couple.primary_currency;
       const spentByCategory = (transactions ?? []).reduce(
         (acc, t) => {
+          if (t.currency && t.currency !== primaryCurrency) return acc;
           acc[t.category_id] = (acc[t.category_id] ?? 0) + t.amount;
           return acc;
         },
@@ -79,10 +91,11 @@ export function useBudget(options: UseBudgetOptions) {
       // render them alongside the configured ones with allocated_amount = 0.
       let phantomCategories: any[] = [];
       if (missingIds.length > 0) {
-        const { data: phantomMeta } = await supabase
+        const { data: phantomMeta, error: phantomError } = await supabase
           .from("categories")
           .select("id, name, icon, color, name_translations")
           .in("id", missingIds);
+        if (phantomError) throw phantomError;
         phantomCategories = (phantomMeta ?? []).map((cat) => ({
           id: `phantom-${cat.id}`,
           budget_id: budget.id,
@@ -161,23 +174,32 @@ export function useCreateBudget() {
 
       if (!savedBudget) throw new Error("failed to save budget");
 
-      // Reset category allocations: delete existing then reinsert the submitted ones.
-      const { error: delError } = await supabase
-        .from("budget_categories")
-        .delete()
-        .eq("budget_id", savedBudget.id);
-
-      if (delError) throw delError;
-
+      // Sync category allocations without a destructive delete-then-insert
+      // (which would wipe every allocation if the reinsert failed mid-flight):
+      // upsert the submitted rows onto unique(budget_id, category_id), then
+      // remove only the rows that are no longer in the submitted set.
       if (categories.length > 0) {
         const { error: catError } = await supabase
           .from("budget_categories")
-          .insert(
-            categories.map((c) => ({ ...c, budget_id: savedBudget!.id }))
+          .upsert(
+            categories.map((c) => ({ ...c, budget_id: savedBudget!.id })),
+            { onConflict: "budget_id,category_id" }
           );
 
         if (catError) throw catError;
       }
+
+      const keptIds = categories.map((c) => c.category_id);
+      let staleQuery = supabase
+        .from("budget_categories")
+        .delete()
+        .eq("budget_id", savedBudget.id);
+      if (keptIds.length > 0) {
+        staleQuery = staleQuery.not("category_id", "in", `(${keptIds.join(",")})`);
+      }
+      const { error: delError } = await staleQuery;
+
+      if (delError) throw delError;
 
       return savedBudget;
     },

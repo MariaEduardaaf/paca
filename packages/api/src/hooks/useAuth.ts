@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../supabase";
 import { useAppStore } from "../store";
+import { getInitialLocale } from "./useI18n";
 import type { Session, User } from "@supabase/supabase-js";
 
 interface AuthState {
@@ -29,17 +30,25 @@ export function useAuth() {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         setAuthState({
           user: session?.user ?? null,
           session,
           loading: false,
         });
+        // Clear cached financial data on ANY sign-out (direct
+        // supabase.auth.signOut() calls, other-tab sign-outs, revoked
+        // sessions), not only the signOut() helper below — otherwise the
+        // previous user's queries are served to the next account.
+        if (event === "SIGNED_OUT") {
+          reset();
+          queryClient.clear();
+        }
       }
     );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [queryClient, reset]);
 
   const signUp = useCallback(
     async (email: string, password: string, displayName: string) => {
@@ -47,7 +56,9 @@ export function useAuth() {
         email,
         password,
         options: {
-          data: { display_name: displayName },
+          // language: consumed by the handle_new_user trigger so the profile
+          // is born with the device/app language instead of hardcoded 'en'.
+          data: { display_name: displayName, language: getInitialLocale() },
         },
       });
       if (error) throw error;
