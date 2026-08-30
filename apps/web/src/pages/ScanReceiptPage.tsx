@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useProfile,
   useCouple,
-  useAddTransaction,
+  useCategories,
   useScanReceipt,
   useScanStatement,
   supabase,
@@ -12,11 +13,12 @@ import {
   QuotaExceededError,
 } from "@paca/api";
 import {
-  DEFAULT_CATEGORIES,
   parseMoneyInput,
   centsToInput,
   getTodayLocal,
-  type Category,
+  scanTransactionWord,
+  selectPluralCategory,
+  type TransactionInsert,
 } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -41,7 +43,8 @@ interface ScannedTransaction {
   original_currency?: string;
   exchange_rate?: number;
   description: string;
-  category: string;
+  // Hardened scan responses can omit the category entirely.
+  category: string | null;
   date: string;
   type: "income" | "expense";
   confidence: number;
@@ -53,10 +56,10 @@ export function ScanReceiptPage() {
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
   const financeMode = useAppStore((s) => s.mode);
-  const addTransaction = useAddTransaction();
+  const queryClient = useQueryClient();
   const scanReceipt = useScanReceipt();
   const scanStatement = useScanStatement();
-  const { t, dateLocale, translateCategory } = useI18n();
+  const { t, locale, translateCategory } = useI18n();
 
   const [mode, setMode] = useState<Mode>("choose");
   const [step, setStep] = useState<ScanStep>("upload");
@@ -65,31 +68,11 @@ export function ScanReceiptPage() {
   // Per-row free-typing drafts for the amount editor — committed on blur so a
   // controlled reformat never fights the cursor or drops comma decimals.
   const [amountDrafts, setAmountDrafts] = useState<Record<number, string>>({});
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { data: categories = [] } = useCategories(financeMode);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [scanProgress, setScanProgress] = useState({ done: 0, total: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const fetch = async () => {
-      let query = supabase.from("categories").select("*").order("name");
-      if (financeMode === "couple") {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${profile?.couple_id})`
-        );
-      } else if (profile?.id) {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${profile.id})`
-        );
-      } else {
-        query = query.eq("is_default", true);
-      }
-      const { data } = await query;
-      if (data) setCategories(data);
-    };
-    if (profile?.couple_id) fetch();
-  }, [profile?.couple_id, profile?.id, financeMode]);
 
   const readFileAsBase64 = (file: File) =>
     new Promise<{ dataUrl: string; base64: string }>((resolve, reject) => {
@@ -176,24 +159,20 @@ export function ScanReceiptPage() {
     setStep("review");
   };
 
-  // RU/UK need three plural forms (one/few/many) — a binary n === 1 check
-  // produces wrong grammar for counts ending in 2-4.
-  const pluralRules = new Intl.PluralRules(dateLocale);
-  const transactionWord = (n: number): string => {
-    const cat = pluralRules.select(n);
-    if (cat === "one") return t.scan.transaction;
-    if (cat === "few") return t.scan.transactionFew;
-    return t.scan.transactions;
-  };
+  const transactionWord = (n: number): string => scanTransactionWord(t.scan, locale, n);
   const foundLabel = (n: number): string => {
-    const cat = pluralRules.select(n);
+    const cat = selectPluralCategory(locale, n);
     const template =
       cat === "one" ? t.scan.foundOne : cat === "few" ? t.scan.foundFew : t.scan.foundMany;
     return template.replace("{count}", String(n));
   };
   const selectedCount = scannedItems.filter((item) => item.selected).length;
 
-  const getCategoryId = (categoryName: string): string => {
+  const getCategoryId = (categoryName: string | null | undefined): string => {
+    const fallback = categories[0]?.id ?? "";
+    // The hardened scan backend can return category: null — fall back to the
+    // default instead of crashing on toLowerCase for every save retry.
+    if (typeof categoryName !== "string") return fallback;
     const target = categoryName.toLowerCase().trim();
     const found = categories.find((c) => {
       if (c.name.toLowerCase() === target) return true;
@@ -202,7 +181,7 @@ export function ScanReceiptPage() {
         (v) => typeof v === "string" && v.toLowerCase() === target
       );
     });
-    return found?.id ?? categories[0]?.id ?? "";
+    return found?.id ?? fallback;
   };
 
   const handleSave = async () => {
@@ -219,36 +198,53 @@ export function ScanReceiptPage() {
       return;
     }
 
-    // Save items individually and track which succeeded, so a mid-batch
+    // Save rows in parallel and track which succeeded, so a mid-batch
     // failure never leaves already-saved rows in the list (retry = duplicates).
+    const savableIdx = scannedItems
+      .map((it, i) => (isSavable(it) ? i : -1))
+      .filter((i) => i !== -1);
+
+    const insertRow = async (it: ScannedTransaction) => {
+      const row: TransactionInsert = {
+        couple_id: profile!.couple_id!,
+        paid_by: profile!.id,
+        scope: financeMode,
+        type: it.type,
+        // AI amounts can come back fractional — round before the bigint column
+        amount: Math.round(Math.abs(it.amount)),
+        currency: it.currency,
+        original_amount:
+          it.original_amount != null ? Math.round(Math.abs(it.original_amount)) : null,
+        original_currency: it.original_currency,
+        exchange_rate: it.exchange_rate,
+        description: it.description,
+        category_id: getCategoryId(it.category),
+        date: /^\d{4}-\d{2}-\d{2}$/.test(it.date ?? "") ? it.date : getTodayLocal(),
+        ai_scanned: true,
+      };
+      // Direct insert (not useAddTransaction) so the batch triggers ONE cache
+      // invalidation below instead of a refetch per row. AI scans skip the
+      // usage_stats log — the scan edge functions already track them.
+      const { error: insertError } = await supabase.from("transactions").insert(row);
+      if (insertError) throw insertError;
+    };
+
+    const results = await Promise.allSettled(
+      savableIdx.map((i) => insertRow(scannedItems[i]))
+    );
+
     const savedIdx = new Set<number>();
     let failures = 0;
+    results.forEach((result, j) => {
+      if (result.status === "fulfilled") savedIdx.add(savableIdx[j]);
+      else failures++;
+    });
 
-    for (let i = 0; i < scannedItems.length; i++) {
-      const it = scannedItems[i];
-      if (!isSavable(it)) continue;
-      try {
-        await addTransaction.mutateAsync({
-          couple_id: profile!.couple_id!,
-          paid_by: profile!.id,
-          scope: financeMode,
-          type: it.type,
-          // AI amounts can come back fractional — round before the bigint column
-          amount: Math.round(Math.abs(it.amount)),
-          currency: it.currency,
-          original_amount:
-            it.original_amount != null ? Math.round(Math.abs(it.original_amount)) : null,
-          original_currency: it.original_currency,
-          exchange_rate: it.exchange_rate,
-          description: it.description,
-          category_id: getCategoryId(it.category),
-          date: /^\d{4}-\d{2}-\d{2}$/.test(it.date ?? "") ? it.date : getTodayLocal(),
-          ai_scanned: true,
-        });
-        savedIdx.add(i);
-      } catch {
-        failures++;
-      }
+    if (savedIdx.size > 0) {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      // Budget "spent" totals are computed from transactions inside the
+      // ["budget"] queryFn, so they must be invalidated together.
+      queryClient.invalidateQueries({ queryKey: ["budget"] });
     }
 
     setSaving(false);

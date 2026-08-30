@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useProfile, useCouple, useTransactions, useBudget, useRealtimeTransactions, useI18n, useAppStore, supabase } from "@paca/api";
 import {
   getCurrentMonth,
+  formatLocalDate,
   type TransactionWithCategory,
 } from "@paca/shared";
 import { splitByCurrency, formatForeignBreakdown } from "@/utils/currencyBreakdown";
@@ -131,7 +132,7 @@ function getWeeklyWindowStart(): string {
   const now = new Date();
   const start = new Date(now);
   start.setDate(now.getDate() - now.getDay() - 7);
-  return `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}-${String(start.getDate()).padStart(2, "0")}`;
+  return formatLocalDate(start);
 }
 
 // Weekly comparison card

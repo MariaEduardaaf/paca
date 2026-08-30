@@ -33,10 +33,14 @@ export function formatMonthYear(dateStr: string): string {
   });
 }
 
+/** A date's LOCAL calendar day as YYYY-MM-DD (never the UTC day). */
+export function formatLocalDate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 /** Today's LOCAL date as YYYY-MM-DD (never the UTC day). */
 export function getTodayLocal(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return formatLocalDate(new Date());
 }
 
 export function getCurrentMonth(): string {
@@ -49,8 +53,5 @@ export function getMonthRange(monthStr: string): { start: string; end: string } 
   const start = new Date(date.getFullYear(), date.getMonth(), 1);
   const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
-  const fmt = (d: Date) =>
-    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-
-  return { start: fmt(start), end: fmt(end) };
+  return { start: formatLocalDate(start), end: formatLocalDate(end) };
 }

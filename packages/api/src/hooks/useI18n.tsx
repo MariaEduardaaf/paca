@@ -76,9 +76,7 @@ let currentLocale: Locale | null = null;
  */
 export function getInitialLocale(): Locale {
   if (currentLocale) return currentLocale;
-  const stored = getI18nItemSync(LOCALE_STORAGE_KEY);
-  if (isLocale(stored)) return stored;
-  return getDeviceLocale();
+  return getStoredLocale();
 }
 
 function getStoredLocale(): Locale {

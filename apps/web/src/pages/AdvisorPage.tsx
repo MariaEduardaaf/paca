@@ -1,18 +1,18 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useProfile,
   useCouple,
   useAskAdvisor,
+  useCategories,
   usePurchaseAdviceHistory,
   useShareAdvice,
-  supabase,
   useI18n,
   useAppStore,
   QuotaExceededError,
 } from "@paca/api";
 import { parseMoneyInput } from "@paca/shared";
-import type { PurchaseAdvice, AdviceUrgency, AdviceVerdict, Category } from "@paca/shared";
+import type { PurchaseAdvice, AdviceUrgency, AdviceVerdict } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import {
@@ -68,20 +68,7 @@ export function AdvisorPage() {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<PurchaseAdvice | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    const fetch = async () => {
-      if (!profile?.couple_id) return;
-      const { data } = await supabase
-        .from("categories")
-        .select("*")
-        .or(`is_default.eq.true,couple_id.eq.${profile.couple_id}`)
-        .order("name");
-      if (data) setCategories(data);
-    };
-    fetch();
-  }, [profile?.couple_id]);
+  const { data: categories = [] } = useCategories(mode);
 
   const resetForm = () => {
     setItem("");

@@ -28,7 +28,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   // Loaded only to detect the "signed in but no couple yet" state — a user
   // who killed the app mid-onboarding must be routed back to /onboarding
   // instead of landing in empty tabs with no way out.
-  const { data: profile } = useProfile();
+  const { data: profile, isFetching: profileFetching } = useProfile();
 
   useEffect(() => {
     supabase.auth
@@ -66,13 +66,17 @@ function AuthGate({ children }: { children: React.ReactNode }) {
       session &&
       profile &&
       !profile.couple_id &&
+      // While the profile query is refetching, the cached row may still say
+      // couple_id=null right after a join/create — don't yank the user back
+      // to onboarding on stale data; re-evaluate once the refetch settles.
+      !profileFetching &&
       segments[0] !== "onboarding"
     ) {
       // Signed in but never finished pairing: the tabs are unusable without a
       // couple, so send the user back to onboarding to create/join one.
       router.replace("/onboarding");
     }
-  }, [session, segments, loading, profile]);
+  }, [session, segments, loading, profile, profileFetching]);
 
   if (loading) {
     return (

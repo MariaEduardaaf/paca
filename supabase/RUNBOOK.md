@@ -1,4 +1,4 @@
-# Runbook — hardening deploy (migrations 00023–00030 + edge functions)
+# Runbook — hardening deploy (migrations 00023–00032 + edge functions)
 
 Written 2026-08-31 during the full audit/fix pass on `feat/hardening-and-blog`.
 
@@ -14,6 +14,8 @@ New files (all in `supabase/migrations/`, additive + idempotent, never touch 000
 | 00028_admins_table.sql | `admin_users` table + SECURITY DEFINER `is_admin()`; the 4 admin policies (00010/00011/00020) re-keyed off the email claim (audit 20) |
 | 00029_fix_created_by_fk_set_null.sql | **extra bug found while verifying**: 00017's DO block never replaced the NO ACTION FK from 00001, so `couples_created_by_fkey` is still NO ACTION in prod — deleting a couple creator's account FAILS today (delete-account edge fn → `auth.admin.deleteUser` hits the FK). Recreates it with ON DELETE SET NULL as 00017 intended |
 | 00030_signup_language_from_metadata.sql | handle_new_user reads `raw_user_meta_data->>'language'` (device locale sent by signUp) instead of hardcoding 'en'; whitelisted to en/pt/ru/uk |
+| 00031_subscriptions_rc_last_event_at.sql | adds `subscriptions.rc_last_event_at` (the last applied RC event's `event_timestamp_ms`) so the revenuecat-webhook stale-event guard compares event time vs event time instead of vs `updated_at` (processing time) — a refund delivered after a renewal is no longer dropped as stale. The webhook degrades gracefully (skips the ordering guard) until this is applied |
+| 00032_replica_identity_full_for_deletes.sql | `replica identity full` on transactions + notifications so realtime DELETE payloads carry the old row's couple_id/target_user_id — clients then skip other tenants' deletes instead of refetching on every delete across the whole user base. Clients degrade gracefully until applied |
 
 Also required after deploying functions: set `CRON_SECRET` in edge-function secrets and send `Authorization: Bearer <CRON_SECRET>` from the check-budgets scheduler (the function fails closed with 503/401 until then), and seed `admin_users` (see item 4 below).
 
@@ -38,7 +40,7 @@ Also required after deploying functions: set `CRON_SECRET` in edge-function secr
 
 All 29 migrations were validated on a scratch Postgres (Supabase-stubbed): full 00001→00029 apply, re-apply of 00023–00029 (idempotent), and behavior tests (RPC create/join incl. COUPLE_FULL/INVALID_CODE/ALREADY_IN_COUPLE, hijack blocked, benign profile edits OK paired+unpaired, forged usage_stats/click inserts blocked, admin visibility, creator account deletion now succeeds).
 
-1. **Apply migrations** (`supabase db push` or CI): 00023→00029 in order. All are safe on the live DB; 00025 is the only behavior-breaking one (see above).
+1. **Apply migrations** (`supabase db push` or CI): 00023→00032 in order. All are safe on the live DB; 00025 is the only behavior-breaking one (see above).
 2. **Immediately deploy updated edge functions**: `generate-invite` (now RPC-based). No other function writes `profiles.couple_id` or the touched policies via user JWT; `delete-account` uses service_role — unaffected.
 3. **Ship clients** (web deploy, mobile release) with the RPC-based useCouple/onboarding.
 4. **Verify admin seed** (00028): `select count(*) from admin_users;` must be ≥ 1. If 0 (owner email differs in prod), run:
@@ -58,6 +60,7 @@ All 29 migrations were validated on a scratch Postgres (Supabase-stubbed): full 
 
 ## Notes / residual risk
 
+- **Monitor RevenueCat webhook delivery health.** Entitlement expiry is now enforced server-side (`current_period_end` + 24h grace in `isPremium`), so a webhook outage longer than the grace window downgrades paying couples until the missed events are re-delivered. Watch the RC dashboard's webhook delivery status and alert on sustained failures to the `revenuecat-webhook` endpoint.
 - `couples` INSERT policy (00002) still lets a client insert a couple row directly, but after 00025 they can never link themselves to it (orphan row at worst). Consider dropping the INSERT policy once all clients are RPC-based.
 - `p_name` on `create_couple` is accepted but ignored — `couples` has no name column today (frozen signature, forward-compat).
 - 00025 also blocks setting couple_id back to NULL ("leave couple"). No such client flow exists today; if one is added later it needs its own SECURITY DEFINER RPC.

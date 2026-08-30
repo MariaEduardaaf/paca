@@ -2,6 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
 import { createAdminClient, isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
+import { convert } from "../_shared/fx.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
@@ -13,35 +14,6 @@ const corsHeaders = {
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
-}
-
-async function fetchRates(base: string): Promise<Record<string, number>> {
-  try {
-    const res = await fetch(`https://open.er-api.com/v6/latest/${base}`);
-    if (!res.ok) return {};
-    const data = await res.json();
-    if (data?.result !== "success" || !data?.rates) return {};
-    return data.rates as Record<string, number>;
-  } catch (err) {
-    console.error("FX fetch failed for base", base, err);
-    return {};
-  }
-}
-
-async function convert(
-  amount: number,
-  from: string,
-  to: string
-): Promise<{ converted: number; rate: number; ok: boolean }> {
-  if (from === to) return { converted: amount, rate: 1, ok: true };
-  const rates = await fetchRates(from);
-  const rate = rates[to];
-  if (!rate || !Number.isFinite(rate) || rate <= 0) {
-    // FX unavailable — signal failure. The caller must keep the original
-    // currency/amount, never relabel an unconverted amount at rate 1.
-    return { converted: amount, rate: 1, ok: false };
-  }
-  return { converted: Math.round(amount * rate), rate, ok: true };
 }
 
 Deno.serve(async (req) => {
@@ -268,7 +240,8 @@ If you cannot identify a field, use null.`,
     // returning: a fire-and-forget insert can be dropped when the isolate is
     // torn down, undercounting the quota/rate meters. On insert failure we
     // still return the result (metering must never break the feature).
-    const { error: usageError } = await supabase
+    // The insert and the FX lookup are independent, so run them concurrently.
+    const usagePromise = supabase
       .from("usage_stats")
       .insert({
         profile_id: profile.id,
@@ -281,14 +254,17 @@ If you cannot identify a field, use null.`,
           converted: rawCurrency !== primaryCurrency,
         },
       });
+    const [{ error: usageError }, fx] = await Promise.all([
+      usagePromise,
+      autoConvert ? convert(rawAmount, rawCurrency, primaryCurrency) : Promise.resolve(null),
+    ]);
     if (usageError) console.error("usage log failed:", usageError);
 
     let amount = rawAmount;
     let currency = rawCurrency;
     let exchangeRate: number | null = 1;
     let conversionFailed = false;
-    if (autoConvert) {
-      const fx = await convert(rawAmount, rawCurrency, primaryCurrency);
+    if (fx) {
       if (fx.ok) {
         amount = fx.converted;
         currency = primaryCurrency;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useProfile, useUpdateTransaction, useI18n } from "@paca/api";
+import { useUpdateTransaction, useCategories, useI18n } from "@paca/api";
 import { supabase } from "@paca/api";
 import {
   transactionUpdateSchema,
@@ -8,7 +8,6 @@ import {
   centsToInput,
   type FinanceScope,
   type TransactionType,
-  type Category,
 } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -19,7 +18,6 @@ import { ArrowLeft } from "lucide-react";
 export function EditTransactionPage() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { data: profile } = useProfile();
   const updateTransaction = useUpdateTransaction();
   const { toast } = useToast();
   const { t, translateCategory } = useI18n();
@@ -31,33 +29,14 @@ export function EditTransactionPage() {
   const [date, setDate] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [currency, setCurrencyCode] = useState<string>("");
   const [originalAmount, setOriginalAmount] = useState<number | null>(null);
   const [originalCurrency, setOriginalCurrency] = useState<string | null>(null);
   const [txScope, setTxScope] = useState<FinanceScope | null>(null);
 
-  // Fetch categories for the transaction's scope (same query as NewTransactionPage)
-  useEffect(() => {
-    const fetchCategories = async () => {
-      let query = supabase.from("categories").select("*").order("name");
-      if (txScope === "couple") {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${profile?.couple_id})`
-        );
-      } else if (txScope === "personal" && profile?.id) {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${profile.id})`
-        );
-      } else {
-        query = query.eq("is_default", true);
-      }
-      const { data } = await query;
-      if (data) setCategories(data);
-    };
-    if (profile?.couple_id && txScope) fetchCategories();
-  }, [profile?.couple_id, profile?.id, txScope]);
+  // Categories for the transaction's scope (shared hook filters hidden defaults)
+  const { data: categories = [] } = useCategories(txScope ?? "couple");
 
   // Fetch existing transaction
   useEffect(() => {

@@ -43,6 +43,16 @@ Deno.serve(async (req) => {
       .single();
     if (!profile) return jsonResponse({ error: "Profile not found" }, 403);
 
+    // Parse + validate the body BEFORE any metering round-trips, so a
+    // malformed request costs zero extra queries.
+    const { name, sourceLocale } = await req.json();
+    if (!name || typeof name !== "string") {
+      return jsonResponse({ error: "name required" }, 400);
+    }
+    const source = SUPPORTED_LOCALES.includes(sourceLocale as Locale)
+      ? (sourceLocale as Locale)
+      : "en";
+
     // Throttle the paid Gemini translation per user to prevent runaway billing abuse.
     const rateLimit = await checkRateLimit(supabase, profile.id, {
       action: "translate",
@@ -56,26 +66,14 @@ Deno.serve(async (req) => {
     // Premium couples bypass. checkMonthlyQuota fails OPEN on a count error —
     // including when the 'translate' usage_action enum value (migration 00022)
     // isn't applied yet — so a missing enum can never block the feature.
+    // The two checks are independent reads, so run them concurrently; the
+    // quota count is simply ignored for premium couples.
     const admin = createAdminClient();
-    const premium = profile.couple_id ? await isPremium(admin, profile.couple_id) : false;
-    if (!premium) {
-      const quota = await checkMonthlyQuota(
-        admin,
-        profile.couple_id,
-        ["translate"],
-        100,
-        profile.id,
-      );
-      if (!quota.allowed) return quotaExceededResponse(quota, corsHeaders);
-    }
-
-    const { name, sourceLocale } = await req.json();
-    if (!name || typeof name !== "string") {
-      return jsonResponse({ error: "name required" }, 400);
-    }
-    const source = SUPPORTED_LOCALES.includes(sourceLocale as Locale)
-      ? (sourceLocale as Locale)
-      : "en";
+    const [premium, quota] = await Promise.all([
+      profile.couple_id ? isPremium(admin, profile.couple_id) : Promise.resolve(false),
+      checkMonthlyQuota(admin, profile.couple_id, ["translate"], 100, profile.id),
+    ]);
+    if (!premium && !quota.allowed) return quotaExceededResponse(quota, corsHeaders);
 
     const prompt = `Translate the personal finance category name "${name}" (written in ${source}) into each of these languages. Return ONLY a JSON object with exactly these keys and a short localized label for each:
 

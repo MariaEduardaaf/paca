@@ -14,6 +14,8 @@ import {
 import {
   LOCALE_LABELS,
   SUPPORTED_CURRENCIES,
+  escapeCsvField,
+  getTodayLocal,
   type Locale,
 } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
@@ -159,21 +161,13 @@ export function ProfilePage() {
 
     if (!data || data.length === 0) return;
 
-    // Escape quotes and neutralize formula injection (=, +, -, @ prefixes are
-    // executed by Excel/Sheets; descriptions/categories are partner-authored).
-    const csv = (v: unknown) => {
-      let s = String(v ?? "");
-      if (/^[=+\-@]/.test(s)) s = "'" + s;
-      return `"${s.replace(/"/g, '""')}"`;
-    };
-
     const header = t.profile.csvHeader + "\n";
     const rows = data
       .map((row: any) => {
         const val = (row.amount / 100).toFixed(2);
         const cat = translateCategory(row.category?.name);
         const typeLabel = row.type === "income" ? t.profile.csvIncome : t.profile.csvExpense;
-        return `${row.date},${csv(row.description)},${csv(typeLabel)},${val},${csv(cat)}`;
+        return `${row.date},${escapeCsvField(row.description)},${escapeCsvField(typeLabel)},${val},${escapeCsvField(cat)}`;
       })
       .join("\n");
 
@@ -181,7 +175,7 @@ export function ProfilePage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `paca-transacoes-${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `paca-transacoes-${getTodayLocal()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };

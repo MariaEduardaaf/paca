@@ -59,13 +59,16 @@ export function useCreateCouple() {
 
       return { couple_id: result.couple_id, invite_code: result.invite_code };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["couple"] });
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      // Couple changed: entitlement and category lists are couple-scoped.
-      queryClient.invalidateQueries({ queryKey: ["subscription"] });
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-    },
+    // Returned so mutateAsync only resolves after the refetches complete —
+    // callers navigate right away and would otherwise read a stale profile.
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["couple"] }),
+        queryClient.invalidateQueries({ queryKey: ["profile"] }),
+        // Couple changed: entitlement and category lists are couple-scoped.
+        queryClient.invalidateQueries({ queryKey: ["subscription"] }),
+        queryClient.invalidateQueries({ queryKey: ["categories"] }),
+      ]),
   });
 }
 
@@ -94,13 +97,17 @@ export function useJoinCouple() {
       // Same shape the direct-write flow returned ({ id: couple_id }).
       return { id: data };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["couple"] });
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      // Joining a couple changes its entitlement + categories for this user.
-      queryClient.invalidateQueries({ queryKey: ["subscription"] });
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-    },
+    // Returned so mutateAsync only resolves after the refetches complete —
+    // AuthGate otherwise bounces a freshly-joined user back to onboarding
+    // because navigation happens while the profile cache is still stale.
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["couple"] }),
+        queryClient.invalidateQueries({ queryKey: ["profile"] }),
+        // Joining a couple changes its entitlement + categories for this user.
+        queryClient.invalidateQueries({ queryKey: ["subscription"] }),
+        queryClient.invalidateQueries({ queryKey: ["categories"] }),
+      ]),
   });
 }
 
@@ -130,8 +137,6 @@ export function useUpdateCouple() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["couple"] });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["couple"] }),
   });
 }

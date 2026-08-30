@@ -3,6 +3,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
 import { createAdminClient, isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
 import { advisorFallback, resolveLang } from "../_shared/i18n.ts";
+import { convert } from "../_shared/fx.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
@@ -28,35 +29,6 @@ interface AdvisorRequest {
   notes?: string | null;
   language?: string;        // locale hint so Gemini replies in the user's language
   mode?: "couple" | "personal";  // financial scope to consider in context
-}
-
-// ---- FX helper (same approach as scan functions) ----
-async function fetchRates(base: string): Promise<Record<string, number>> {
-  try {
-    const res = await fetch(`https://open.er-api.com/v6/latest/${base}`);
-    if (!res.ok) return {};
-    const data = await res.json();
-    if (data?.result !== "success" || !data?.rates) return {};
-    return data.rates as Record<string, number>;
-  } catch {
-    return {};
-  }
-}
-
-async function convert(
-  amount: number,
-  from: string,
-  to: string
-): Promise<{ converted: number; rate: number; ok: boolean }> {
-  if (from === to) return { converted: amount, rate: 1, ok: true };
-  const rates = await fetchRates(from);
-  const rate = rates[to];
-  if (!rate || !Number.isFinite(rate) || rate <= 0) {
-    // FX unavailable — signal failure. The verdict math runs in the couple's
-    // primary currency, so an unconverted amount would produce a bogus verdict.
-    return { converted: amount, rate: 1, ok: false };
-  }
-  return { converted: Math.round(amount * rate), rate, ok: true };
 }
 
 // ---- Verdict rules: deterministic, AI only explains ----
@@ -451,25 +423,6 @@ ${factsForPrompt}`;
       reasoning = advisorFallback(language, verdict);
     }
 
-    // Log usage AWAITED, right after the billable Gemini call and before
-    // returning: a fire-and-forget insert can be dropped when the isolate is
-    // torn down, undercounting the quota/rate meters. On insert failure we
-    // still return the result (metering must never break the feature).
-    const { error: usageError } = await supabase
-      .from("usage_stats")
-      .insert({
-        profile_id: profile.id,
-        couple_id: profile.couple_id,
-        action: "advise",
-        metadata: {
-          verdict,
-          urgency: body.urgency,
-          primary_currency: primaryCurrency,
-          original_currency: rawCurrency,
-        },
-      });
-    if (usageError) console.error("usage log failed:", usageError);
-
     const impact = {
       balance_now: balanceThisMonth,
       balance_after: balanceThisMonth - convertedAmount - remainingBillsThisMonth,
@@ -512,6 +465,26 @@ ${factsForPrompt}`;
       console.error("insert advice failed", insertError);
       return jsonResponse({ error: "Could not save advice", details: insertError.message }, 500);
     }
+
+    // Log usage AWAITED, only after the advice row saved and before returning:
+    // metering before the save would burn one of the 3 free monthly uses on a
+    // failed request, and a fire-and-forget insert can be dropped when the
+    // isolate is torn down, undercounting the quota/rate meters. On insert
+    // failure we still return the result (metering must never break the feature).
+    const { error: usageError } = await supabase
+      .from("usage_stats")
+      .insert({
+        profile_id: profile.id,
+        couple_id: profile.couple_id,
+        action: "advise",
+        metadata: {
+          verdict,
+          urgency: body.urgency,
+          primary_currency: primaryCurrency,
+          original_currency: rawCurrency,
+        },
+      });
+    if (usageError) console.error("usage log failed:", usageError);
 
     return jsonResponse(saved);
   } catch (error) {

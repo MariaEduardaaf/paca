@@ -4,6 +4,7 @@ import type {
   BudgetWithCategories,
   BudgetInsert,
   BudgetCategoryInsert,
+  CoupleWithPartner,
   FinanceScope,
 } from "@paca/shared";
 
@@ -16,6 +17,7 @@ interface UseBudgetOptions {
 
 export function useBudget(options: UseBudgetOptions) {
   const { coupleId, month, mode, ownerId } = options;
+  const queryClient = useQueryClient();
 
   return useQuery({
     queryKey: ["budget", coupleId, mode, ownerId ?? null, month],
@@ -58,19 +60,34 @@ export function useBudget(options: UseBudgetOptions) {
         txQuery = txQuery.eq("paid_by", ownerId);
       }
 
-      const [{ data: transactions, error: txError }, { data: couple, error: coupleError }] =
-        await Promise.all([
-          txQuery,
-          supabase.from("couples").select("primary_currency").eq("id", coupleId).single(),
-        ]);
+      // useCouple already caches the couple (with primary_currency) — reuse it
+      // instead of re-querying on every budget refetch; hit the network only
+      // when the cache is empty.
+      const cachedCurrency = queryClient.getQueryData<CoupleWithPartner | null>(["couple"])
+        ?.primary_currency;
 
-      // A swallowed error here would show spent = 0 for every category.
+      const currencyPromise = cachedCurrency
+        ? Promise.resolve(cachedCurrency)
+        : supabase
+            .from("couples")
+            .select("primary_currency")
+            .eq("id", coupleId)
+            .single()
+            .then(({ data: couple, error: coupleError }) => {
+              // A swallowed error here would show spent = 0 for every category.
+              if (coupleError) throw coupleError;
+              return couple.primary_currency;
+            });
+
+      const [{ data: transactions, error: txError }, primaryCurrency] = await Promise.all([
+        txQuery,
+        currencyPromise,
+      ]);
+
       if (txError) throw txError;
-      if (coupleError) throw coupleError;
 
       // Unconverted foreign-currency rows (auto-convert off) can't be added to
       // primary-currency cents — leave them out of the spent totals.
-      const primaryCurrency = couple.primary_currency;
       const spentByCategory = (transactions ?? []).reduce(
         (acc, t) => {
           if (t.currency && t.currency !== primaryCurrency) return acc;

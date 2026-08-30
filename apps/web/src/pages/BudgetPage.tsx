@@ -1,12 +1,19 @@
 import { useState, useEffect, useRef } from "react";
-import { useProfile, useBudget, useCreateBudget, useI18n, useAppStore } from "@paca/api";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  useProfile,
+  useBudget,
+  useCreateBudget,
+  useCategories,
+  useI18n,
+  useAppStore,
+} from "@paca/api";
 import { supabase } from "@paca/api";
 import {
   getCurrentMonth,
   parseMoneyInput,
   centsToInput,
   BUDGET_THRESHOLDS,
-  type Category,
   type BudgetWithCategories,
 } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
@@ -240,7 +247,8 @@ function BudgetSetup({
   const [totalAmount, setTotalAmount] = useState(
     existingBudget ? centsToInput(existingBudget.total_amount) : ""
   );
-  const [categories, setCategories] = useState<Category[]>([]);
+  const queryClient = useQueryClient();
+  const { data: categories = [] } = useCategories(mode);
   const [allocations, setAllocations] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
   const [showNewCategory, setShowNewCategory] = useState(false);
@@ -272,7 +280,7 @@ function BudgetSetup({
       .single();
     setSavingCat(false);
     if (!catError && data) {
-      setCategories((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
       setNewCatName("");
       setShowNewCategory(false);
     }
@@ -284,35 +292,15 @@ function BudgetSetup({
     }
   }, [showNewCategory]);
 
+  // Pre-fill allocations from the existing budget
   useEffect(() => {
-    const fetch = async () => {
-      let query = supabase.from("categories").select("*").order("name");
-      if (mode === "couple") {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${coupleId})`
-        );
-      } else if (ownerId) {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${ownerId})`
-        );
-      } else {
-        query = query.eq("is_default", true);
-      }
-      const { data } = await query;
-      if (data) {
-        setCategories(data);
-        // Pre-fill from existing
-        if (existingBudget) {
-          const allocs: Record<string, string> = {};
-          for (const bc of existingBudget.categories) {
-            allocs[bc.category_id] = centsToInput(bc.allocated_amount);
-          }
-          setAllocations(allocs);
-        }
-      }
-    };
-    fetch();
-  }, [coupleId, mode, ownerId]);
+    if (!existingBudget) return;
+    const allocs: Record<string, string> = {};
+    for (const bc of existingBudget.categories) {
+      allocs[bc.category_id] = centsToInput(bc.allocated_amount);
+    }
+    setAllocations(allocs);
+  }, [existingBudget]);
 
   const handleSave = async () => {
     setError("");

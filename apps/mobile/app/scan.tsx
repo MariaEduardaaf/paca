@@ -15,17 +15,19 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useProfile,
-  useAddTransaction,
   useScanReceipt,
   useScanStatement,
   useCategories,
   useI18n,
   useAppStore,
+  supabase,
   QuotaExceededError,
 } from "@paca/api";
-import { getTodayLocal } from "@paca/shared";
+import { getTodayLocal, scanTransactionWord } from "@paca/shared";
+import type { TransactionInsert } from "@paca/shared";
 import { PaywallModal, type PaywallReason } from "../components/PaywallModal";
 
 type Mode = "choose" | "single" | "batch";
@@ -47,12 +49,12 @@ interface ScannedTransaction {
 
 export default function ScanScreen() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: profile } = useProfile();
   const financeMode = useAppStore((s) => s.mode);
-  const addTransaction = useAddTransaction();
   const scanReceipt = useScanReceipt();
   const scanStatement = useScanStatement();
-  const { t, translateCategory, formatCurrency } = useI18n();
+  const { t, locale, translateCategory, formatCurrency } = useI18n();
 
   const [mode, setMode] = useState<Mode>("choose");
   const [step, setStep] = useState<ScanStep>("upload");
@@ -168,7 +170,10 @@ export default function ScanScreen() {
     setStep("review");
   };
 
-  const getCategoryId = (name: string) => {
+  const getCategoryId = (name: unknown) => {
+    // The scan functions can return category: null (or garbage) — fall back
+    // to the default category instead of crashing on toLowerCase.
+    if (typeof name !== "string") return categories[0]?.id ?? "";
     const target = name.toLowerCase().trim();
     const found = categories.find((c) => {
       if (c.name.toLowerCase() === target) return true;
@@ -184,20 +189,25 @@ export default function ScanScreen() {
     setSaving(true);
     setError("");
     // Filter out rows with invalid/zero amounts — DB has CHECK (amount > 0)
-    const selected = scannedItems.filter(
-      (it) => it.selected && Number.isFinite(it.amount) && Math.abs(it.amount) > 0
-    );
-    if (selected.length === 0) {
+    const isSavable = (it: ScannedTransaction) =>
+      Boolean(it.selected) && Number.isFinite(it.amount) && Math.abs(it.amount) > 0;
+    const savable = scannedItems
+      .map((it, i) => ({ it, i }))
+      .filter(({ it }) => isSavable(it));
+    if (savable.length === 0) {
       setError(t.scan.saveError);
       setSaving(false);
       return;
     }
-    // Track per-item failures so a mid-batch error doesn't leave already-saved
-    // rows in the list (a retry would then insert duplicates).
-    const failed = new Set<ScannedTransaction>();
-    for (const it of selected) {
-      try {
-        await addTransaction.mutateAsync({
+    // Insert the rows concurrently and track which indices succeeded, so a
+    // partial failure never leaves already-saved rows in the list (a retry
+    // would then insert duplicates). Direct insert instead of
+    // useAddTransaction: these rows are always ai_scanned (so the manual
+    // usage log doesn't apply) and it lets the transaction/budget caches be
+    // invalidated once for the whole batch instead of once per row.
+    const results = await Promise.allSettled(
+      savable.map(({ it }) => {
+        const row: TransactionInsert = {
           couple_id: profile!.couple_id!,
           paid_by: profile!.id,
           scope: financeMode,
@@ -214,19 +224,34 @@ export default function ScanScreen() {
           category_id: getCategoryId(it.category),
           date: it.date ?? getTodayLocal(),
           ai_scanned: true,
-        });
-      } catch {
-        failed.add(it);
-      }
+        };
+        return supabase
+          .from("transactions")
+          .insert(row)
+          .then(({ error: insertError }) => {
+            if (insertError) throw insertError;
+          });
+      })
+    );
+    const savedIdx = new Set<number>();
+    results.forEach((result, k) => {
+      if (result.status === "fulfilled") savedIdx.add(savable[k].i);
+    });
+    if (savedIdx.size > 0) {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      // Budget "spent" totals are computed from transactions inside the
+      // ["budget"] queryFn, so they must be invalidated together.
+      queryClient.invalidateQueries({ queryKey: ["budget"] });
     }
     setSaving(false);
-    if (failed.size === 0) {
+    if (savedIdx.size === savable.length) {
       router.back();
       return;
     }
-    // Keep only the failed rows (and any rows the user chose not to save) so
-    // tapping save again retries just the failures.
-    setScannedItems(scannedItems.filter((it) => !it.selected || failed.has(it)));
+    // Keep only the rows that did NOT save, filtering prev (not the pre-save
+    // closure) so selection toggles made during the save aren't reverted and
+    // skipped-invalid rows stay listed. Retrying then can't duplicate.
+    setScannedItems((prev) => prev.filter((_, i) => !savedIdx.has(i)));
     setError(t.scan.partialSaveError);
   };
 
@@ -262,6 +287,9 @@ export default function ScanScreen() {
         <TouchableOpacity
           onPress={() => toggleItem(i)}
           className="flex-row items-center gap-3 flex-1"
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: !!item.selected }}
+          accessibilityLabel={`${item.description} · ${translateCategory(item.category)}`}
         >
           <View
             className={`w-6 h-6 rounded-lg border-2 items-center justify-center ${
@@ -313,6 +341,8 @@ export default function ScanScreen() {
     </View>
   );
 
+  const selectedCount = scannedItems.filter((s) => s.selected).length;
+
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
       {/* Header */}
@@ -360,7 +390,7 @@ export default function ScanScreen() {
                 <Ionicons name="sparkles" size={20} color="#FF8FB1" />
                 <Text className="text-base font-bold text-gray-800 dark:text-gray-100">
                   {scannedItems.length}{" "}
-                  {scannedItems.length === 1 ? t.scan.transaction : t.scan.transactions}
+                  {scanTransactionWord(t.scan, locale, scannedItems.length)}
                 </Text>
               </View>
             </View>
@@ -387,10 +417,8 @@ export default function ScanScreen() {
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <Text className="text-white font-semibold">
-                    {t.scan.saveCount} {scannedItems.filter((s) => s.selected).length}{" "}
-                    {scannedItems.filter((s) => s.selected).length === 1
-                      ? t.scan.transaction
-                      : t.scan.transactions}
+                    {t.scan.saveCount} {selectedCount}{" "}
+                    {scanTransactionWord(t.scan, locale, selectedCount)}
                   </Text>
                 )}
               </TouchableOpacity>

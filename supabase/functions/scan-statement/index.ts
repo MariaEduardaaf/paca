@@ -2,6 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
 import { createAdminClient, isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
+import { convert } from "../_shared/fx.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
@@ -13,43 +14,6 @@ const corsHeaders = {
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
-}
-
-// Fetch FX rates for a base currency using exchangerate-api.com free tier.
-// Returns a map { target: rate } where amount_in_target = amount_in_base * rate.
-async function fetchRates(base: string): Promise<Record<string, number>> {
-  try {
-    const res = await fetch(`https://open.er-api.com/v6/latest/${base}`);
-    if (!res.ok) return {};
-    const data = await res.json();
-    if (data?.result !== "success" || !data?.rates) return {};
-    return data.rates as Record<string, number>;
-  } catch (err) {
-    console.error("FX fetch failed for base", base, err);
-    return {};
-  }
-}
-
-// Convert an amount (in cents of `from`) to cents of `to`.
-// Returns { converted, rate, ok }. On FX failure ok=false — the caller must
-// keep the original currency/amount, never relabel unconverted money.
-async function convert(
-  amount: number,
-  from: string,
-  to: string,
-  ratesCache: Map<string, Record<string, number>>
-): Promise<{ converted: number; rate: number; ok: boolean }> {
-  if (from === to) return { converted: amount, rate: 1, ok: true };
-  let rates = ratesCache.get(from);
-  if (!rates) {
-    rates = await fetchRates(from);
-    ratesCache.set(from, rates);
-  }
-  const rate = rates[to];
-  if (!rate || !Number.isFinite(rate) || rate <= 0) {
-    return { converted: amount, rate: 1, ok: false };
-  }
-  return { converted: Math.round(amount * rate), rate, ok: true };
 }
 
 Deno.serve(async (req) => {
@@ -269,10 +233,11 @@ CRITICAL: SKIP CANCELLED AND DENIED TRANSACTIONS ENTIRELY.
     }));
 
     // Log usage AWAITED, right after the billable Gemini call and before the
-    // FX work/response: a fire-and-forget insert can be dropped when the
-    // isolate is torn down, undercounting the quota/rate meters. On insert
-    // failure we still return the result (metering must never break the feature).
-    const { error: usageError } = await supabase
+    // response: a fire-and-forget insert can be dropped when the isolate is
+    // torn down, undercounting the quota/rate meters. On insert failure we
+    // still return the result (metering must never break the feature).
+    // The insert and the FX conversions are independent — run them concurrently.
+    const usagePromise = supabase
       .from("usage_stats")
       .insert({
         profile_id: profile.id,
@@ -286,12 +251,11 @@ CRITICAL: SKIP CANCELLED AND DENIED TRANSACTIONS ENTIRELY.
           ),
         },
       });
-    if (usageError) console.error("usage log failed:", usageError);
 
     // Convert each transaction to the couple's primary currency. On FX failure
     // keep the ORIGINAL currency and amount and flag the row — relabeling
     // unconverted money as the primary currency would corrupt the ledger.
-    const converted = await Promise.all(
+    const convertedPromise = Promise.all(
       sanitized.map(async (tx) => {
         let amount = tx.rawAmount;
         let currency = tx.rawCurrency;
@@ -324,6 +288,9 @@ CRITICAL: SKIP CANCELLED AND DENIED TRANSACTIONS ENTIRELY.
         };
       })
     );
+
+    const [{ error: usageError }, converted] = await Promise.all([usagePromise, convertedPromise]);
+    if (usageError) console.error("usage log failed:", usageError);
 
     return jsonResponse({ transactions: converted, primary_currency: primaryCurrency });
   } catch (error) {

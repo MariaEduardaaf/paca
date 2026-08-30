@@ -63,7 +63,11 @@ const EXPIRY_GRACE_MS = 24 * 60 * 60 * 1000;
 function isEntitled(sub: Subscription): boolean {
   if (sub.status !== "active" && sub.status !== "trialing") return false;
   if (!sub.current_period_end) return true;
-  return new Date(sub.current_period_end).getTime() + EXPIRY_GRACE_MS > Date.now();
+  const end = new Date(sub.current_period_end).getTime();
+  // Unparseable timestamp: trust the status, exactly like the server does —
+  // otherwise the UI would lock Premium while every edge function grants it.
+  if (Number.isNaN(end)) return true;
+  return end + EXPIRY_GRACE_MS > Date.now();
 }
 
 /** Convenience: is the current couple Premium right now? Defaults to false. */

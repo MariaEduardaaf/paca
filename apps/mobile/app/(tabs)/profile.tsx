@@ -26,7 +26,7 @@ import {
   useAppStore,
   useIsPremium,
 } from "@paca/api";
-import { LOCALE_LABELS, SUPPORTED_CURRENCIES, type Locale } from "@paca/shared";
+import { LOCALE_LABELS, SUPPORTED_CURRENCIES, escapeCsvField, type Locale } from "@paca/shared";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { PaywallModal, type PaywallReason } from "../../components/PaywallModal";
 
@@ -164,10 +164,12 @@ export default function Profile() {
     }
 
     const header = `${t.profile.csvHeader}\n`;
+    // escapeCsvField: descriptions/categories are user-authored — escape
+    // quotes and neutralize =/+/-/@ formula injection, same as the web export.
     const rows = data
       .map((row: any) => {
         const val = (row.amount / 100).toFixed(2);
-        return `${row.date},"${row.description}",${row.type === "income" ? t.profile.csvIncome : t.profile.csvExpense},${val},"${translateCategory(row.category?.name)}"`;
+        return `${row.date},${escapeCsvField(row.description)},${row.type === "income" ? t.profile.csvIncome : t.profile.csvExpense},${val},${escapeCsvField(translateCategory(row.category?.name))}`;
       })
       .join("\n");
 

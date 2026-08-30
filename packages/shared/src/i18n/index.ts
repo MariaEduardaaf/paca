@@ -64,4 +64,29 @@ export function formatMonthYearLocalized(dateStr: string, locale: Locale): strin
   });
 }
 
+// RU/UK need three plural forms (one/few/many) — a binary n === 1 check
+// produces wrong grammar for counts ending in 2-4.
+const pluralRulesCache = new Map<Locale, Intl.PluralRules>();
+
+export function selectPluralCategory(locale: Locale, count: number): Intl.LDMLPluralRule {
+  let rules = pluralRulesCache.get(locale);
+  if (!rules) {
+    rules = new Intl.PluralRules(LOCALE_DATE_MAP[locale]);
+    pluralRulesCache.set(locale, rules);
+  }
+  return rules.select(count);
+}
+
+/** Locale-correct "transaction(s)" word for scan counts (one/few/many). */
+export function scanTransactionWord(
+  slice: { transaction: string; transactionFew: string; transactions: string },
+  locale: Locale,
+  count: number
+): string {
+  const cat = selectPluralCategory(locale, count);
+  if (cat === "one") return slice.transaction;
+  if (cat === "few") return slice.transactionFew;
+  return slice.transactions;
+}
+
 export type { TranslationKeys };

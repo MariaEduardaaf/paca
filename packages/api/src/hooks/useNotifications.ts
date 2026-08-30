@@ -62,12 +62,19 @@ export function useNotifications(targetProfileId: string | undefined | null) {
         "postgres_changes",
         {
           // DELETE events only carry the old row's PK (default replica
-          // identity), so the filter above would never match them.
+          // identity), so the filter above would never match them. After
+          // migration 00032 (replica identity full) payload.old carries
+          // target_user_id and we skip other users' deletes.
           event: "DELETE",
           schema: "public",
           table: "notifications",
         },
-        invalidate
+        (payload) => {
+          const oldTarget = (payload.old as { target_user_id?: string })
+            ?.target_user_id;
+          if (oldTarget && oldTarget !== targetProfileId) return;
+          invalidate();
+        }
       )
       .subscribe();
 
