@@ -13,6 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useProfile, useBills, useCreateBill, useToggleBill, useDeleteBill, useI18n } from "@paca/api";
 import {
   getCurrentMonth,
+  parseMoneyInput,
   type BillWithPayment,
 } from "@paca/shared";
 import { ErrorState } from "../../components/ErrorState";
@@ -42,13 +43,18 @@ export default function Bills() {
   };
 
   const handleToggle = async (bill: BillWithPayment) => {
+    if (!profile) return;
     const newPaid = !bill.payment?.paid;
-    await toggleBill.mutateAsync({
-      billId: bill.id,
-      month,
-      paid: newPaid,
-      profileId: profile!.id,
-    });
+    try {
+      await toggleBill.mutateAsync({
+        billId: bill.id,
+        month,
+        paid: newPaid,
+        profileId: profile.id,
+      });
+    } catch {
+      Alert.alert(t.common.error, t.common.actionError);
+    }
   };
 
   const handleDelete = (bill: BillWithPayment) => {
@@ -60,7 +66,13 @@ export default function Bills() {
         {
           text: t.common.delete,
           style: "destructive",
-          onPress: () => deleteBill.mutateAsync(bill.id),
+          onPress: async () => {
+            try {
+              await deleteBill.mutateAsync(bill.id);
+            } catch {
+              Alert.alert(t.common.error, t.common.actionError);
+            }
+          },
         },
       ]
     );
@@ -312,10 +324,10 @@ function NewBillForm({
       return;
     }
 
-    const amountCents = Math.round(
-      parseFloat(amount.replace(/\./g, "").replace(",", ".")) * 100
-    );
-    if (!amountCents || isNaN(amountCents) || amountCents <= 0) {
+    // Locale-tolerant parser: "12.50", "12,50" and "1.234,56" all parse
+    // correctly (the old dot-stripping turned "12.50" into 1250 units).
+    const amountCents = parseMoneyInput(amount);
+    if (!amountCents) {
       setError(t.bills.invalidAmount);
       return;
     }

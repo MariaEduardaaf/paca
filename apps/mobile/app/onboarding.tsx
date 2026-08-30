@@ -11,71 +11,57 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ScreenContainer } from "../components/ScreenContainer";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { supabase, useI18n } from "@paca/api";
+import { useCreateCouple, useJoinCouple, useI18n } from "@paca/api";
+import { isValidInviteCode, normalizeInviteCode } from "@paca/shared";
 
 type Step = "welcome" | "choice" | "create" | "join";
 
 export default function Onboarding() {
   const router = useRouter();
   const { t } = useI18n();
+  const createCouple = useCreateCouple();
+  const joinCouple = useJoinCouple();
   const [step, setStep] = useState<Step>("welcome");
   const [inviteCode, setInviteCode] = useState("");
   const [generatedCode, setGeneratedCode] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const loading = createCouple.isPending || joinCouple.isPending;
 
   const handleCreate = async () => {
-    setLoading(true);
     setError("");
     try {
-      const { data, error: fnError } = await supabase.functions.invoke(
-        "generate-invite"
-      );
-      if (fnError) throw fnError;
-      setGeneratedCode(data.invite_code);
+      // The create_couple RPC creates the couple, links this profile and
+      // returns the server-generated invite code; the hook refreshes the
+      // profile/couple caches so the AuthGate sees the new state.
+      const { invite_code } = await createCouple.mutateAsync();
+      setGeneratedCode(invite_code);
       setStep("create");
-    } catch {
-      setError(t.onboarding.createError);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      setError(
+        err instanceof Error && err.message.includes("ALREADY_IN_COUPLE")
+          ? t.onboarding.alreadyInCouple
+          : t.onboarding.createError
+      );
     }
   };
 
   const handleJoin = async () => {
-    const code = inviteCode.toUpperCase().trim();
-    if (!/^PACA-[A-HJ-NP-Z2-9]{4}$/.test(code)) {
+    const code = normalizeInviteCode(inviteCode);
+    if (!isValidInviteCode(code)) {
       setError(t.onboarding.invalidCode);
       return;
     }
 
-    setLoading(true);
     setError("");
     try {
-      const { data: couple, error: findError } = await supabase
-        .from("couples")
-        .select("id")
-        .eq("invite_code", code)
-        .single();
-
-      if (findError) throw new Error("Código não encontrado");
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Não autenticado");
-
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ couple_id: couple.id })
-        .eq("user_id", user.id);
-
-      if (updateError) throw updateError;
-
+      await joinCouple.mutateAsync(code);
       router.replace("/(tabs)");
-    } catch {
-      setError(t.onboarding.codeNotFound);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "";
+      if (message.includes("COUPLE_FULL")) setError(t.onboarding.coupleFull);
+      else if (message.includes("ALREADY_IN_COUPLE"))
+        setError(t.onboarding.alreadyInCouple);
+      else setError(t.onboarding.codeNotFound);
     }
   };
 
@@ -239,12 +225,12 @@ export default function Onboarding() {
 
             <TextInput
               className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-4 text-center text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-widest"
-              placeholder="PACA-XXXX"
+              placeholder="PACA-XXXXXXXXXX"
               placeholderTextColor="#9CA3AF"
               value={inviteCode}
               onChangeText={(t) => setInviteCode(t.toUpperCase())}
               autoCapitalize="characters"
-              maxLength={9}
+              maxLength={15}
             />
 
             <View className="flex-row gap-3 mt-6">

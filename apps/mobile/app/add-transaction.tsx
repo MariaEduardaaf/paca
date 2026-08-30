@@ -12,8 +12,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useProfile, useCouple, useAddTransaction, supabase, useI18n, useAppStore } from "@paca/api";
-import type { TransactionType, Category } from "@paca/shared";
+import { useProfile, useCouple, useAddTransaction, useCategories, useI18n, useAppStore } from "@paca/api";
+import { getTodayLocal, parseMoneyInput } from "@paca/shared";
+import type { TransactionType } from "@paca/shared";
 
 export default function AddTransaction() {
   const router = useRouter();
@@ -27,39 +28,27 @@ export default function AddTransaction() {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  // LOCAL date: toISOString() is the UTC day, which lands evening entries in
+  // UTC-negative timezones on tomorrow (and next month at the month edge).
+  const [date, setDate] = useState(getTodayLocal());
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
+
+  // Shared hook: same scoping as everywhere else, plus the hidden_category_ids
+  // filter so soft-deleted defaults don't reappear in this picker.
+  const { data: categories = [] } = useCategories(mode);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      let query = supabase.from("categories").select("*").order("name");
-      if (mode === "couple") {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${profile?.couple_id})`
-        );
-      } else if (profile?.id) {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${profile.id})`
-        );
-      } else {
-        query = query.eq("is_default", true);
-      }
-      const { data } = await query;
-      if (data) {
-        setCategories(data);
-        if (data.length > 0 && !categoryId) setCategoryId(data[0].id);
-      }
-    };
-    if (profile?.couple_id) fetchCategories();
-  }, [profile?.couple_id, profile?.id, mode]);
+    if (categories.length > 0 && !categoryId) setCategoryId(categories[0].id);
+  }, [categories, categoryId]);
 
   const handleSubmit = async () => {
     setError("");
 
-    const amountCents = Math.round(parseFloat(amount.replace(",", ".")) * 100);
-    if (!amountCents || amountCents <= 0) {
+    // Locale-tolerant: handles "12,50", "12.50" and "1.234,56" (the old
+    // comma-only replace truncated thousands input to R$1,23).
+    const amountCents = parseMoneyInput(amount);
+    if (!amountCents) {
       setError(t.transactions.invalidAmount);
       return;
     }
@@ -79,6 +68,8 @@ export default function AddTransaction() {
         scope: mode,
         type,
         amount: amountCents,
+        // Without this the DB default stamps 'BRL' even for non-BRL couples.
+        currency: couple?.primary_currency ?? "BRL",
         description: description.trim(),
         category_id: categoryId,
         date,

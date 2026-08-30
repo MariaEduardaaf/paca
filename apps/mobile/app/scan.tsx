@@ -1,29 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
+  FlatList,
   Image,
-  TextInput,
   ActivityIndicator,
   Alert,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 import {
   useProfile,
   useAddTransaction,
   useScanReceipt,
   useScanStatement,
-  supabase,
+  useCategories,
   useI18n,
   useAppStore,
   QuotaExceededError,
 } from "@paca/api";
-import type { Category } from "@paca/shared";
+import { getTodayLocal } from "@paca/shared";
 import { PaywallModal, type PaywallReason } from "../components/PaywallModal";
 
 type Mode = "choose" | "single" | "batch";
@@ -56,72 +58,77 @@ export default function ScanScreen() {
   const [step, setStep] = useState<ScanStep>("upload");
   const [preview, setPreview] = useState<string | null>(null);
   const [scannedItems, setScannedItems] = useState<ScannedTransaction[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [scanProgress, setScanProgress] = useState({ done: 0, total: 0 });
   const [paywall, setPaywall] = useState<PaywallReason | null>(null);
 
-  useEffect(() => {
-    const fetch = async () => {
-      let query = supabase.from("categories").select("*").order("name");
-      if (financeMode === "couple") {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${profile?.couple_id})`
-        );
-      } else if (profile?.id) {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${profile.id})`
-        );
-      } else {
-        query = query.eq("is_default", true);
-      }
-      const { data } = await query;
-      if (data) setCategories(data);
-    };
-    if (profile?.couple_id) fetch();
-  }, [profile?.couple_id, profile?.id, financeMode]);
+  // Shared hook: same couple/personal scoping as everywhere else, plus the
+  // hidden_category_ids filter so soft-deleted defaults don't reappear here.
+  const { data: categories = [] } = useCategories(financeMode);
 
   const pickImage = async (useCamera: boolean) => {
-    const result = useCamera
-      ? await ImagePicker.launchCameraAsync({
+    let result: ImagePicker.ImagePickerResult;
+    try {
+      if (useCamera) {
+        const perm = await ImagePicker.requestCameraPermissionsAsync();
+        if (!perm.granted) {
+          if (!perm.canAskAgain) {
+            Alert.alert(t.common.error, t.scan.permissionError, [
+              { text: t.common.cancel, style: "cancel" },
+              { text: t.scan.openSettings, onPress: () => Linking.openSettings() },
+            ]);
+          } else {
+            setError(t.scan.permissionError);
+          }
+          return;
+        }
+        result = await ImagePicker.launchCameraAsync({
           mediaTypes: ["images"],
-          base64: true,
-          quality: 0.8,
-        })
-      : await ImagePicker.launchImageLibraryAsync({
+          quality: 0.6,
+        });
+      } else {
+        // No base64 here: reading each image lazily inside the loop keeps a
+        // single base64 string in memory at a time instead of up to 20.
+        result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ["images"],
-          base64: true,
-          quality: 0.8,
+          quality: 0.6,
           allowsMultipleSelection: true,
           selectionLimit: 20,
         });
+      }
+    } catch {
+      setError(t.scan.permissionError);
+      return;
+    }
 
     if (result.canceled || !result.assets?.length) return;
 
-    const assets = result.assets.filter((a) => a.base64);
-    if (assets.length === 0) return;
+    const uris = result.assets.map((a) => a.uri);
 
-    setPreview(assets[0].uri);
+    setPreview(uris[0]);
     setStep("scanning");
     setError("");
     setScannedItems([]);
-    setScanProgress({ done: 0, total: assets.length });
+    setScanProgress({ done: 0, total: uris.length });
 
     const allItems: ScannedTransaction[] = [];
     let failures = 0;
     let quotaHit = false;
 
-    for (const asset of assets) {
+    for (const uri of uris) {
       try {
+        const base64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
         if (mode === "single") {
-          const data = await scanReceipt.mutateAsync({ image: asset.base64!, mode: financeMode });
+          const data = await scanReceipt.mutateAsync({ image: base64, mode: financeMode });
           const valid = Number.isFinite(data.amount) && Math.abs(data.amount) > 0;
           if (data && data.amount != null) {
             allItems.push({ ...data, selected: valid });
           }
         } else {
-          const data = await scanStatement.mutateAsync({ image: asset.base64!, mode: financeMode });
+          const data = await scanStatement.mutateAsync({ image: base64, mode: financeMode });
           for (const tx of data.transactions) {
             allItems.push({
               ...tx,
@@ -138,7 +145,14 @@ export default function ScanScreen() {
     }
 
     if (quotaHit) {
-      setStep("upload");
+      // Quota was already consumed for the scans that succeeded — keep those
+      // results reviewable instead of throwing them away with the paywall.
+      if (allItems.length > 0) {
+        setScannedItems(allItems);
+        setStep("review");
+      } else {
+        setStep("upload");
+      }
       setPaywall("scan_limit");
       return;
     }
@@ -168,6 +182,7 @@ export default function ScanScreen() {
 
   const handleSave = async () => {
     setSaving(true);
+    setError("");
     // Filter out rows with invalid/zero amounts — DB has CHECK (amount > 0)
     const selected = scannedItems.filter(
       (it) => it.selected && Number.isFinite(it.amount) && Math.abs(it.amount) > 0
@@ -177,30 +192,42 @@ export default function ScanScreen() {
       setSaving(false);
       return;
     }
-    try {
-      for (const it of selected) {
+    // Track per-item failures so a mid-batch error doesn't leave already-saved
+    // rows in the list (a retry would then insert duplicates).
+    const failed = new Set<ScannedTransaction>();
+    for (const it of selected) {
+      try {
         await addTransaction.mutateAsync({
           couple_id: profile!.couple_id!,
           paid_by: profile!.id,
           scope: financeMode,
           type: it.type,
-          amount: Math.abs(it.amount),
+          // Round: the AI occasionally emits fractional "cents" that a bigint
+          // column rejects, failing the insert.
+          amount: Math.round(Math.abs(it.amount)),
           currency: it.currency,
-          original_amount: it.original_amount != null ? Math.abs(it.original_amount) : null,
+          original_amount:
+            it.original_amount != null ? Math.round(Math.abs(it.original_amount)) : null,
           original_currency: it.original_currency,
           exchange_rate: it.exchange_rate,
           description: it.description,
           category_id: getCategoryId(it.category),
-          date: it.date ?? new Date().toISOString().split("T")[0],
+          date: it.date ?? getTodayLocal(),
           ai_scanned: true,
         });
+      } catch {
+        failed.add(it);
       }
-      router.back();
-    } catch {
-      setError(t.scan.saveError);
-    } finally {
-      setSaving(false);
     }
+    setSaving(false);
+    if (failed.size === 0) {
+      router.back();
+      return;
+    }
+    // Keep only the failed rows (and any rows the user chose not to save) so
+    // tapping save again retries just the failures.
+    setScannedItems(scannedItems.filter((it) => !it.selected || failed.has(it)));
+    setError(t.scan.partialSaveError);
   };
 
   const toggleItem = (i: number) => {
@@ -210,6 +237,81 @@ export default function ScanScreen() {
       )
     );
   };
+
+  const errorBanner = error ? (
+    <View className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-4 mt-4">
+      <Text className="text-red-500 text-sm text-center">{error}</Text>
+    </View>
+  ) : null;
+
+  const renderReviewItem = ({
+    item,
+    index: i,
+  }: {
+    item: ScannedTransaction;
+    index: number;
+  }) => (
+    <View
+      className={`bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 mb-3 border-2 ${
+        item.selected
+          ? "border-pink-primary/30"
+          : "border-gray-100 dark:border-gray-700 opacity-50"
+      }`}
+    >
+      <View className="flex-row items-start justify-between mb-2">
+        <TouchableOpacity
+          onPress={() => toggleItem(i)}
+          className="flex-row items-center gap-3 flex-1"
+        >
+          <View
+            className={`w-6 h-6 rounded-lg border-2 items-center justify-center ${
+              item.selected
+                ? "bg-pink-primary border-pink-primary"
+                : "border-gray-300 dark:border-gray-600"
+            }`}
+          >
+            {item.selected && (
+              <Ionicons name="checkmark" size={14} color="#fff" />
+            )}
+          </View>
+          <View className="flex-1">
+            <Text className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+              {item.description}
+            </Text>
+            <Text className="text-xs text-gray-400">
+              {translateCategory(item.category)} · {item.date} ·{" "}
+              <Text className="text-pink-primary">
+                {Math.round((item.confidence ?? 0) * 100)}%
+              </Text>
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <Text
+          className={`text-sm font-bold ${
+            item.type === "expense" ? "text-red-500" : "text-emerald-500"
+          }`}
+        >
+          {formatCurrency(item.amount, item.currency)}
+        </Text>
+      </View>
+
+      {/* Confidence bar */}
+      <View className="h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <View
+          className="h-full rounded-full"
+          style={{
+            width: `${(item.confidence ?? 0) * 100}%`,
+            backgroundColor:
+              (item.confidence ?? 0) >= 0.9
+                ? "#34D399"
+                : (item.confidence ?? 0) >= 0.7
+                  ? "#FBBF24"
+                  : "#F87171",
+          }}
+        />
+      </View>
+    </View>
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
@@ -242,12 +344,62 @@ export default function ScanScreen() {
         </View>
       </View>
 
+      {step === "review" ? (
+        /* Review: virtualized — a 20-image statement batch can yield hundreds
+           of rows, which a plain ScrollView mounts all at once. */
+        <FlatList
+          className="flex-1 px-6"
+          keyboardShouldPersistTaps="handled"
+          data={scannedItems}
+          keyExtractor={(_, i) => String(i)}
+          renderItem={renderReviewItem}
+          ListHeaderComponent={
+            <View className="mt-4">
+              {errorBanner}
+              <View className="flex-row items-center gap-2 mb-4 mt-2">
+                <Ionicons name="sparkles" size={20} color="#FF8FB1" />
+                <Text className="text-base font-bold text-gray-800 dark:text-gray-100">
+                  {scannedItems.length}{" "}
+                  {scannedItems.length === 1 ? t.scan.transaction : t.scan.transactions}
+                </Text>
+              </View>
+            </View>
+          }
+          ListFooterComponent={
+            <View className="flex-row gap-3 mt-4 mb-8">
+              <TouchableOpacity
+                onPress={() => {
+                  setStep("upload");
+                  setPreview(null);
+                  setScannedItems([]);
+                }}
+                className="px-6 py-4 rounded-2xl"
+              >
+                <Text className="text-gray-500 font-semibold">{t.scan.another}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleSave}
+                disabled={saving || !scannedItems.some((s) => s.selected)}
+                className="flex-1 bg-pink-primary rounded-2xl py-4 items-center"
+                activeOpacity={0.8}
+              >
+                {saving ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-white font-semibold">
+                    {t.scan.saveCount} {scannedItems.filter((s) => s.selected).length}{" "}
+                    {scannedItems.filter((s) => s.selected).length === 1
+                      ? t.scan.transaction
+                      : t.scan.transactions}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          }
+        />
+      ) : (
       <ScrollView className="flex-1 px-6" keyboardShouldPersistTaps="handled">
-        {error ? (
-          <View className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-4 mt-4">
-            <Text className="text-red-500 text-sm text-center">{error}</Text>
-          </View>
-        ) : null}
+        {errorBanner}
 
         {/* Mode choice */}
         {mode === "choose" && (
@@ -338,111 +490,8 @@ export default function ScanScreen() {
           </View>
         )}
 
-        {/* Review */}
-        {step === "review" && (
-          <View className="mt-4">
-            <View className="flex-row items-center gap-2 mb-4">
-              <Ionicons name="sparkles" size={20} color="#FF8FB1" />
-              <Text className="text-base font-bold text-gray-800 dark:text-gray-100">
-                {scannedItems.length} {scannedItems.length === 1 ? t.scan.transaction : t.scan.transactions}
-              </Text>
-            </View>
-
-            {scannedItems.map((item, i) => (
-              <View
-                key={i}
-                className={`bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 mb-3 border-2 ${
-                  item.selected
-                    ? "border-pink-primary/30"
-                    : "border-gray-100 dark:border-gray-700 opacity-50"
-                }`}
-              >
-                <View className="flex-row items-start justify-between mb-2">
-                  <TouchableOpacity
-                    onPress={() => toggleItem(i)}
-                    className="flex-row items-center gap-3 flex-1"
-                  >
-                    <View
-                      className={`w-6 h-6 rounded-lg border-2 items-center justify-center ${
-                        item.selected
-                          ? "bg-pink-primary border-pink-primary"
-                          : "border-gray-300 dark:border-gray-600"
-                      }`}
-                    >
-                      {item.selected && (
-                        <Ionicons name="checkmark" size={14} color="#fff" />
-                      )}
-                    </View>
-                    <View className="flex-1">
-                      <Text className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-                        {item.description}
-                      </Text>
-                      <Text className="text-xs text-gray-400">
-                        {translateCategory(item.category)} · {item.date} ·{" "}
-                        <Text className="text-pink-primary">
-                          {Math.round(item.confidence * 100)}%
-                        </Text>
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                  <Text
-                    className={`text-sm font-bold ${
-                      item.type === "expense"
-                        ? "text-red-500"
-                        : "text-emerald-500"
-                    }`}
-                  >
-                    {formatCurrency(item.amount, item.currency)}
-                  </Text>
-                </View>
-
-                {/* Confidence bar */}
-                <View className="h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                  <View
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${item.confidence * 100}%`,
-                      backgroundColor:
-                        item.confidence >= 0.9
-                          ? "#34D399"
-                          : item.confidence >= 0.7
-                            ? "#FBBF24"
-                            : "#F87171",
-                    }}
-                  />
-                </View>
-              </View>
-            ))}
-
-            <View className="flex-row gap-3 mt-4 mb-8">
-              <TouchableOpacity
-                onPress={() => {
-                  setStep("upload");
-                  setPreview(null);
-                  setScannedItems([]);
-                }}
-                className="px-6 py-4 rounded-2xl"
-              >
-                <Text className="text-gray-500 font-semibold">{t.scan.another}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleSave}
-                disabled={saving || !scannedItems.some((t) => t.selected)}
-                className="flex-1 bg-pink-primary rounded-2xl py-4 items-center"
-                activeOpacity={0.8}
-              >
-                {saving ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text className="text-white font-semibold">
-                    {t.scan.saveCount} {scannedItems.filter((s) => s.selected).length} {scannedItems.filter((s) => s.selected).length === 1 ? t.scan.transaction : t.scan.transactions}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
       </ScrollView>
+      )}
       <PaywallModal
         visible={!!paywall}
         reason="scan_limit"

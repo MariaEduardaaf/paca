@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -6,14 +6,17 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useProfile, useBudget, useCreateBudget, supabase, useI18n, useAppStore } from "@paca/api";
+import { useProfile, useBudget, useCreateBudget, useCategories, useI18n, useAppStore } from "@paca/api";
 import {
   getCurrentMonth,
+  parseMoneyInput,
+  centsToInput,
   BUDGET_THRESHOLDS,
-  type Category,
   type BudgetWithCategories,
 } from "@paca/shared";
 import { ErrorState } from "../../components/ErrorState";
@@ -233,56 +236,40 @@ function BudgetSetupMobile({
 }) {
   const { t, formatCurrency, translateCategory } = useI18n();
   const createBudget = useCreateBudget();
+  // centsToInput renders the decimal-comma string the parser round-trips
+  // (String(cents/100) produced dot decimals like "3000.5").
   const [totalAmount, setTotalAmount] = useState(
-    existingBudget ? String(existingBudget.total_amount / 100) : ""
+    existingBudget ? centsToInput(existingBudget.total_amount) : ""
   );
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [allocations, setAllocations] = useState<Record<string, string>>({});
+  const [allocations, setAllocations] = useState<Record<string, string>>(() => {
+    if (!existingBudget) return {};
+    const allocs: Record<string, string> = {};
+    for (const bc of existingBudget.categories) {
+      allocs[bc.category_id] = centsToInput(bc.allocated_amount);
+    }
+    return allocs;
+  });
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetch = async () => {
-      let query = supabase.from("categories").select("*").order("name");
-      if (mode === "couple") {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${coupleId})`
-        );
-      } else if (ownerId) {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${ownerId})`
-        );
-      } else {
-        query = query.eq("is_default", true);
-      }
-      const { data } = await query;
-      if (data) {
-        setCategories(data);
-        if (existingBudget) {
-          const allocs: Record<string, string> = {};
-          for (const bc of existingBudget.categories) {
-            allocs[bc.category_id] = String(bc.allocated_amount / 100);
-          }
-          setAllocations(allocs);
-        }
-      }
-    };
-    fetch();
-  }, [coupleId, mode, ownerId]);
+  // Shared hook: same scoping as everywhere else, plus the hidden_category_ids
+  // filter so soft-deleted defaults don't reappear in the budget setup.
+  const { data: categories = [] } = useCategories(mode);
 
   const handleSave = async () => {
     setError("");
-    const totalCents = Math.round(parseFloat(totalAmount.replace(",", ".")) * 100);
-    if (!totalCents || totalCents <= 0) {
+    // Locale-tolerant: "12,50", "12.50" and "1.234,56" all parse correctly.
+    const totalCents = parseMoneyInput(totalAmount);
+    if (!totalCents) {
       setError(t.budget.invalidTotal);
       return;
     }
 
     const cats = Object.entries(allocations)
-      .filter(([, val]) => parseFloat(val.replace(",", ".")) > 0)
       .map(([categoryId, val]) => ({
         category_id: categoryId,
-        allocated_amount: Math.round(parseFloat(val.replace(",", ".")) * 100),
-      }));
+        allocated_amount: parseMoneyInput(val) ?? 0,
+      }))
+      .filter((c) => c.allocated_amount > 0);
 
     try {
       await createBudget.mutateAsync({
@@ -302,7 +289,17 @@ function BudgetSetupMobile({
   };
 
   return (
-    <ScrollView className="flex-1 px-6" keyboardShouldPersistTaps="handled">
+    // Same KAV pattern as add-transaction.tsx — without it the iOS keyboard
+    // covers the lower per-category inputs with no way to scroll to them.
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="flex-1"
+    >
+    <ScrollView
+      className="flex-1 px-6"
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={{ paddingBottom: 120 }}
+    >
       <Text className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">
         {isNew ? t.budget.createBudget : t.budget.editBudget}
       </Text>
@@ -383,5 +380,6 @@ function BudgetSetupMobile({
         </TouchableOpacity>
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
