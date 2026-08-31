@@ -1,5 +1,15 @@
 ---
 import { APP_URL } from "../consts";
+
+// Short nav labels for the category hubs (full labels live in lib/categories).
+const NAV = [
+  { href: "/categorias/dividir-contas", label: "Dividir contas" },
+  { href: "/categorias/organizacao", label: "Organização" },
+  { href: "/categorias/conversas-sobre-dinheiro", label: "Conversas" },
+  { href: "/categorias/metas-e-sonhos", label: "Metas" },
+  { href: "/categorias/ferramentas", label: "Ferramentas" },
+  { href: "/sobre", label: "Sobre" },
+];
 ---
 
 <header class="border-b border-gray-100 bg-white/90 backdrop-blur dark:border-gray-800 dark:bg-gray-900/90">
@@ -9,14 +19,20 @@ import { APP_URL } from "../consts";
       <span class="font-display text-xl font-bold tracking-tight text-gray-800 dark:text-white">paca<span class="text-pink-500 dark:text-pink-300">finance</span></span>
     </a>
 
-    <nav aria-label="Navegação principal" class="order-3 w-full sm:order-none sm:w-auto">
-      <ul class="flex items-center gap-6 text-sm font-medium">
-        <li>
-          <a href="/blog" class="rounded-lg py-1 text-gray-700 transition-colors hover:text-pink-700 dark:text-gray-200 dark:hover:text-pink-300">Blog</a>
-        </li>
-        <li>
-          <a href="/sobre" class="rounded-lg py-1 text-gray-700 transition-colors hover:text-pink-700 dark:text-gray-200 dark:hover:text-pink-300">Sobre</a>
-        </li>
+    <nav aria-label="Navegação principal" class="order-3 w-full lg:order-none lg:w-auto">
+      <ul class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm font-medium">
+        {
+          NAV.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="rounded py-1 text-gray-700 transition-colors hover:text-pink-700 dark:text-gray-200 dark:hover:text-pink-300"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </nav>
 

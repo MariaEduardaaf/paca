@@ -2,9 +2,11 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
 import CTABox from "../components/CTABox.astro";
+import Cover from "../components/Cover.astro";
 import PostCard from "../components/PostCard.astro";
 import { SITE_TITLE, SITE_URL, APP_URL } from "../consts";
 import { CATEGORIES } from "../lib/categories";
+import { COVER_PALETTES } from "../lib/covers";
 import type { BlogPost } from "../lib/posts";
 import {
   extractFaq,
@@ -18,27 +20,31 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
-const { title, description, pubDate, updatedDate, category, heroEmoji } =
-  post.data;
+const { title, description, pubDate, updatedDate, category } = post.data;
 const categoryInfo = CATEGORIES[category];
+const palette = COVER_PALETTES[category];
 const minutes = readingTimeMinutes(post.body);
+
+// Inline "Neste artigo" TOC, only for long pieces (NerdWallet pattern).
+const tocEntries = headings.filter((h) => h.depth === 2);
+const showToc = tocEntries.length >= 4;
 
 const postUrl = new URL(`/blog/${post.id}`, SITE_URL).href;
 const logoUrl = new URL("/logo-icon-large.png", SITE_URL).href;
 
-// Related (same category) + prev/next across all published posts.
+// "Leia também": same category first, padded with recent posts from others.
 const allPosts = sortByDateDesc(
   await getCollection("blog", ({ data }) => !data.draft),
 );
-const related = allPosts
-  .filter((p) => p.id !== post.id && p.data.category === category)
-  .slice(0, 3);
-const index = allPosts.findIndex((p) => p.id === post.id);
-const newerPost = index > 0 ? allPosts[index - 1] : undefined;
-const olderPost =
-  index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1] : undefined;
+const sameCategory = allPosts.filter(
+  (p) => p.id !== post.id && p.data.category === category,
+);
+const others = allPosts.filter(
+  (p) => p.id !== post.id && p.data.category !== category,
+);
+const related = [...sameCategory, ...others].slice(0, 3);
 
 const blogPostingJsonLd = {
   "@context": "https://schema.org",
@@ -110,66 +116,97 @@ const faqJsonLd =
     {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
   </Fragment>
 
-  <article class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+  <article
+    class="mx-auto max-w-3xl px-4 py-10 sm:px-6"
+    style={`--kc:${palette.kicker};--kcd:${palette.kickerDark}`}
+  >
     <nav aria-label="Trilha de navegação" class="text-sm text-gray-500 dark:text-gray-400">
       <ol class="flex flex-wrap items-center gap-1">
         <li>
-          <a href="/" class="rounded-lg transition-colors hover:text-pink-700 dark:hover:text-pink-300">Início</a>
+          <a href="/" class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">Início</a>
         </li>
         <li aria-hidden="true">›</li>
         <li>
-          <a href="/blog" class="rounded-lg transition-colors hover:text-pink-700 dark:hover:text-pink-300">Blog</a>
+          <a href="/blog" class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">Blog</a>
         </li>
         <li aria-hidden="true">›</li>
         <li>
-          <a href={`/categorias/${category}`} class="rounded-lg transition-colors hover:text-pink-700 dark:hover:text-pink-300">
+          <a href={`/categorias/${category}`} class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">
             {categoryInfo.label}
           </a>
         </li>
-        <li aria-hidden="true">›</li>
-        <li aria-current="page" class="truncate text-gray-700 dark:text-gray-200">{title}</li>
       </ol>
     </nav>
 
-    <header class="mt-8">
-      <div
-        class="flex h-44 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-50 via-pink-100 to-pink-200 sm:h-52 dark:from-pink-900/50 dark:via-gray-800 dark:to-pink-900/30"
-        aria-hidden="true"
-      >
-        <span class="text-7xl sm:text-8xl">{heroEmoji}</span>
-      </div>
-
-      <p class="mt-6">
-        <a
-          href={`/categorias/${category}`}
-          class="inline-block rounded-full bg-pink-100 px-3 py-1 text-xs font-semibold text-pink-800 transition-colors hover:bg-pink-200 dark:bg-pink-900 dark:text-pink-200 dark:hover:bg-pink-800"
-        >
-          {categoryInfo.label}
-        </a>
+    <header class="mt-6">
+      <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--kc)] dark:text-[color:var(--kcd)]">
+        <a href={`/categorias/${category}`} class="rounded">{categoryInfo.label}</a>
       </p>
 
-      <h1 class="mt-4 font-display text-3xl font-bold leading-tight text-gray-900 sm:text-4xl dark:text-white">
+      <h1 class="mt-3 font-display text-[2.1rem] font-bold leading-[1.15] text-gray-800 sm:text-[2.6rem] dark:text-white">
         {title}
       </h1>
 
       <p class="mt-4 text-lg leading-relaxed text-gray-600 dark:text-gray-300">{description}</p>
 
-      <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-        <span aria-hidden="true"> · </span>
-        <span>{minutes} min de leitura</span>
-        {
-          updatedDate && (
-            <>
-              <span aria-hidden="true"> · </span>
-              <span>
-                Atualizado em <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
-              </span>
-            </>
-          )
-        }
-      </p>
+      <div class="mt-6 flex items-center gap-3 border-y border-gray-100 py-4 dark:border-gray-800">
+        <img
+          src="/logo-icon-large.png"
+          alt=""
+          class="h-9 w-9 rounded-full"
+          width="36"
+          height="36"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          <a href="/sobre" class="rounded font-semibold text-gray-800 hover:text-pink-700 dark:text-gray-100 dark:hover:text-pink-300">
+            Equipe Paca Finance
+          </a>
+          <span class="block text-gray-500 sm:inline dark:text-gray-400">
+            <span class="hidden sm:inline" aria-hidden="true"> · </span>
+            Publicado em <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+            {
+              updatedDate && (
+                <>
+                  <span aria-hidden="true"> · </span>
+                  Atualizado em <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+                </>
+              )
+            }
+            <span aria-hidden="true"> · </span>
+            {minutes} min de leitura
+          </span>
+        </p>
+      </div>
+
+      <div class="mt-8 overflow-hidden rounded-2xl">
+        <Cover category={category} slug={post.id} class="aspect-video w-full" />
+      </div>
     </header>
+
+    {
+      showToc && (
+        <nav
+          aria-labelledby="toc-title"
+          class="mt-8 rounded-2xl border border-gray-100 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-800/60"
+        >
+          <p id="toc-title" class="text-xs font-semibold uppercase tracking-[0.12em] text-gray-500 dark:text-gray-400">
+            Neste artigo
+          </p>
+          <ol class="mt-3 space-y-2 text-[15px]">
+            {tocEntries.map((h) => (
+              <li>
+                <a
+                  href={`#${h.slug}`}
+                  class="rounded text-gray-700 transition-colors hover:text-pink-700 dark:text-gray-200 dark:hover:text-pink-300"
+                >
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
 
     <div class="prose-paca mt-10">
       <Content />
@@ -179,48 +216,23 @@ const faqJsonLd =
 
     {
       related.length > 0 && (
-        <section aria-labelledby="relacionados" class="mt-14">
-          <h2 id="relacionados" class="font-display text-2xl font-bold text-gray-900 dark:text-white">
-            Posts relacionados
+        <section aria-labelledby="relacionados" class="mt-14 border-t border-gray-100 pt-10 dark:border-gray-800">
+          <h2 id="relacionados" class="font-display text-xl font-bold text-gray-800 sm:text-2xl dark:text-white">
+            Leia também
           </h2>
-          <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((p) => (
-              <PostCard post={p} />
+              <PostCard post={p} showExcerpt={false} />
             ))}
           </div>
         </section>
       )
     }
 
-    {
-      (olderPost || newerPost) && (
-        <nav aria-label="Outros posts" class="mt-14 grid gap-4 border-t border-gray-100 pt-8 sm:grid-cols-2 dark:border-gray-800">
-          {olderPost ? (
-            <a
-              href={`/blog/${olderPost.id}`}
-              class="group rounded-2xl border border-gray-100 p-4 transition-colors hover:border-pink-300 dark:border-gray-800 dark:hover:border-pink-600"
-            >
-              <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">← Post anterior</span>
-              <span class="mt-1 block font-display font-semibold text-gray-900 group-hover:text-pink-700 dark:text-white dark:group-hover:text-pink-300">
-                {olderPost.data.title}
-              </span>
-            </a>
-          ) : (
-            <span />
-          )}
-          {newerPost && (
-            <a
-              href={`/blog/${newerPost.id}`}
-              class="group rounded-2xl border border-gray-100 p-4 text-right transition-colors hover:border-pink-300 dark:border-gray-800 dark:hover:border-pink-600"
-            >
-              <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Próximo post →</span>
-              <span class="mt-1 block font-display font-semibold text-gray-900 group-hover:text-pink-700 dark:text-white dark:group-hover:text-pink-300">
-                {newerPost.data.title}
-              </span>
-            </a>
-          )}
-        </nav>
-      )
-    }
+    <p class="mt-12 border-t border-gray-100 pt-6 text-[13px] leading-relaxed text-gray-500 dark:border-gray-800 dark:text-gray-400">
+      Conteúdo editorial do blog do Paca Finance. Não é recomendação de
+      investimento. Saiba como produzimos e revisamos nossos guias na
+      <a href="/sobre#politica-editorial" class="rounded underline underline-offset-2 hover:text-pink-700 dark:hover:text-pink-300">política editorial</a>.
+    </p>
   </article>
 </BaseLayout>

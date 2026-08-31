@@ -18,7 +18,6 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
     // Emoji hero art on a brand-gradient card (no stock images).
-    heroEmoji: z.string().default("💰"),
   }),
 });
 

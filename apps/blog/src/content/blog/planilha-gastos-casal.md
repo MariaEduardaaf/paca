@@ -4,7 +4,6 @@ description: "Monte uma planilha de gastos para casal em 10 minutos: estrutura p
 pubDate: 2026-08-28
 category: "ferramentas"
 tags: ["planilha", "orçamento", "casal", "google sheets", "controle de gastos"]
-heroEmoji: "📊"
 draft: false
 ---
 

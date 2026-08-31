@@ -4,7 +4,6 @@ description: "Comparamos os melhores apps para casal dividir gastos e organizar 
 pubDate: 2026-08-29
 category: "ferramentas"
 tags: ["apps de finanças", "casal", "dividir contas", "gastos compartilhados", "comparativo"]
-heroEmoji: "📱"
 draft: false
 ---
 

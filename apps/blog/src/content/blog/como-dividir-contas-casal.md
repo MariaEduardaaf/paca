@@ -4,7 +4,6 @@ description: "50/50, proporcional ao salário, conta conjunta ou por responsabil
 pubDate: 2026-08-27
 category: "dividir-contas"
 tags: ["dividir contas", "finanças do casal", "orçamento a dois", "vida a dois"]
-heroEmoji: "⚖️"
 draft: false
 ---
 

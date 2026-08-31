@@ -4,7 +4,6 @@ description: "Como aplicar a regra 50/30/20 com duas rendas: exemplo real em rea
 pubDate: 2026-08-23
 category: "organizacao"
 tags: ["regra 50 30 20", "orçamento de casal", "planejamento financeiro", "organização financeira"]
-heroEmoji: "🧮"
 draft: false
 ---
 

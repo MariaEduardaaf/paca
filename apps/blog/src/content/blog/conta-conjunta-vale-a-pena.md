@@ -4,7 +4,6 @@ description: "Conta conjunta vale a pena para o casal? Vantagens, riscos, o que 
 pubDate: 2026-08-25
 category: "organizacao"
 tags: ["conta conjunta", "finanças do casal", "organização financeira", "dividir contas"]
-heroEmoji: "🏦"
 draft: false
 ---
 

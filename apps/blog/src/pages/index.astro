@@ -2,111 +2,113 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostCard from "../components/PostCard.astro";
-import { APP_URL, SITE_DESCRIPTION } from "../consts";
-import { sortByDateDesc } from "../lib/posts";
+import CTABox from "../components/CTABox.astro";
+import Cover from "../components/Cover.astro";
+import { SITE_DESCRIPTION } from "../consts";
+import { formatDate, readingTimeMinutes, sortByDateDesc } from "../lib/posts";
+import { CATEGORIES } from "../lib/categories";
+import { COVER_PALETTES } from "../lib/covers";
 
-const posts = sortByDateDesc(
-  await getCollection("blog", ({ data }) => !data.draft),
-).slice(0, 6);
-
-const features = [
-  {
-    emoji: "💞",
-    title: "Gastos compartilhados em tempo real",
-    body: "Cada compra aparece para os dois na hora. Nada de “quem pagou o quê?” no fim do mês.",
-  },
-  {
-    emoji: "📸",
-    title: "Scanner de notas com IA",
-    body: "Fotografou a notinha, o Paca lê e categoriza sozinho. Registrar gasto deixa de ser tarefa chata.",
-  },
-  {
-    emoji: "🎯",
-    title: "Orçamento do casal",
-    body: "Limites por categoria definidos juntos, com alertas antes de estourar — não depois.",
-  },
+const sorted = sortByDateDesc(await getCollection("blog", ({ data }) => !data.draft));
+// The welcome note never takes an editorial slot — it goes last.
+const posts = [
+  ...sorted.filter((p) => p.id !== "bem-vindos-ao-blog-do-paca"),
+  ...sorted.filter((p) => p.id === "bem-vindos-ao-blog-do-paca"),
 ];
+
+// The pillar article leads the page; everything else flows chronologically.
+const FEATURED_SLUG = "como-dividir-contas-casal";
+const featured = posts.find((p) => p.id === FEATURED_SLUG) ?? posts[0];
+const rest = posts.filter((p) => p.id !== featured.id);
+const picks = rest.slice(0, 3);
+const latest = rest.slice(3);
+
+const featuredCategory = CATEGORIES[featured.data.category];
+const featuredPalette = COVER_PALETTES[featured.data.category];
+const featuredMinutes = readingTimeMinutes(featured.body);
 ---
 
 <BaseLayout description={SITE_DESCRIPTION}>
-  <section class="bg-gradient-to-b from-pink-50 to-white dark:from-gray-900 dark:to-gray-900">
-    <div class="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 sm:py-24">
-      <h1 class="mx-auto max-w-3xl font-display text-4xl font-bold leading-tight text-gray-900 sm:text-5xl dark:text-white">
-        Finanças a dois, sem briga e sem planilha
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <!-- Hub header: plain title + dek, content right below (no marketing hero) -->
+    <header class="border-b border-gray-100 py-8 sm:py-10 dark:border-gray-800">
+      <h1 class="font-display text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
+        Finanças para casais
       </h1>
-      <p class="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-gray-600 dark:text-gray-300">
-        Guias práticos para casais que querem organizar o dinheiro juntos:
-        dividir contas do jeito justo, conversar sobre grana sem estresse e
-        realizar sonhos em dupla.
+      <p class="mt-2 max-w-2xl leading-relaxed text-gray-600 dark:text-gray-300">
+        Guias práticos para organizar o dinheiro a dois: dividir contas do jeito
+        justo, conversar sobre grana sem briga e realizar planos em dupla.
       </p>
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-        <a
-          href={APP_URL}
-          class="rounded-xl bg-pink-primary px-6 py-3 font-semibold text-gray-900 shadow-sm transition-colors hover:bg-pink-400"
-        >
-          Conhecer o Paca Finance
-        </a>
+    </header>
+
+    <!-- Featured article -->
+    <section aria-labelledby="destaque" class="py-10 sm:py-12">
+      <h2 id="destaque" class="sr-only">Em destaque</h2>
+      <article
+        class="group relative grid items-center gap-6 lg:grid-cols-[7fr_5fr] lg:gap-10"
+        style={`--kc:${featuredPalette.kicker};--kcd:${featuredPalette.kickerDark}`}
+      >
+        <div class="overflow-hidden rounded-2xl">
+          <Cover
+            category={featured.data.category}
+            slug={featured.id}
+            class="aspect-video w-full transition-transform duration-300 group-hover:scale-[1.02]"
+          />
+        </div>
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-[color:var(--kc)] dark:text-[color:var(--kcd)]">
+            <a href={`/categorias/${featured.data.category}`} class="relative z-10 rounded">
+              {featuredCategory.label}
+            </a>
+          </p>
+          <h3 class="mt-2 font-display text-2xl font-bold leading-tight text-gray-800 sm:text-[2rem] sm:leading-tight dark:text-white">
+            <a
+              href={`/blog/${featured.id}`}
+              class="rounded transition-colors after:absolute after:inset-0 after:content-[''] group-hover:text-pink-700 dark:group-hover:text-pink-300"
+            >
+              {featured.data.title}
+            </a>
+          </h3>
+          <p class="mt-3 leading-relaxed text-gray-600 dark:text-gray-300">
+            {featured.data.description}
+          </p>
+          <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+            Equipe Paca Finance
+            <span aria-hidden="true"> · </span>
+            <time datetime={featured.data.pubDate.toISOString()}>{formatDate(featured.data.pubDate)}</time>
+            <span aria-hidden="true"> · </span>
+            {featuredMinutes} min de leitura
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <!-- Editor's picks -->
+    <section aria-label="Destaques recentes" class="border-t border-gray-100 py-10 dark:border-gray-800">
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {picks.map((post) => <PostCard post={post} headingLevel="h2" />)}
+      </div>
+    </section>
+
+    <!-- The one product block on the page -->
+    <CTABox />
+
+    <!-- Latest -->
+    <section aria-labelledby="mais-recentes" class="py-10">
+      <div class="flex flex-wrap items-baseline justify-between gap-4 border-b border-gray-100 pb-4 dark:border-gray-800">
+        <h2 id="mais-recentes" class="font-display text-xl font-bold text-gray-800 sm:text-2xl dark:text-white">
+          Mais recentes
+        </h2>
         <a
           href="/blog"
-          class="rounded-xl border border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 transition-colors hover:border-pink-300 hover:text-pink-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-600 dark:hover:text-pink-300"
+          class="rounded text-sm font-semibold text-pink-700 transition-colors hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
         >
-          Ler o blog
+          Ver todos os artigos →
         </a>
       </div>
-    </div>
-  </section>
-
-  <section aria-labelledby="por-que-paca" class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-    <h2 id="por-que-paca" class="text-center font-display text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white">
-      Por que o Paca?
-    </h2>
-    <div class="mt-10 grid gap-6 sm:grid-cols-3">
-      {
-        features.map((feature) => (
-          <div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800">
-            <div
-              class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-100 to-pink-200 text-2xl dark:from-pink-900/60 dark:to-pink-800/40"
-              aria-hidden="true"
-            >
-              {feature.emoji}
-            </div>
-            <h3 class="mt-4 font-display text-lg font-bold text-gray-900 dark:text-white">{feature.title}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{feature.body}</p>
-          </div>
-        ))
-      }
-    </div>
-  </section>
-
-  <section aria-labelledby="ultimos-posts" class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-    <div class="flex flex-wrap items-baseline justify-between gap-4">
-      <h2 id="ultimos-posts" class="font-display text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white">
-        Últimos posts
-      </h2>
-      <a href="/blog" class="rounded-lg text-sm font-semibold text-pink-700 transition-colors hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200">
-        Ver todos →
-      </a>
-    </div>
-    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {posts.map((post) => <PostCard post={post} />)}
-    </div>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 pb-20 pt-6 sm:px-6">
-    <div class="rounded-3xl bg-gradient-to-br from-pink-100 via-pink-50 to-pink-200 px-6 py-12 text-center sm:px-12 dark:from-gray-800 dark:via-gray-800 dark:to-pink-900/40 dark:ring-1 dark:ring-pink-800">
-      <h2 class="font-display text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white">
-        Prontos para cuidar do dinheiro juntos?
-      </h2>
-      <p class="mx-auto mt-3 max-w-xl leading-relaxed text-gray-700 dark:text-gray-200">
-        O Paca Finance é grátis para começar. Criem a conta do casal e vejam
-        para onde o dinheiro de vocês está indo — hoje.
-      </p>
-      <a
-        href={APP_URL}
-        class="mt-6 inline-block rounded-xl bg-pink-primary px-6 py-3 font-semibold text-gray-900 shadow-sm transition-colors hover:bg-pink-400"
-      >
-        Conhecer o Paca Finance
-      </a>
-    </div>
-  </section>
+      <div class="mt-8 grid gap-8 pb-10 sm:grid-cols-2 lg:grid-cols-3">
+        {latest.map((post) => <PostCard post={post} headingLevel="h3" showExcerpt={false} />)}
+      </div>
+    </section>
+  </div>
 </BaseLayout>

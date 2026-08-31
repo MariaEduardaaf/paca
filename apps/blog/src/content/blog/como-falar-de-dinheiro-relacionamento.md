@@ -4,7 +4,6 @@ description: "66% dos casais nunca conversaram sobre dinheiro. Saiba quando toca
 pubDate: 2026-08-21
 category: "conversas-sobre-dinheiro"
 tags: ["conversa sobre dinheiro", "transparência financeira", "relacionamento", "finanças do casal"]
-heroEmoji: "💬"
 draft: false
 ---
 

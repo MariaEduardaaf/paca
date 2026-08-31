@@ -63,10 +63,6 @@
           "type": "boolean",
           "default": false
         },
-        "heroEmoji": {
-          "type": "string",
-          "default": "💰"
-        },
         "$schema": {
           "type": "string"
         }

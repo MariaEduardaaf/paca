@@ -9,24 +9,35 @@ interface Props {
 
 const {
   title = "Chega de planilha",
-  body = "O Paca organiza o dinheiro do casal num app só: gastos compartilhados em tempo real, contas divididas do jeito justo e metas a dois.",
+  body = "O Paca organiza o dinheiro do casal num app só: gastos compartilhados em tempo real, contas divididas do jeito justo e metas a dois. Grátis para começar.",
   buttonLabel = "Conhecer o Paca Finance",
 } = Astro.props;
 ---
 
+<!-- Product block: tinted flat card, clearly distinct from editorial content. -->
 <aside
   aria-label="Conheça o Paca Finance"
-  class="my-10 rounded-3xl bg-gradient-to-br from-pink-50 via-pink-100 to-pink-200 p-6 sm:p-8 dark:from-gray-800 dark:via-gray-800 dark:to-pink-900/40 dark:ring-1 dark:ring-pink-800"
+  class="my-10 rounded-2xl border border-pink-200 bg-pink-50 p-6 sm:p-8 dark:border-pink-800/60 dark:bg-pink-900/15"
 >
   <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-    <div class="max-w-md">
-      <p class="font-display text-xl font-bold text-gray-900 dark:text-white">{title}</p>
-      <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">{body}</p>
+    <div class="flex max-w-xl items-start gap-4">
+      <img
+        src="/logo-icon-large.png"
+        alt=""
+        class="mt-0.5 h-10 w-10 shrink-0 rounded-xl"
+        width="40"
+        height="40"
+        loading="lazy"
+      />
+      <div>
+        <p class="font-display text-lg font-bold text-gray-800 dark:text-white">{title}</p>
+        <p class="mt-1.5 text-sm leading-relaxed text-gray-700 dark:text-gray-200">{body}</p>
+      </div>
     </div>
-    <div class="flex flex-col items-start gap-3">
+    <div class="flex shrink-0 flex-col items-start gap-3 sm:items-end">
       <a
         href={APP_URL}
-        class="inline-block rounded-xl bg-pink-primary px-5 py-3 text-sm font-semibold text-gray-900 shadow-sm transition-colors hover:bg-pink-400"
+        class="inline-block rounded-xl bg-pink-primary px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm transition-colors hover:bg-pink-400"
       >
         {buttonLabel}
       </a>
@@ -35,12 +46,12 @@ const {
         (APP_STORE_URL || PLAY_STORE_URL) && (
           <div class="flex gap-3 text-sm font-medium">
             {APP_STORE_URL && (
-              <a href={APP_STORE_URL} class="rounded-lg text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200">
+              <a href={APP_STORE_URL} class="rounded text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200">
                 App Store
               </a>
             )}
             {PLAY_STORE_URL && (
-              <a href={PLAY_STORE_URL} class="rounded-lg text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200">
+              <a href={PLAY_STORE_URL} class="rounded text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200">
                 Google Play
               </a>
             )}

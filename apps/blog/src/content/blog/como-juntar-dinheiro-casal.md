@@ -4,7 +4,6 @@ description: "Do sonho ao valor mensal: plano de 6 passos para juntar dinheiro e
 pubDate: 2026-08-24
 category: "metas-e-sonhos"
 tags: ["juntar dinheiro", "metas financeiras", "casal", "poupar junto", "planejamento"]
-heroEmoji: "🎯"
 draft: false
 ---
 

@@ -4,7 +4,6 @@ description: "Dinheiro é o motivo nº 1 de brigas em 53% dos casais no Brasil. 
 pubDate: 2026-08-26
 category: "conversas-sobre-dinheiro"
 tags: ["brigas por dinheiro", "conflitos financeiros", "relacionamento", "finanças do casal"]
-heroEmoji: "💢"
 draft: false
 ---
 

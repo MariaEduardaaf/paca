@@ -4,7 +4,6 @@ description: "O que você vai encontrar por aqui: guias práticos de finanças p
 pubDate: 2026-08-30
 category: "organizacao"
 tags: ["paca-finance", "financas-de-casal"]
-heroEmoji: "👋"
 ---
 
 Se vocês já discutiram por causa de um Pix esquecido, uma fatura surpresa ou aquela planilha que só um dos dois atualiza, este blog é para vocês.

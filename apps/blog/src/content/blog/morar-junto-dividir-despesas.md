@@ -4,7 +4,6 @@ description: "Vão morar juntos? Quem paga o quê, como dividir aluguel e mercad
 pubDate: 2026-08-22
 category: "dividir-contas"
 tags: ["morar junto", "dividir contas", "despesas do casal", "vida a dois", "orçamento"]
-heroEmoji: "🏠"
 draft: false
 ---
 

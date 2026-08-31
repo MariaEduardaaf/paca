@@ -4,7 +4,6 @@ description: "Aprenda a dividir as contas do casal proporcional ao salário: fó
 pubDate: 2026-08-30
 category: "dividir-contas"
 tags: ["dividir contas", "divisão proporcional", "finanças de casal", "salários diferentes", "orçamento a dois"]
-heroEmoji: "➗"
 draft: false
 ---
 
