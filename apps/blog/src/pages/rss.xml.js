@@ -11,6 +11,10 @@ export async function GET(context) {
     title: `${SITE_TITLE} — Blog`,
     description: SITE_DESCRIPTION,
     site: context.site,
+    // O site usa trailingSlash "never" (astro.config.mjs) e o canonical sai sem
+    // barra final. Sem isto o feed publicaria /blog/slug/ — outra URL para a
+    // mesma página, justo no canal que agregadores usam para citar o link.
+    trailingSlash: false,
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,
