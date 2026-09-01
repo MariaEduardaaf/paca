@@ -1,19 +1,8 @@
-import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
+import type { SupabaseClient } from "jsr:@supabase/supabase-js@2";
 
-/**
- * Service-role client for couple-wide aggregate reads. The free-tier AI quota is
- * PER COUPLE (shared pool), but usage_stats RLS is per-profile (each partner only
- * sees their own rows). Counting with the user's JWT client would miss the
- * partner's usage, so the monthly quota counts via service_role (bypasses RLS).
- * Never returns rows to the client — only an internal count for the gate.
- */
-export function createAdminClient(): SupabaseClient {
-  return createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
-}
+// NOTE: only TYPE imports here. `createAdminClient` lives in ./adminClient.ts
+// because it needs Deno.env + a value-level JSR import; keeping this module
+// runtime-free is what lets the quota decisions be unit-tested outside Deno.
 
 /**
  * Grace period after `current_period_end` during which a stored

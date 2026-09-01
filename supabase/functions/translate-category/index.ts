@@ -1,7 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
-import { createAdminClient, isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
+import { createAdminClient } from "../_shared/adminClient.ts";
+import { isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
