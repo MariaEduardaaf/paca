@@ -6,6 +6,10 @@ import type { CategoryId } from "./categories";
  * watermark — the Ghost/Stripe-blog pattern of branded generative covers.
  * No photos, no emojis; deterministic per slug so covers never change between
  * builds.
+ *
+ * The motifs themselves (one per article) and the per-slug variant hash live in
+ * ./motifs.mjs — plain JS so scripts/og.mjs (Node, no TS) shares the exact same
+ * drawings instead of keeping a second copy of them.
  */
 export interface CoverPalette {
   bg: string;
@@ -43,22 +47,10 @@ export const COVER_PALETTES: Record<CategoryId, CoverPalette> = {
 
 export const COVER_INK = "#2A1B22";
 
-/** Small stable hash so each slug always gets the same layout variant. */
-export function coverVariant(slug: string): {
-  /** Motif anchored to the right (default) or mirrored to the left. */
-  mirrored: boolean;
-  /** Slight rotation of the motif group, in degrees. */
-  rotation: number;
-  /** Watermark along the bottom-left (default) or top edge. */
-  watermarkTop: boolean;
-} {
-  let h = 0;
-  for (let i = 0; i < slug.length; i++) {
-    h = (h * 31 + slug.charCodeAt(i)) >>> 0;
-  }
-  return {
-    mirrored: h % 2 === 1,
-    rotation: [-8, 0, 8][h % 3],
-    watermarkTop: (h >> 2) % 2 === 1,
-  };
-}
+/**
+ * Re-exported so app code keeps importing everything cover-related from here.
+ * The implementation lives in ./motifs.mjs because scripts/og.mjs needs the
+ * very same hash (any drift would make a post's card and its on-site cover
+ * disagree).
+ */
+export { coverArt, coverVariant, MOTIF_BOX, motifNameFor } from "./motifs.mjs";

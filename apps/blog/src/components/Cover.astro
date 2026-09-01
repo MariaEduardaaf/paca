@@ -1,6 +1,7 @@
 ---
 import type { CategoryId } from "../lib/categories";
-import { COVER_INK, COVER_PALETTES, coverVariant } from "../lib/covers";
+import { COVER_INK, COVER_PALETTES } from "../lib/covers";
+import { coverArt, MOTIF_BOX, watermarkSize } from "../lib/motifs.mjs";
 
 interface Props {
   category: CategoryId;
@@ -10,17 +11,31 @@ interface Props {
 
 const { category, slug, class: className = "" } = Astro.props;
 const palette = COVER_PALETTES[category];
-const variant = coverVariant(slug);
 
-// Motif sits in a 675x675 square anchored to one side, bleeding off the edge.
+// O motivo vem de src/lib/motifs.mjs — um por artigo, com fallback por
+// categoria — desenhado numa caixa 620x620 com origem no canto. Aqui a gente só
+// posiciona essa caixa dentro do viewBox 1200x675, sangrando por uma das bordas.
+// A variação determinística por slug (lado, giro, espelho) vem junto.
+const art = coverArt(slug, category, palette.fg);
+
+const SCALE = 1.06; // 620 -> 657, quase a altura toda da capa
+const boxed = MOTIF_BOX * SCALE;
+const originX = art.mirrored ? -120 : 1200 + 120 - boxed;
+const center = MOTIF_BOX / 2;
+
 const motifTransform = [
-  variant.mirrored ? "translate(210 90)" : "translate(680 90)",
-  `rotate(${variant.rotation} 320 280)`,
-].join(" ");
+  `translate(${originX.toFixed(1)} 9)`,
+  `scale(${SCALE})`,
+  art.flip ? `translate(${MOTIF_BOX} 0) scale(-1 1)` : "",
+  `rotate(${art.rotation} ${center} ${center})`,
+]
+  .filter(Boolean)
+  .join(" ");
 
-const watermarkY = variant.watermarkTop ? 200 : 640;
-const watermarkX = variant.mirrored ? 1180 : 24;
-const watermarkAnchor = variant.mirrored ? "end" : "start";
+const watermarkY = art.watermarkTop ? 200 : 640;
+const watermarkX = art.mirrored ? 1180 : 24;
+const watermarkAnchor = art.mirrored ? "end" : "start";
+const watermarkFont = watermarkSize(palette.word, 190);
 ---
 
 <!-- Decorative duotone cover: two category colors + ink watermark. -->
@@ -41,60 +56,9 @@ const watermarkAnchor = variant.mirrored ? "end" : "start";
     opacity="0.08"
     font-family="'Bricolage Grotesque', system-ui, sans-serif"
     font-weight="800"
-    font-size="190"
-    letter-spacing="-6"
+    font-size={watermarkFont}
+    letter-spacing={-(watermarkFont / 32).toFixed(1)}
   >{palette.word}</text>
 
-  <g transform={motifTransform}>
-    {category === "dividir-contas" && (
-      <>
-        {/* Two overlapping rings — the couple; the shared lens is what they split. */}
-        <circle cx="220" cy="280" r="190" fill="none" stroke={palette.fg} stroke-width="44" />
-        <circle cx="440" cy="280" r="190" fill="none" stroke={palette.fg} stroke-width="44" />
-        <path
-          d="M 330 122 A 190 190 0 0 1 330 438 A 190 190 0 0 1 330 122 Z"
-          fill={palette.fg}
-          opacity="0.35"
-        />
-      </>
-    )}
-    {category === "organizacao" && (
-      <>
-        {/* Pie with a pulled slice — the budget taking shape. */}
-        <path d="M 300 280 L 300 80 A 200 200 0 1 1 127 380 Z" fill={palette.fg} />
-        <path d="M 340 240 L 340 60 A 200 200 0 0 1 513 160 Z" fill={palette.fg} opacity="0.45" />
-      </>
-    )}
-    {category === "conversas-sobre-dinheiro" && (
-      <>
-        {/* Two speech bubbles mid-conversation. */}
-        <path
-          d="M 60 120 h 300 a 48 48 0 0 1 48 48 v 120 a 48 48 0 0 1 -48 48 h -180 l -72 76 v -76 h -48 a 48 48 0 0 1 -48 -48 v -120 a 48 48 0 0 1 48 -48 Z"
-          fill={palette.fg}
-        />
-        <path
-          d="M 280 300 h 280 a 44 44 0 0 1 44 44 v 104 a 44 44 0 0 1 -44 44 h -44 v 68 l -66 -68 h -170 a 44 44 0 0 1 -44 -44 v -104 a 44 44 0 0 1 44 -44 Z"
-          fill={palette.fg}
-          opacity="0.45"
-        />
-      </>
-    )}
-    {category === "metas-e-sonhos" && (
-      <>
-        {/* Concentric target — the goal the couple is aiming at. */}
-        <circle cx="320" cy="290" r="210" fill="none" stroke={palette.fg} stroke-width="36" opacity="0.4" />
-        <circle cx="320" cy="290" r="130" fill="none" stroke={palette.fg} stroke-width="36" opacity="0.7" />
-        <circle cx="320" cy="290" r="52" fill={palette.fg} />
-      </>
-    )}
-    {category === "ferramentas" && (
-      <>
-        {/* Spreadsheet cells — one already filled in. */}
-        <rect x="80" y="90" width="180" height="180" rx="36" fill="none" stroke={palette.fg} stroke-width="26" />
-        <rect x="320" y="90" width="180" height="180" rx="36" fill="none" stroke={palette.fg} stroke-width="26" />
-        <rect x="80" y="330" width="180" height="180" rx="36" fill="none" stroke={palette.fg} stroke-width="26" />
-        <rect x="320" y="330" width="180" height="180" rx="36" fill={palette.fg} />
-      </>
-    )}
-  </g>
+  <g transform={motifTransform} set:html={art.svg}></g>
 </svg>

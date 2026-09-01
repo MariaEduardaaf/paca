@@ -6,14 +6,17 @@
  * /og-default.png. Agora cada artigo tem o seu card 1200x630 em public/og/<slug>.png,
  * usando a mesma identidade visual das capas do site (src/lib/covers.ts + Cover.astro):
  * fundo na cor da categoria, rótulo da categoria, título em Bricolage Grotesque,
- * motivo geométrico da categoria e a assinatura "paca finance".
+ * o motivo geométrico DO ARTIGO e a assinatura "paca finance".
+ * Os motivos vêm de src/lib/motifs.mjs — o mesmo módulo que o Cover.astro usa,
+ * para card e capa nunca divergirem.
  *
  * QUANDO RODAR DE NOVO
  *   npm run og            (dentro de apps/blog)
  * Rode sempre que:
  *   - publicar um artigo novo (ou tirar um post de draft);
  *   - mudar o `title` ou a `category` de um artigo já publicado;
- *   - mexer nas paletas de COVER_PALETTES / no visual do card aqui.
+ *   - mexer nas paletas de COVER_PALETTES, nos motivos de src/lib/motifs.mjs
+ *     ou no visual do card aqui.
  * Depois de rodar, **comite os PNGs alterados**.
  *
  * POR QUE OS PNGs SÃO VERSIONADOS DE PROPÓSITO
@@ -45,6 +48,10 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// Motivos e variação por slug: MESMO módulo que o site usa (Cover.astro).
+// É .mjs justamente para este script Node conseguir importar sem build.
+import { coverArt, watermarkSize } from "../src/lib/motifs.mjs";
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT_DIR = join(ROOT, "src", "content", "blog");
 const PUBLIC_DIR = join(ROOT, "public");
@@ -55,8 +62,10 @@ const CHROME =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 // ---------------------------------------------------------------------------
-// Identidade visual — espelha src/lib/covers.ts e src/lib/categories.ts.
+// Paletas e rótulos — espelham src/lib/covers.ts e src/lib/categories.ts.
 // Se mudar lá, mude aqui (não dá para importar .ts de um script Node puro).
+// Os MOTIVOS não estão aqui de propósito: vêm de src/lib/motifs.mjs, importado
+// no topo, para existir uma cópia só das formas.
 // ---------------------------------------------------------------------------
 
 const COVER_INK = "#2A1B22";
@@ -83,52 +92,6 @@ const COVER_PALETTES = {
     kicker: "#5D4E96", label: "Ferramentas",
   },
 };
-
-/** Motivos geométricos por categoria, desenhados num viewBox 0 0 620 620. */
-function motif(category, fg) {
-  switch (category) {
-    case "dividir-contas":
-      // Dois anéis sobrepostos — o casal; a lente comum é o que se divide.
-      return `
-        <circle cx="220" cy="310" r="170" fill="none" stroke="${fg}" stroke-width="40" />
-        <circle cx="400" cy="310" r="170" fill="none" stroke="${fg}" stroke-width="40" />
-        <path d="M 310 166 A 170 170 0 0 1 310 454 A 170 170 0 0 1 310 166 Z" fill="${fg}" opacity="0.35" />`;
-    case "organizacao":
-      // Pizza com uma fatia puxada — o orçamento tomando forma.
-      return `
-        <path d="M 300 320 L 300 130 A 190 190 0 1 1 110 320 Z" fill="${fg}" />
-        <path d="M 268 288 L 78 288 A 190 190 0 0 1 268 98 Z" fill="${fg}" opacity="0.45" />`;
-    case "conversas-sobre-dinheiro":
-      // Dois balões de fala no meio da conversa.
-      return `
-        <path d="M 70 110 h 300 a 48 48 0 0 1 48 48 v 120 a 48 48 0 0 1 -48 48 h -180 l -72 76 v -76 h -48 a 48 48 0 0 1 -48 -48 v -120 a 48 48 0 0 1 48 -48 Z" fill="${fg}" />
-        <path d="M 290 300 h 260 a 44 44 0 0 1 44 44 v 104 a 44 44 0 0 1 -44 44 h -44 v 68 l -66 -68 h -150 a 44 44 0 0 1 -44 -44 v -104 a 44 44 0 0 1 44 -44 Z" fill="${fg}" opacity="0.45" />`;
-    case "metas-e-sonhos":
-      // Alvo concêntrico — a meta que o casal mira.
-      return `
-        <circle cx="310" cy="310" r="228" fill="none" stroke="${fg}" stroke-width="36" opacity="0.4" />
-        <circle cx="310" cy="310" r="144" fill="none" stroke="${fg}" stroke-width="36" opacity="0.7" />
-        <circle cx="310" cy="310" r="58" fill="${fg}" />`;
-    case "ferramentas":
-      // Células de planilha — uma já preenchida.
-      return `
-        <rect x="62" y="62" width="220" height="220" rx="42" fill="none" stroke="${fg}" stroke-width="28" />
-        <rect x="338" y="62" width="220" height="220" rx="42" fill="none" stroke="${fg}" stroke-width="28" />
-        <rect x="62" y="338" width="220" height="220" rx="42" fill="none" stroke="${fg}" stroke-width="28" />
-        <rect x="338" y="338" width="220" height="220" rx="42" fill="${fg}" />`;
-    default:
-      return "";
-  }
-}
-
-/** Mesmo hash de src/lib/covers.ts — cada slug sempre recebe a mesma variação. */
-function coverVariant(slug) {
-  let h = 0;
-  for (let i = 0; i < slug.length; i++) {
-    h = (h * 31 + slug.charCodeAt(i)) >>> 0;
-  }
-  return { rotation: [-8, 0, 8][h % 3] };
-}
 
 // ---------------------------------------------------------------------------
 // Frontmatter (parser mínimo: só title / category / draft)
@@ -181,8 +144,10 @@ function titleStyle(title) {
 
 function cardHtml({ title, category, slug, logoDataUri }) {
   const palette = COVER_PALETTES[category];
-  const { rotation } = coverVariant(slug);
+  const art = coverArt(slug, category, palette.fg);
   const t = titleStyle(title);
+  // Mesma conta da capa do site: iguala a largura aparente das cinco palavras.
+  const wm = watermarkSize(palette.word, 200);
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -206,18 +171,19 @@ function cardHtml({ title, category, slug, logoDataUri }) {
      Fica sozinha na faixa de baixo — a assinatura da marca subiu para o topo
      justamente para nada se sobrepor a ela. */
   .watermark {
-    position: absolute; left: 62px; bottom: -74px;
+    position: absolute; left: 62px; bottom: ${Math.round(-0.37 * wm)}px;
     font-family: 'Bricolage Grotesque', system-ui, sans-serif;
-    font-weight: 800; font-size: 200px; line-height: 1;
-    letter-spacing: -7px; color: ${COVER_INK}; opacity: 0.055;
+    font-weight: 800; font-size: ${wm}px; line-height: 1;
+    letter-spacing: ${-(wm / 29).toFixed(1)}px; color: ${COVER_INK}; opacity: 0.055;
     white-space: nowrap;
   }
 
-  /* Motivo geométrico da categoria, sangrando pela direita. */
+  /* Motivo do artigo (src/lib/motifs.mjs), sangrando pela direita.
+     A caixa de desenho é 620x620 — mesma do site; aqui ela entra 1:1. */
   .motif {
     position: absolute; right: -118px; top: 12px;
     width: 620px; height: 620px;
-    transform: rotate(${rotation}deg);
+    transform: rotate(${art.rotation}deg)${art.flip ? " scaleX(-1)" : ""};
   }
 
   /* Assinatura da marca, no canto superior esquerdo. */
@@ -255,7 +221,7 @@ function cardHtml({ title, category, slug, logoDataUri }) {
 <body>
   <div class="card">
     <div class="watermark">${escapeHtml(palette.word)}</div>
-    <svg class="motif" viewBox="0 0 620 620" aria-hidden="true">${motif(category, palette.fg)}</svg>
+    <svg class="motif" viewBox="0 0 620 620" aria-hidden="true">${art.svg}</svg>
     <div class="brand">
       <img src="${logoDataUri}" alt="" />
       <span>paca finance</span>
