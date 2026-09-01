@@ -1,5 +1,5 @@
 ---
-import { APP_URL, SUBSCRIBE_ENDPOINT } from "../consts";
+import { APP_URL, SUBSCRIBE_ENDPOINT, SIGNUP_URL } from "../consts";
 
 /**
  * Bloco de captura de e-mail do blog.
@@ -27,8 +27,14 @@ const emailId = `${uid}-email`;
 const consentId = `${uid}-consent`;
 const statusId = `${uid}-status`;
 const hpId = `${uid}-hp`;
+const successTitleId = `${uid}-success-title`;
 
 const privacyUrl = "/privacidade";
+
+// Rota pública de cadastro do app. O sucesso da inscrição não pode ser um beco
+// sem saída: confirmar e oferecer o passo seguinte é o momento de maior
+// intenção que a página vai ter.
+const signupUrl = SIGNUP_URL;
 ---
 
 <!--
@@ -51,14 +57,19 @@ const privacyUrl = "/privacidade";
       Receba os guias por e-mail
     </h2>
 
-    <p class="mt-2 max-w-xl text-[15px] leading-relaxed text-gray-600 dark:text-gray-300">
+    <p data-nl-intro class="mt-2 max-w-xl text-[15px] leading-relaxed text-gray-600 dark:text-gray-300">
       Um e-mail por semana com um guia prático de finanças a dois: dividir
       contas, organizar o orçamento e conversar sobre dinheiro sem briga. Só
       isso — sem promessa de fórmula mágica e sem e-mail todo dia.
     </p>
 
+    {/*
+      Largura travada (max-w-2xl): o bloco agora também vive em páginas largas
+      (/blog, categorias, home) e, sem isso, o campo de e-mail esticava por
+      quase mil pixels — parecia caixa de busca, não convite.
+    */}
     <form
-      class="relative mt-6"
+      class="relative mt-6 max-w-2xl"
       data-newsletter
       data-endpoint={SUBSCRIBE_ENDPOINT}
       data-source={source ?? ""}
@@ -172,6 +183,56 @@ const privacyUrl = "/privacidade";
     </form>
 
     {/*
+      Estado de sucesso: substitui o formulário no lugar dele, confirma e
+      entrega o próximo passo (criar conta grátis no app). Nasce escondido pela
+      classe `hidden` além do atributo — uma classe de display do Tailwind
+      venceria o `[hidden]` do navegador. O foco vai para este bloco quando ele
+      aparece: sem isso, quem usa teclado perderia o foco junto com o botão de
+      enviar, e quem usa leitor de tela não saberia que a página mudou.
+    */}
+    <div
+      data-nl-success
+      hidden
+      tabindex="-1"
+      aria-labelledby={successTitleId}
+      class="mt-6 hidden focus:outline-none"
+    >
+      <p class="flex items-start gap-2 text-sm font-semibold text-green-700 dark:text-green-300">
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="mt-0.5 h-4 w-4 shrink-0"
+        >
+          <path d="M4.5 12.75l6 6 9-13.5"></path>
+        </svg>
+        Pronto, seu e-mail está na lista. O próximo guia chega em breve.
+      </p>
+
+      <h3
+        id={successTitleId}
+        class="mt-4 font-display text-lg font-bold text-gray-800 dark:text-white"
+      >
+        Enquanto o primeiro e-mail não chega
+      </h3>
+      <p class="mt-2 max-w-xl text-[15px] leading-relaxed text-gray-600 dark:text-gray-300">
+        Ler ajuda, mas o combinado só existe quando os dois veem os mesmos
+        números. Crie sua conta no Paca, registre os gastos do mês e convide
+        quem divide as contas com você. Grátis para começar.
+      </p>
+      <a
+        href={signupUrl}
+        class="mt-4 inline-block rounded-xl bg-pink-primary px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm transition-colors hover:bg-pink-400"
+      >
+        Criar conta grátis
+      </a>
+    </div>
+
+    {/*
       Sem JavaScript o envio é IMPOSSÍVEL — o blog é estático e o único destino
       é a edge function, que fala JSON, não form-urlencoded. O <form> não tem
       `action`, então um submit sem JS viraria um GET para a própria página com
@@ -239,6 +300,10 @@ const privacyUrl = "/privacidade";
       var hp = form.querySelector("[data-nl-hp]");
       var button = form.querySelector("[data-nl-submit]");
       var status = form.querySelector("[data-nl-status]");
+      // O bloco de sucesso é irmão do <form>, dentro do mesmo <section>.
+      var success = (form.closest("section") || document).querySelector(
+        "[data-nl-success]",
+      );
       var defaultLabel = button.textContent;
       var sending = false;
 
@@ -304,12 +369,29 @@ const privacyUrl = "/privacidade";
             }
             var result = { ok: ok, data: data };
             if (result.ok && result.data && result.data.ok) {
-              // Sucesso: trava os campos para não reenviar e deixa a confirmação.
               subscribed = true;
-              form.querySelectorAll("input, button").forEach(function (el) {
-                el.disabled = true;
-              });
-              setStatus(status, MESSAGES.success, "success");
+              // Sucesso vira PASSO SEGUINTE, não beco sem saída: o formulário
+              // sai de cena e no lugar dele entra a confirmação + o convite
+              // para criar a conta no app.
+              if (success) {
+                form.hidden = true;
+                // O parágrafo de "o que você vai receber" já cumpriu o papel:
+                // depois de assinar, ele só empurra o próximo passo para baixo.
+                var intro = (form.closest("section") || document).querySelector(
+                  "[data-nl-intro]",
+                );
+                if (intro) intro.hidden = true;
+                success.hidden = false;
+                success.classList.remove("hidden");
+                success.focus();
+              } else {
+                // Se por algum motivo o bloco de sucesso não existir, ainda
+                // assim confirma: trava os campos e mostra a mensagem.
+                form.querySelectorAll("input, button").forEach(function (el) {
+                  el.disabled = true;
+                });
+                setStatus(status, MESSAGES.success, "success");
+              }
               return;
             }
             var code = (result.data && result.data.error) || "server_error";

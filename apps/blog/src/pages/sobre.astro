@@ -1,7 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CTABox from "../components/CTABox.astro";
-import { APP_URL } from "../consts";
+import NewsletterForm from "../components/NewsletterForm.astro";
+import { APP_URL, SIGNUP_URL } from "../consts";
 ---
 
 <BaseLayout
@@ -42,7 +43,7 @@ import { APP_URL } from "../consts";
         registram gastos que aparecem em tempo real para o parceiro, dividem
         contas do jeito que fizer sentido (meio a meio ou proporcional),
         definem orçamento por categoria e acompanham metas em conjunto. Você
-        pode <a href={APP_URL}>conhecer o app aqui</a>.
+        pode <a href={SIGNUP_URL}>criar a conta do casal aqui</a>.
       </p>
 
       <h2>Transparência</h2>
@@ -59,6 +60,14 @@ import { APP_URL } from "../consts";
         <a href={`${APP_URL}/terms`}>Termos de Uso</a>.
       </p>
     </div>
+
+    {/*
+      Quem chega no /sobre está decidindo se confia na gente — é o melhor lugar
+      da página para pedir o e-mail, logo depois da política editorial. O bloco
+      de produto continua fechando a página, e os dois têm cara diferente
+      (cinza editorial x rosa de produto) para não virarem um pedido só.
+    */}
+    <NewsletterForm source="sobre" />
 
     <CTABox />
   </div>

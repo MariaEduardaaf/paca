@@ -8,6 +8,7 @@ import CTABox from "../components/CTABox.astro";
 import Cover from "../components/Cover.astro";
 import NewsletterForm from "../components/NewsletterForm.astro";
 import PostCard from "../components/PostCard.astro";
+import ShareBox from "../components/ShareBox.astro";
 import { SITE_TITLE, SITE_URL, APP_URL } from "../consts";
 import { CATEGORIES } from "../lib/categories";
 import { COVER_PALETTES } from "../lib/covers";
@@ -36,6 +37,10 @@ const tocEntries = headings.filter((h) => h.depth === 2);
 const showToc = tocEntries.length >= 4;
 
 const postUrl = new URL(`/blog/${post.id}`, SITE_URL).href;
+// Logo do publisher no JSON-LD: aqui vale o arquivo grande (480x480) de
+// propósito — é lido pelo Google, não baixado pelo leitor. O que a página
+// realmente exibe é /logo-icon-96.png. O 480 também alimenta scripts/og.mjs
+// (card 1200x630); não troque nenhum dos dois pelo 96.
 const logoUrl = new URL("/logo-icon-large.png", SITE_URL).href;
 
 // Card de compartilhamento próprio do artigo, gerado por `npm run og` e
@@ -165,7 +170,7 @@ const faqJsonLd =
 
       <div class="mt-6 flex items-center gap-3 border-y border-gray-100 py-4 dark:border-gray-800">
         <img
-          src="/logo-icon-large.png"
+          src="/logo-icon-96.png"
           alt=""
           class="h-9 w-9 rounded-full"
           width="36"
@@ -229,9 +234,25 @@ const faqJsonLd =
       <Content />
     </div>
 
+    {/*
+      Ordem do fim do artigo, de propósito (o texto termina aqui):
+
+      1. Compartilhar — o passo que o próprio artigo pede ("combina com a outra
+         pessoa"). É um convite leve e a favor do leitor, então vem primeiro.
+      2. Anúncio.
+      3. Newsletter — o único pedido de e-mail da página, ANTES dos cards de
+         "Leia também". Depois deles, quem ia clicar já clicou.
+      4. "Leia também".
+      5. CTABox (produto) — fecha a página. Fica longe da newsletter de
+         propósito: os dois pedidos colados viravam um muro no fim do texto, e
+         a grade de artigos entre eles dá o respiro.
+    */}
+    <ShareBox url={postUrl} title={title} />
+
     <AdSlot placement="in-content" />
 
-    <CTABox />
+    {/* `source` = slug, para saber que conteúdo converte (ESTRATEGIA §6). */}
+    <NewsletterForm source={post.id} />
 
     {
       related.length > 0 && (
@@ -248,9 +269,7 @@ const faqJsonLd =
       )
     }
 
-    {/* Captura de e-mail no fim do artigo: é aqui que a intenção existe
-        (ESTRATEGIA §6). `source` = slug, para saber que conteúdo converte. */}
-    <NewsletterForm source={post.id} />
+    <CTABox />
 
     <p class="mt-12 border-t border-gray-100 pt-6 text-[13px] leading-relaxed text-gray-500 dark:border-gray-800 dark:text-gray-400">
       Conteúdo editorial do blog do Paca Finance. Não é recomendação de

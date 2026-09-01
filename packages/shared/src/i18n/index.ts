@@ -83,6 +83,12 @@ export function scanTransactionWord(
   locale: Locale,
   count: number
 ): string {
+  // Zero é plural em pt-BR ("0 transações"), mas o CLDR classifica pt como
+  // one para i = 0..1 — o Intl está certo pela norma e errado pelo uso, e
+  // renderizaria "0 transação". Só o português precisa do desvio: en usa
+  // "other" no zero, e ru/uk já caem em "many".
+  if (count === 0 && locale === "pt") return slice.transactions;
+
   const cat = selectPluralCategory(locale, count);
   if (cat === "one") return slice.transaction;
   if (cat === "few") return slice.transactionFew;

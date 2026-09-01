@@ -1,0 +1,198 @@
+---
+/**
+ * Compartilhar o artigo — discreto, no fim do texto.
+ *
+ * Por que WhatsApp em primeiro lugar: quem lê estes guias está lendo para
+ * COMBINAR algo com a outra pessoa. "Manda pro seu parceiro" é literalmente o
+ * próximo passo que o texto pede, e no Brasil esse passo acontece no WhatsApp.
+ * Nada de barra flutuante nem de ícone de rede social que ninguém usa aqui.
+ *
+ * O link do WhatsApp é montado no build (wa.me + texto pronto), então funciona
+ * mesmo sem JavaScript. JS só melhora: copiar link e navigator.share (celular).
+ */
+interface Props {
+  /** URL absoluta do artigo. */
+  url: string;
+  /** Título do artigo, usado no texto pronto da mensagem. */
+  title: string;
+  class?: string;
+}
+
+const { url, title, class: className = "" } = Astro.props;
+
+// Texto pronto da mensagem. Sem promessa nem chamariz: título + link, do jeito
+// que a pessoa mandaria. Ela ainda pode editar antes de enviar.
+const shareText = `${title} — ${url}`;
+const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+
+const uid = `sh-${crypto.randomUUID().slice(0, 8)}`;
+const titleId = `${uid}-title`;
+const statusId = `${uid}-status`;
+
+const buttonClass =
+  "inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-pink-300 hover:bg-pink-50 hover:text-pink-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-600 dark:hover:bg-pink-900/40 dark:hover:text-pink-200";
+---
+
+<section
+  aria-labelledby={titleId}
+  data-share
+  data-url={url}
+  data-title={title}
+  class={`mt-12 border-t border-gray-100 pt-6 dark:border-gray-800 ${className}`}
+>
+  {/*
+    Rótulo em cima, botões embaixo: lado a lado, os três botões e a frase
+    disputavam a mesma linha e quebravam feio (a frase partia no meio e o
+    terceiro botão caía sozinho numa segunda fileira).
+  */}
+  <div>
+    <p id={titleId} class="font-display text-[15px] font-semibold text-gray-800 dark:text-gray-100">
+      Manda para quem divide as contas com você
+    </p>
+
+    <div class="mt-3 flex flex-wrap items-center gap-2">
+      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class={buttonClass}>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
+          <path
+            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"
+          ></path>
+        </svg>
+        WhatsApp<span class="sr-only"> (abre em nova aba)</span>
+      </a>
+
+      <button type="button" data-share-copy class={buttonClass}>
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="h-4 w-4"
+        >
+          <path d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"></path>
+        </svg>
+        Copiar link
+      </button>
+
+      {/*
+        Só existe onde o sistema tem folha de compartilhamento (celular).
+        Nasce escondido pela classe `hidden` (não só pelo atributo): uma classe
+        de display do Tailwind venceria o `[hidden]` do navegador.
+      */}
+      <button type="button" data-share-native hidden class={`hidden ${buttonClass}`}>
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="h-4 w-4"
+        >
+          <path d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186m0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185"></path>
+        </svg>
+        Compartilhar
+      </button>
+    </div>
+  </div>
+
+  {/*
+    Uma região viva só: a confirmação de "copiei" é vista E anunciada pelo
+    mesmo texto, sem trocar o rótulo do botão (evita anúncio duplicado).
+  */}
+  <p
+    id={statusId}
+    role="status"
+    aria-live="polite"
+    data-share-status
+    class="mt-3 text-sm text-gray-600 empty:mt-0 dark:text-gray-300"
+  >
+  </p>
+</section>
+
+<script is:inline>
+  (function () {
+    function copyText(value) {
+      // A Clipboard API não é só "existe ou não existe": ela também REJEITA em
+      // situações comuns (aba sem foco, permissão negada, WebView de app). Por
+      // isso o caminho antigo (textarea + execCommand) é fallback dos dois
+      // casos, não só da ausência da API.
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(value).catch(function () {
+          return legacyCopy(value);
+        });
+      }
+      return legacyCopy(value);
+    }
+
+    function legacyCopy(value) {
+      return new Promise(function (resolve, reject) {
+        try {
+          var ta = document.createElement("textarea");
+          ta.value = value;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.top = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = document.execCommand("copy");
+          document.body.removeChild(ta);
+          ok ? resolve() : reject(new Error("copy failed"));
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+
+    document.querySelectorAll("[data-share]").forEach(function (root) {
+      if (root.dataset.shareBound === "1") return;
+      root.dataset.shareBound = "1";
+
+      var url = root.getAttribute("data-url") || window.location.href;
+      var title = root.getAttribute("data-title") || document.title;
+      var status = root.querySelector("[data-share-status]");
+      var copyButton = root.querySelector("[data-share-copy]");
+      var nativeButton = root.querySelector("[data-share-native]");
+      var timer;
+
+      function say(message, kind) {
+        status.textContent = message;
+        status.className =
+          "mt-3 text-sm empty:mt-0 " +
+          (kind === "error"
+            ? "font-medium text-red-700 dark:text-red-300"
+            : "font-medium text-green-700 dark:text-green-300");
+        window.clearTimeout(timer);
+        timer = window.setTimeout(function () {
+          status.textContent = "";
+        }, 6000);
+      }
+
+      copyButton.addEventListener("click", function () {
+        copyText(url).then(
+          function () {
+            say("Link copiado. Agora é só colar na conversa.", "success");
+          },
+          function () {
+            say(
+              "Não deu para copiar por aqui. Use o botão do WhatsApp ou copie o endereço da barra do navegador.",
+              "error",
+            );
+          },
+        );
+      });
+
+      if (navigator.share) {
+        nativeButton.hidden = false;
+        nativeButton.classList.remove("hidden");
+        nativeButton.addEventListener("click", function () {
+          // Cancelar a folha do sistema rejeita a promise: não é erro.
+          navigator.share({ title: title, url: url }).catch(function () {});
+        });
+      }
+    });
+  })();
+</script>

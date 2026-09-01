@@ -5,6 +5,19 @@
 @layer base {
   html {
     @apply scroll-smooth;
+    /*
+     * Faz o navegador pintar no tema certo o que o CSS não alcança: barra de
+     * rolagem, campos de formulário nativos e o fundo antes da primeira pintura.
+     * Segue a classe .dark (que o script anti-flash aplica), não a preferência
+     * do sistema — senão quem escolhe o tema manualmente vê campo claro em
+     * página escura. Importa mais desde que o blog tem formulário de e-mail e
+     * a calculadora.
+     */
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {

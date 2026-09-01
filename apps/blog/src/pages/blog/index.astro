@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostCard from "../../components/PostCard.astro";
+import NewsletterForm from "../../components/NewsletterForm.astro";
 import { CATEGORIES, CATEGORY_IDS } from "../../lib/categories";
 import { sortByDateDesc } from "../../lib/posts";
 
@@ -50,5 +51,12 @@ const posts = sortByDateDesc(
         <p class="mt-10 text-gray-600 dark:text-gray-300">Nenhum post publicado ainda. Volte em breve!</p>
       )
     }
+
+    {/*
+      /blog é página de entrada de quem vem da busca: sem captura aqui, a
+      pessoa folheava a lista e ia embora sem deixar contato. Fica depois da
+      grade — o conteúdo continua sendo a primeira coisa da página.
+    */}
+    <NewsletterForm source="blog-index" class="mt-14" />
   </div>
 </BaseLayout>

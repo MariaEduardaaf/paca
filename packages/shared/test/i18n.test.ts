@@ -112,11 +112,24 @@ describe("scanTransactionWord — inglês e português (duas formas)", () => {
     assert.equal(scanTransactionWord(pt, "pt", 100), "transações");
   });
 
-  it("português trata zero como singular — regra do CLDR para pt (i = 0..1), não um acidente", () => {
-    // Renderiza "0 transação". Se o produto quiser "0 transações", a correção
-    // é um caso especial para count === 0, não mexer no Intl.PluralRules.
+  it("português rende '0 transações', apesar de o CLDR classificar pt como singular no zero", () => {
+    // O Intl está certo pela norma (pt tem one para i = 0..1) e errado pelo
+    // uso: em pt-BR ninguém escreve "0 transação". O desvio vive na
+    // scanTransactionWord, não no Intl — por isso a categoria continua "one".
     assert.equal(selectPluralCategory("pt", 0), "one");
-    assert.equal(scanTransactionWord(slice("pt"), "pt", 0), "transação");
+    assert.equal(scanTransactionWord(slice("pt"), "pt", 0), "transações");
+  });
+
+  it("no zero, todo idioma cai na forma de plural geral — inclusive o português, pelo desvio", () => {
+    // en usa "other" no zero e ru/uk usam "many": os três chegam na mesma
+    // chave sem precisar de desvio. O português só chega lá por causa dele.
+    for (const locale of LOCALES) {
+      assert.equal(
+        scanTransactionWord(slice(locale), locale, 0),
+        slice(locale).transactions,
+        `${locale} deveria usar a forma plural no zero`
+      );
+    }
   });
 
   it("nenhum locale devolve string vazia para nenhuma contagem de 0 a 30", () => {
