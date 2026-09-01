@@ -10,6 +10,11 @@ export const SITE_URL: string =
 
 export const APP_URL = "https://paca-web-twmh.vercel.app";
 
+// Destino de TODO botão de conversão do blog. A raiz do app é rota protegida:
+// quem não tem conta cai numa tela de senha, que é o pior lugar para entregar
+// alguém vindo de um artigo. /signup é público e abre direto no cadastro.
+export const SIGNUP_URL = `${APP_URL}/signup`;
+
 // Captura de e-mail do blog (Supabase Edge Function `blog-subscribe`).
 // Contrato congelado: POST { email, consent, source, hp } →
 // 200 {ok:true} | 400 {error:"invalid_email"|"consent_required"} |

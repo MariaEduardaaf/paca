@@ -1,0 +1,670 @@
+---
+/**
+ * Calculadora de divisão proporcional ao salário.
+ *
+ * Mesma conta ensinada em /blog/dividir-contas-proporcional-ao-salario:
+ *   renda total   = renda A + renda B
+ *   percentual    = renda individual ÷ renda total
+ *   parte de cada = total das contas compartilhadas × percentual
+ *
+ * Tudo roda no navegador com JS inline (sem dependência, sem framework) e
+ * nada é enviado nem guardado: os valores existem só enquanto a aba estiver
+ * aberta. Por isso não há localStorage aqui — salário é dado sensível e a
+ * política de privacidade do blog diz que só o tema fica no navegador.
+ */
+---
+
+<section
+  aria-labelledby="calc-titulo"
+  class="rounded-3xl border border-gray-200 bg-gray-50 p-5 sm:p-7 dark:border-gray-700 dark:bg-gray-800/60"
+>
+  <h2 id="calc-titulo" class="sr-only">Calculadora de divisão proporcional</h2>
+
+  <div class="grid gap-6 lg:grid-cols-5 lg:gap-8">
+    <!-- ENTRADAS -->
+    <form
+      id="calc-form"
+      novalidate
+      autocomplete="off"
+      class="lg:col-span-2"
+    >
+      <fieldset class="rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+        <legend class="px-1.5 font-display text-sm font-bold text-gray-800 dark:text-white">
+          <span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-[#E5647A] align-middle"></span>
+          Primeira pessoa
+        </legend>
+
+        <label for="nome1" class="mt-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Nome <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <input
+          id="nome1"
+          name="nome1"
+          type="text"
+          maxlength="24"
+          placeholder="Pessoa 1"
+          class="mt-1.5 w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+        />
+
+        <label for="renda1" class="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Quanto ganha por mês (líquido)
+        </label>
+        <div class="relative mt-1.5">
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-gray-600 dark:text-gray-400"
+            >R$</span
+          >
+          <input
+            id="renda1"
+            name="renda1"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="3.000,00"
+            aria-describedby="dica-renda1 erro-renda1"
+            class="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+          />
+        </div>
+        <p id="dica-renda1" class="mt-1.5 text-xs text-gray-600 dark:text-gray-400">
+          O que cai na conta, depois dos descontos.
+        </p>
+        <p id="erro-renda1" hidden class="mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300"></p>
+      </fieldset>
+
+      <fieldset class="mt-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+        <legend class="px-1.5 font-display text-sm font-bold text-gray-800 dark:text-white">
+          <span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-[#2F8F7C] align-middle"></span>
+          Segunda pessoa
+        </legend>
+
+        <label for="nome2" class="mt-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Nome <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <input
+          id="nome2"
+          name="nome2"
+          type="text"
+          maxlength="24"
+          placeholder="Pessoa 2"
+          class="mt-1.5 w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+        />
+
+        <label for="renda2" class="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Quanto ganha por mês (líquido)
+        </label>
+        <div class="relative mt-1.5">
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-gray-600 dark:text-gray-400"
+            >R$</span
+          >
+          <input
+            id="renda2"
+            name="renda2"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="5.000,00"
+            aria-describedby="dica-renda2 erro-renda2"
+            class="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+          />
+        </div>
+        <p id="dica-renda2" class="mt-1.5 text-xs text-gray-600 dark:text-gray-400">
+          Se a renda varia, use a média dos últimos 3 meses.
+        </p>
+        <p id="erro-renda2" hidden class="mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300"></p>
+      </fieldset>
+
+      <div class="mt-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+        <label for="despesas" class="block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Total das contas compartilhadas do mês
+        </label>
+        <div class="relative mt-2">
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-gray-600 dark:text-gray-400"
+            >R$</span
+          >
+          <input
+            id="despesas"
+            name="despesas"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="4.200,00"
+            aria-describedby="dica-despesas erro-despesas"
+            class="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+          />
+        </div>
+        <p id="dica-despesas" class="mt-1.5 text-xs text-gray-600 dark:text-gray-400">
+          Só o que serve aos dois: aluguel, condomínio, luz, água, internet, mercado do mês.
+        </p>
+        <p id="erro-despesas" hidden class="mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300"></p>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <button
+          type="button"
+          id="btn-exemplo"
+          class="rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-pink-300 hover:text-pink-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-500 dark:hover:text-pink-300"
+        >
+          Preencher com o exemplo
+        </button>
+        <button
+          type="button"
+          id="btn-limpar"
+          class="rounded px-1 py-1 text-sm font-medium text-gray-600 underline underline-offset-2 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300"
+        >
+          Limpar
+        </button>
+      </div>
+      <p class="mt-3 text-xs text-gray-600 dark:text-gray-400">
+        A conta acontece no seu navegador. Nada é enviado para a gente nem fica salvo.
+      </p>
+    </form>
+
+    <!-- SAÍDA -->
+    <div class="lg:col-span-3">
+      <div id="calc-saida" role="status" aria-live="polite">
+        <!-- vazio -->
+        <div
+          id="estado-vazio"
+          class="flex min-h-[14rem] flex-col justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white/60 px-6 py-12 text-center lg:min-h-[28rem] dark:border-gray-600 dark:bg-gray-900/40"
+        >
+          <p class="font-display text-lg font-bold text-gray-800 dark:text-white">
+            Preencha as duas rendas e o total das contas
+          </p>
+          <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            O resultado aparece aqui na hora: quanto cada um paga, o percentual de cada
+            um e quanto do salário isso compromete — comparado com o meio a meio.
+          </p>
+        </div>
+
+        <!-- aviso: renda total zero -->
+        <div
+          id="estado-zero"
+          hidden
+          class="rounded-2xl border border-pink-200 bg-pink-50 p-6 dark:border-pink-800/60 dark:bg-pink-900/20"
+        >
+          <p class="font-display text-lg font-bold text-gray-800 dark:text-white">
+            Com renda zero nos dois, não dá para calcular a proporção
+          </p>
+          <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+            A fórmula divide pela renda total do casal, e não existe divisão por zero.
+            Se um dos dois está sem renda neste mês, coloque só a renda de quem ganha:
+            a parte de quem está sem renda fica em R$ 0,00 e a calculadora mostra isso.
+          </p>
+        </div>
+
+        <!-- resultado -->
+        <div id="estado-resultado" hidden>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+              <p class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                <span aria-hidden="true" class="h-2.5 w-2.5 shrink-0 rounded-full bg-[#E5647A]"></span>
+                <span id="r-nome1" class="truncate">Pessoa 1</span>
+              </p>
+              <p id="r-valor1" class="mt-2 font-display text-3xl font-bold tabular-nums text-gray-900 dark:text-white">
+                R$ 0,00
+              </p>
+              <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                <span id="r-pct1" class="font-semibold text-gray-800 dark:text-gray-100">0%</span> das contas
+              </p>
+              <p class="mt-3 border-t border-gray-100 pt-3 text-sm text-gray-600 dark:border-gray-800 dark:text-gray-300">
+                Compromete <span id="r-comp1" class="font-semibold text-gray-800 dark:text-gray-100">0%</span> do que ganha
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+              <p class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                <span aria-hidden="true" class="h-2.5 w-2.5 shrink-0 rounded-full bg-[#2F8F7C]"></span>
+                <span id="r-nome2" class="truncate">Pessoa 2</span>
+              </p>
+              <p id="r-valor2" class="mt-2 font-display text-3xl font-bold tabular-nums text-gray-900 dark:text-white">
+                R$ 0,00
+              </p>
+              <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                <span id="r-pct2" class="font-semibold text-gray-800 dark:text-gray-100">0%</span> das contas
+              </p>
+              <p class="mt-3 border-t border-gray-100 pt-3 text-sm text-gray-600 dark:border-gray-800 dark:text-gray-300">
+                Compromete <span id="r-comp2" class="font-semibold text-gray-800 dark:text-gray-100">0%</span> do que ganha
+              </p>
+            </div>
+          </div>
+
+          <p id="r-insight" class="mt-4 rounded-2xl bg-white p-4 text-sm leading-relaxed text-gray-700 dark:bg-gray-900 dark:text-gray-200"></p>
+
+          <p
+            id="r-alerta"
+            hidden
+            class="mt-3 rounded-2xl border border-pink-200 bg-pink-50 p-4 text-sm leading-relaxed text-gray-700 dark:border-pink-800/60 dark:bg-pink-900/20 dark:text-gray-200"
+          >
+          </p>
+        </div>
+      </div>
+
+      <!-- Detalhe (fora da região aria-live: o resumo acima já foi anunciado) -->
+      <div id="detalhe" hidden class="mt-3 space-y-3">
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+          <p class="font-display text-sm font-bold text-gray-800 dark:text-white">
+            Quanto do salário de cada um vai para as contas
+          </p>
+          <div class="mt-4 space-y-5">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">
+                Meio a meio
+              </p>
+              <div class="mt-2 space-y-2">
+                <div class="flex items-center gap-3">
+                  <span id="b50-nome1" class="w-20 shrink-0 truncate text-sm text-gray-700 sm:w-28 dark:text-gray-200">Pessoa 1</span>
+                  <span class="h-3 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700" aria-hidden="true">
+                    <span id="b50-bar1" class="block h-3 rounded-full bg-[#E5647A]" style="width:0%"></span>
+                  </span>
+                  <span id="b50-pct1" class="w-14 shrink-0 text-right text-sm font-bold tabular-nums text-gray-900 dark:text-white">0%</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span id="b50-nome2" class="w-20 shrink-0 truncate text-sm text-gray-700 sm:w-28 dark:text-gray-200">Pessoa 2</span>
+                  <span class="h-3 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700" aria-hidden="true">
+                    <span id="b50-bar2" class="block h-3 rounded-full bg-[#2F8F7C]" style="width:0%"></span>
+                  </span>
+                  <span id="b50-pct2" class="w-14 shrink-0 text-right text-sm font-bold tabular-nums text-gray-900 dark:text-white">0%</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">
+                Proporcional
+              </p>
+              <div class="mt-2 space-y-2">
+                <div class="flex items-center gap-3">
+                  <span id="bp-nome1" class="w-20 shrink-0 truncate text-sm text-gray-700 sm:w-28 dark:text-gray-200">Pessoa 1</span>
+                  <span class="h-3 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700" aria-hidden="true">
+                    <span id="bp-bar1" class="block h-3 rounded-full bg-[#E5647A]" style="width:0%"></span>
+                  </span>
+                  <span id="bp-pct1" class="w-14 shrink-0 text-right text-sm font-bold tabular-nums text-gray-900 dark:text-white">0%</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span id="bp-nome2" class="w-20 shrink-0 truncate text-sm text-gray-700 sm:w-28 dark:text-gray-200">Pessoa 2</span>
+                  <span class="h-3 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700" aria-hidden="true">
+                    <span id="bp-bar2" class="block h-3 rounded-full bg-[#2F8F7C]" style="width:0%"></span>
+                  </span>
+                  <span id="bp-pct2" class="w-14 shrink-0 text-right text-sm font-bold tabular-nums text-gray-900 dark:text-white">0%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p id="b-legenda" class="mt-4 text-xs leading-relaxed text-gray-600 dark:text-gray-400"></p>
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
+          <p class="font-display text-sm font-bold text-gray-800 dark:text-white">A conta, passo a passo</p>
+          <ol class="mt-3 space-y-2 text-sm leading-relaxed text-gray-700 tabular-nums dark:text-gray-200">
+            <li id="f-passo1"></li>
+            <li id="f-passo2"></li>
+            <li id="f-passo3"></li>
+          </ol>
+          <p id="f-conferencia" class="mt-3 border-t border-gray-100 pt-3 text-sm tabular-nums text-gray-600 dark:border-gray-800 dark:text-gray-300"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+   * O atributo `hidden` precisa vencer as utilitárias de display do Tailwind
+   * (`flex`, `grid`) — sem isso, um painel escondido continua aparecendo.
+   */
+  [hidden] {
+    display: none !important;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var byId = function (id) {
+      return document.getElementById(id);
+    };
+
+    var f = {
+      nome1: byId("nome1"),
+      nome2: byId("nome2"),
+      renda1: byId("renda1"),
+      renda2: byId("renda2"),
+      despesas: byId("despesas"),
+    };
+    if (!f.renda1 || !f.renda2 || !f.despesas) return;
+
+    var erro = {
+      renda1: byId("erro-renda1"),
+      renda2: byId("erro-renda2"),
+      despesas: byId("erro-despesas"),
+    };
+
+    var vazio = byId("estado-vazio");
+    var zero = byId("estado-zero");
+    var res = byId("estado-resultado");
+    var detalhe = byId("detalhe");
+
+    var brl = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    var pctFmt = new Intl.NumberFormat("pt-BR", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    });
+
+    function money(n) {
+      return brl.format(n);
+    }
+    function pct(n) {
+      return pctFmt.format(n) + "%";
+    }
+
+    /**
+     * Aceita como a pessoa escreve no Brasil: "1.234,56", "1234,56",
+     * "1234.56", "R$ 3.000" e "3000". Um único ponto com 3 casas depois
+     * (3.000) é separador de milhar, não decimal.
+     */
+    function parseBR(bruto) {
+      var raw = String(bruto == null ? "" : bruto).trim();
+      if (!raw) return null; // vazio: campo ainda não preenchido
+      var s = raw.replace(/[^\d.,-]/g, "");
+      if (!/\d/.test(s)) return NaN; // escreveu alguma coisa, mas não é número
+      var negativo = s.indexOf("-") !== -1;
+      s = s.replace(/-/g, "");
+      if (!s) return NaN;
+      if (s.indexOf(",") !== -1) {
+        var partes = s.split(",");
+        var dec = partes.pop();
+        s = partes.join("").replace(/\./g, "") + "." + dec.replace(/\./g, "");
+      } else if (s.indexOf(".") !== -1) {
+        var pontos = s.split(".").length - 1;
+        var casas = s.length - s.lastIndexOf(".") - 1;
+        if (pontos > 1 || casas === 3) s = s.replace(/\./g, "");
+      }
+      var n = parseFloat(s);
+      if (!isFinite(n)) return NaN;
+      return negativo ? -n : n;
+    }
+
+    function cents(n) {
+      return Math.round(n * 100) / 100;
+    }
+
+    function nomeDe(input, padrao) {
+      var v = input && input.value ? input.value.trim() : "";
+      return v || padrao;
+    }
+
+    function marcarErro(campo, mensagem) {
+      var input = f[campo];
+      var alvo = erro[campo];
+      if (mensagem) {
+        alvo.textContent = mensagem;
+        alvo.hidden = false;
+        input.setAttribute("aria-invalid", "true");
+        input.classList.add("border-pink-600", "dark:border-pink-400");
+      } else {
+        alvo.textContent = "";
+        alvo.hidden = true;
+        input.removeAttribute("aria-invalid");
+        input.classList.remove("border-pink-600", "dark:border-pink-400");
+      }
+    }
+
+    /** null = vazio, NaN = inválido, número = ok. */
+    function lerCampo(campo) {
+      var v = parseBR(f[campo].value);
+      if (v === null) {
+        marcarErro(campo, "");
+        return null;
+      }
+      if (isNaN(v)) {
+        marcarErro(campo, "Use só números — por exemplo 3.000 ou 3000,50.");
+        return NaN;
+      }
+      if (v < 0) {
+        marcarErro(campo, "Use um valor positivo.");
+        return NaN;
+      }
+      marcarErro(campo, "");
+      return v;
+    }
+
+    function mostrar(qual) {
+      vazio.hidden = qual !== "vazio";
+      zero.hidden = qual !== "zero";
+      res.hidden = qual !== "resultado";
+      detalhe.hidden = qual !== "resultado";
+    }
+
+    function larguraBarra(p) {
+      if (p === null) return "0%";
+      return Math.max(0, Math.min(100, p)) + "%";
+    }
+
+    function calcular() {
+      var r1 = lerCampo("renda1");
+      var r2 = lerCampo("renda2");
+      var d = lerCampo("despesas");
+
+      if (r1 === null || r2 === null || d === null || isNaN(r1) || isNaN(r2) || isNaN(d)) {
+        mostrar("vazio");
+        return;
+      }
+
+      var rendaTotal = cents(r1 + r2);
+      if (rendaTotal <= 0) {
+        mostrar("zero");
+        return;
+      }
+
+      var desp = cents(d);
+      var n1 = nomeDe(f.nome1, "Pessoa 1");
+      var n2 = nomeDe(f.nome2, "Pessoa 2");
+
+      var p1 = (r1 / rendaTotal) * 100;
+      var p2 = 100 - p1;
+
+      // Arredonda a primeira parte e tira a segunda por diferença: a soma
+      // das duas sempre bate com o total das contas, sem centavo perdido.
+      var parte1 = cents(desp * (r1 / rendaTotal));
+      var parte2 = cents(desp - parte1);
+
+      var meio = cents(desp / 2);
+      var meio2 = cents(desp - meio);
+
+      var comp1 = r1 > 0 ? (parte1 / r1) * 100 : null;
+      var comp2 = r2 > 0 ? (parte2 / r2) * 100 : null;
+      var m1 = r1 > 0 ? (meio / r1) * 100 : null;
+      var m2 = r2 > 0 ? (meio2 / r2) * 100 : null;
+
+      byId("r-nome1").textContent = n1;
+      byId("r-nome2").textContent = n2;
+      byId("r-valor1").textContent = money(parte1);
+      byId("r-valor2").textContent = money(parte2);
+      byId("r-pct1").textContent = pct(p1);
+      byId("r-pct2").textContent = pct(p2);
+      byId("r-comp1").textContent = comp1 === null ? "—" : pct(comp1);
+      byId("r-comp2").textContent = comp2 === null ? "—" : pct(comp2);
+
+      byId("b50-nome1").textContent = n1;
+      byId("b50-nome2").textContent = n2;
+      byId("bp-nome1").textContent = n1;
+      byId("bp-nome2").textContent = n2;
+      byId("b50-pct1").textContent = m1 === null ? "—" : pct(m1);
+      byId("b50-pct2").textContent = m2 === null ? "—" : pct(m2);
+      byId("bp-pct1").textContent = comp1 === null ? "—" : pct(comp1);
+      byId("bp-pct2").textContent = comp2 === null ? "—" : pct(comp2);
+      byId("b50-bar1").style.width = larguraBarra(m1);
+      byId("b50-bar2").style.width = larguraBarra(m2);
+      byId("bp-bar1").style.width = larguraBarra(comp1);
+      byId("bp-bar2").style.width = larguraBarra(comp2);
+      byId("b-legenda").textContent =
+        "Mesmo total de contas (" +
+        money(desp) +
+        ") nos dois cenários. Barras cheias marcam 100% do salário.";
+
+      byId("f-passo1").textContent =
+        "1. Renda total: " + money(r1) + " + " + money(r2) + " = " + money(rendaTotal);
+      byId("f-passo2").textContent =
+        "2. " +
+        n1 +
+        ": " +
+        money(r1) +
+        " ÷ " +
+        money(rendaTotal) +
+        " = " +
+        pct(p1) +
+        " · " +
+        pct(p1) +
+        " × " +
+        money(desp) +
+        " = " +
+        money(parte1);
+      byId("f-passo3").textContent =
+        "3. " +
+        n2 +
+        ": " +
+        money(r2) +
+        " ÷ " +
+        money(rendaTotal) +
+        " = " +
+        pct(p2) +
+        " · " +
+        pct(p2) +
+        " × " +
+        money(desp) +
+        " = " +
+        money(parte2);
+      byId("f-conferencia").textContent =
+        "Confere: " + money(parte1) + " + " + money(parte2) + " = " + money(desp);
+
+      // Frase de insight — o argumento do método com os números de vocês.
+      var menorNome = r1 <= r2 ? n1 : n2;
+      var maiorNome = r1 <= r2 ? n2 : n1;
+      var menorMeio = r1 <= r2 ? m1 : m2;
+      var maiorMeio = r1 <= r2 ? m2 : m1;
+      var parteMaior = r1 <= r2 ? parte2 : parte1;
+      var compMaior = r1 <= r2 ? comp2 : comp1;
+      var insight;
+
+      if (r1 === r2) {
+        insight =
+          "As rendas são iguais, então os dois métodos dão o mesmo resultado: " +
+          money(parte1) +
+          " para cada um, " +
+          (comp1 === null ? "—" : pct(comp1)) +
+          " do salário de cada. Aqui a proporcional não muda nada — o meio a meio já divide o esforço igual.";
+      } else if (menorMeio === null) {
+        insight =
+          "Sem renda no mês, o meio a meio nem seria possível: " +
+          menorNome +
+          " teria que pagar " +
+          money(meio) +
+          " sem receber nada. Na proporcional, a parte de " +
+          menorNome +
+          " fica em R$ 0,00 e " +
+          maiorNome +
+          " assume " +
+          money(parteMaior) +
+          " — " +
+          (compMaior === null ? "—" : pct(compMaior)) +
+          " do que ganha.";
+      } else {
+        insight =
+          "No meio a meio, " +
+          menorNome +
+          " entregaria " +
+          pct(menorMeio) +
+          " do salário e " +
+          maiorNome +
+          ", " +
+          pct(maiorMeio) +
+          ". Na proporcional, os dois entregam " +
+          pct(comp1) +
+          " — " +
+          maiorNome +
+          " paga " +
+          money(cents(parteMaior - meio)) +
+          " a mais que no meio a meio, e o aperto do mês fica igual para os dois.";
+      }
+      byId("r-insight").textContent = insight;
+
+      var alerta = byId("r-alerta");
+      if (desp > rendaTotal) {
+        alerta.textContent =
+          "As contas compartilhadas (" +
+          money(desp) +
+          ") somam mais do que as duas rendas juntas (" +
+          money(rendaTotal) +
+          "). A divisão continua válida, mas nenhum dos dois consegue pagar a parte sem se endividar — antes de escolher o método, o corte de gastos vem primeiro.";
+        alerta.hidden = false;
+      } else if (r1 === 0 || r2 === 0) {
+        alerta.textContent =
+          "Um de vocês está sem renda neste mês, então a parte dele fica em R$ 0,00 e o outro assume as contas. Tratem como fase, com revisão mensal — é para isso que existe a reserva de emergência.";
+        alerta.hidden = false;
+      } else {
+        alerta.hidden = true;
+        alerta.textContent = "";
+      }
+
+      mostrar("resultado");
+    }
+
+    var timer = null;
+    function agendar() {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(calcular, 250);
+    }
+
+    ["nome1", "nome2", "renda1", "renda2", "despesas"].forEach(function (k) {
+      f[k].addEventListener("input", agendar);
+      f[k].addEventListener("change", agendar);
+    });
+
+    // Não há botão "calcular" — se alguém apertar Enter, só recalcula.
+    var form = byId("calc-form");
+    if (form) {
+      form.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        calcular();
+      });
+    }
+
+    var btnExemplo = byId("btn-exemplo");
+    if (btnExemplo) {
+      btnExemplo.addEventListener("click", function () {
+        f.nome1.value = "Ana";
+        f.nome2.value = "Bruno";
+        f.renda1.value = "3.000";
+        f.renda2.value = "5.000";
+        f.despesas.value = "4.200";
+        calcular();
+      });
+    }
+
+    var btnLimpar = byId("btn-limpar");
+    if (btnLimpar) {
+      btnLimpar.addEventListener("click", function () {
+        ["nome1", "nome2", "renda1", "renda2", "despesas"].forEach(function (k) {
+          f[k].value = "";
+        });
+        ["renda1", "renda2", "despesas"].forEach(function (k) {
+          marcarErro(k, "");
+        });
+        mostrar("vazio");
+        f.renda1.focus();
+      });
+    }
+
+    // Reidrata o que o navegador restaurou (voltar/atualizar).
+    calcular();
+  })();
+</script>

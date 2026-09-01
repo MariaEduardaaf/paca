@@ -21,7 +21,7 @@ Nenhum método funciona se vocês pularem esta etapa. E cuidado com a falsa sens
 - **Quanto cada um ganha, de verdade.** Salário líquido, freelas, comissões. Sem esse número real, qualquer divisão "justa" é chute.
 - **O que acontece com o que sobra.** Depois das contas pagas, cada um faz o que quiser com o resto? Vai uma parte para um objetivo comum? Decidam antes, não durante uma discussão.
 
-Se essa conversa parece difícil de começar, o guia sobre [como falar de dinheiro no relacionamento](/blog/como-falar-de-dinheiro-relacionamento) traz um roteiro para ela. E se vocês estão de mudança marcada, aproveitem: a mudança é o melhor momento para definir as regras do zero.
+Se essa conversa parece difícil de começar, o guia sobre [como falar de dinheiro no relacionamento](/blog/como-falar-de-dinheiro-relacionamento) traz um roteiro para ela. E se vocês estão de mudança marcada, aproveitem: a mudança é o melhor momento para definir as regras do zero — o guia de [despesas de quem vai morar junto](/blog/morar-junto-dividir-despesas) traz a lista completa de custos do primeiro ano, inclusive os que ninguém lembra.
 
 ## Método 1: 50/50 — simples, mas nem sempre justo
 
@@ -153,7 +153,7 @@ Escolher o método é metade do trabalho. A outra metade é o acompanhamento —
 O antídoto é um registro que os dois enxergam:
 
 - **Planilha compartilhada.** Barata e flexível. Se vocês já têm uma [planilha de gastos do casal](/blog/planilha-gastos-casal) que funciona e — ponto crucial — os dois realmente preenchem, não precisam trocar de ferramenta. O problema clássico é outro: depois de algumas semanas, um dos dois para de preencher e a planilha morre em silêncio.
-- **App compartilhado.** É a dor que o Paca Finance resolve: cada um registra o gasto na hora (ou escaneia a notinha do mercado), e o app mostra quem pagou o quê e o saldo de cada um em tempo real. Qualquer que seja o método de vocês, a cobrança vira transparência — em vez de "você está me devendo", a conversa é olhar o número juntos no [Paca](https://paca-web-twmh.vercel.app). Mas sejamos honestos: app nenhum resolve sozinho — se um dos dois não registrar os gastos, ele morre como a planilha. Há um plano gratuito para testar se o hábito pega antes de pagar qualquer coisa.
+- **App compartilhado.** É a dor que o Paca Finance resolve: cada um registra o gasto na hora (ou escaneia a notinha do mercado), e o app mostra quem pagou o quê e o saldo de cada um em tempo real. Qualquer que seja o método de vocês, a cobrança vira transparência — em vez de "você está me devendo", a conversa é olhar o número juntos no Paca. Mas sejamos honestos: app nenhum resolve sozinho — se um dos dois não registrar os gastos, ele morre como a planilha. Dá para [criar a conta do casal no plano gratuito](https://paca-web-twmh.vercel.app/signup) e testar se o hábito pega antes de pagar qualquer coisa.
 - **Teto por categoria.** Acompanhar quem pagou é uma parte; a outra é saber se o total está saudável. A regra 50/30/20 dá uma referência rápida: até 50% da renda em essenciais, 30% em estilo de vida, 20% para objetivos.
 
 Por fim, combinem um **dia do acerto**: uma data fixa por mês (dia do pagamento funciona bem) em que eventuais diferenças se resolvem num único Pix. Acertar uma vez por mês, com número na frente, é infinitamente mais leve do que negociar boleto a boleto.

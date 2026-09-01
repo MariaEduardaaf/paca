@@ -55,7 +55,7 @@ Todo gasto fica visível para o outro. Para a casa, isso é ótimo; para a vida 
 
 ### Estilos financeiros diferentes no mesmo saldo
 
-Quando um é poupador e o outro é gastador, dividir o mesmo saldo transforma cada compra num pequeno atrito. A conta conjunta **expõe** diferenças de estilo — não resolve nenhuma. Se vocês ainda brigam por dinheiro, resolver a conversa vem antes de resolver o banco.
+Quando um é poupador e o outro é gastador, dividir o mesmo saldo transforma cada compra num pequeno atrito. A conta conjunta **expõe** diferenças de estilo — não resolve nenhuma. Se as [brigas por dinheiro](/blog/brigas-por-dinheiro-relacionamento) ainda são frequentes entre vocês, resolver a conversa vem antes de resolver o banco.
 
 ## Conta conjunta, contas separadas ou modelo híbrido?
 
@@ -104,7 +104,7 @@ O **híbrido** é o meio-termo que mais aparece na prática, e por um bom motivo
 <figcaption>No híbrido, a conta comum paga só as despesas da casa — o resto da renda fica na conta individual de cada um, sem prestação de contas.</figcaption>
 </figure>
 
-E há um detalhe que pouca gente fala: **vocês não precisam unificar o banco para unificar a visão**. O problema que empurra muitos casais para a conta conjunta não é pagar contas — é enxergar o dinheiro da casa num lugar só. Dá para resolver isso por software: no [Paca Finance](https://paca-web-twmh.vercel.app), cada um segue com sua conta e seus cartões, e os gastos dos dois aparecem juntos num painel compartilhado, com orçamento por categoria. Vocês ganham a transparência da conta conjunta sem assumir os riscos de dívida e separação. Sendo honesta: se vocês já têm uma [planilha de gastos](/blog/planilha-gastos-casal) que funciona e a disciplina de preenchê-la a dois, ela cumpre papel parecido — a diferença é o trabalho manual de registrar tudo.
+E há um detalhe que pouca gente fala: **vocês não precisam unificar o banco para unificar a visão**. O problema que empurra muitos casais para a conta conjunta não é pagar contas — é enxergar o dinheiro da casa num lugar só. Dá para resolver isso por software: no Paca Finance, cada um segue com sua conta e seus cartões, e os gastos dos dois aparecem juntos num painel compartilhado, com orçamento por categoria. Vocês ganham a transparência da conta conjunta sem assumir os riscos de dívida e separação — dá para [criar a conta do casal no plano grátis](https://paca-web-twmh.vercel.app/signup) e testar antes de mexer no banco. Sendo honesta: se vocês já têm uma [planilha de gastos](/blog/planilha-gastos-casal) que funciona e a disciplina de preenchê-la a dois, ela cumpre papel parecido — a diferença é o trabalho manual de registrar tudo. E o nosso não é o único caminho: o [comparativo de apps de finanças para casal](/blog/melhor-app-financas-casal) põe sete opções lado a lado, com preços e contras de cada uma.
 
 ## Para cada fase do relacionamento, uma opção
 

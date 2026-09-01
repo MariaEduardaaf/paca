@@ -25,6 +25,8 @@ Neste guia, vocês vão sair com um plano completo em 6 passos: transformar o so
 
 Esse número mensal é o teste de realidade. Se R$ 1.334 por mês não cabe na renda de vocês hoje, não é motivo pra desistir — é motivo pra ajustar uma das três variáveis: esticar o prazo, reduzir o valor do sonho (casamento mais enxuto, viagem na baixa temporada) ou aumentar a renda. O que não funciona é manter o sonho grande, o prazo curto e a contribuição impossível: esse é o plano que morre no segundo mês.
 
+E se a meta de vocês for morar junto, cuidado com o valor total: além do primeiro aluguel entram caução, frete da mudança e o "montar a casa" inteiro. A [lista completa de despesas de quem vai morar junto](/blog/morar-junto-dividir-despesas) ajuda a chegar num número honesto antes de dividir pelo prazo.
+
 <figure class="diagram">
 <svg viewBox="0 0 640 240" role="img" aria-label="Aporte mensal de três metas: a viagem de R$ 12.000 em 18 meses pede R$ 667 por mês, o casamento de R$ 40.000 em 30 meses pede R$ 1.334 e a entrada do apê de R$ 60.000 em 48 meses pede R$ 1.250 — o prazo pesa tanto quanto o tamanho do sonho.">
   <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">Valor total ÷ prazo = quanto sai da renda todo mês</text>
@@ -131,7 +133,7 @@ Plano sem acompanhamento vira lembrança. O que sustenta a meta não é a empolg
 3. **Algum gasto fugiu do padrão?** Fatura do cartão e variáveis na mesa, sem tom de tribunal — o objetivo é ajustar, não julgar.
 4. **Mudou alguma coisa?** Renda nova, imprevisto, prazo do sonho — o plano se adapta, não quebra.
 
-A ferramenta importa menos que a constância — mas ela muda o custo do ritual. Com orçamentos por categoria e metas compartilhadas no [Paca Finance](https://paca-web-twmh.vercel.app), os dois registram os gastos ao longo do mês e a revisão vira 5 minutos de app aberto juntos — os números já estão lá, atualizados pros dois — em vez de uma noite montando planilha. Dito isso, com honestidade: se vocês já têm uma planilha que funciona e a revisão mensal *acontece de verdade*, não precisam trocar de ferramenta — precisam só não pular o ritual.
+A ferramenta importa menos que a constância — mas ela muda o custo do ritual. Com orçamentos por categoria e metas compartilhadas no Paca Finance, os dois registram os gastos ao longo do mês e a revisão vira 5 minutos de app aberto juntos — os números já estão lá, atualizados pros dois — em vez de uma noite montando planilha; dá pra [criar a conta do casal no plano grátis](https://paca-web-twmh.vercel.app/signup) e testar o ritual por um mês. Dito isso, com honestidade: se vocês já têm uma planilha que funciona e a revisão mensal *acontece de verdade*, não precisam trocar de ferramenta — precisam só não pular o ritual.
 
 Última dica do ritual: comemorem os marcos. 25%, 50%, 75% da meta merecem pelo menos um brinde. Meta de casal que só cobra e nunca celebra vira obrigação — e obrigação a gente abandona.
 

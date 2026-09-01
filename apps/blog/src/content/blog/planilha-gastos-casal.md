@@ -148,7 +148,7 @@ Quando uma planilha de casal morre, ela costuma morrer cedo — nos primeiros do
 - **Categoria demais.** Se "Padaria", "Mercado" e "Hortifruti" são categorias separadas, cada compra exige uma decisão. Sete categorias, no máximo dez.
 - **Só um dos dois preenche.** A planilha vira "a planilha dela", o outro se desliga, e quem digita se ressente. Cada um lança o que pagou — inegociável.
 - **Ignorar a competência do cartão.** Sem regra clara para fatura, os totais nunca batem com o extrato e a planilha perde credibilidade.
-- **Usar a planilha como tribunal.** Se todo lançamento vem com um "precisava mesmo?", a pessoa para de lançar — e às vezes passa a esconder gasto, que é o começo de um problema bem maior.
+- **Usar a planilha como tribunal.** Se todo lançamento vem com um "precisava mesmo?", a pessoa para de lançar — e às vezes passa a esconder gasto, que é o começo de um problema bem maior: é assim que nascem boa parte das [brigas por dinheiro no relacionamento](/blog/brigas-por-dinheiro-relacionamento).
 - **Não ter rotina fixa.** "A gente atualiza quando der" significa nunca.
 
 Reparem que quase todos os erros têm a mesma raiz: **digitação manual**. É trabalho repetitivo, chato, fácil de adiar — e quando atrasa, compromete todo o resto.
@@ -157,7 +157,7 @@ Reparem que quase todos os erros têm a mesma raiz: **digitação manual**. É t
 
 Sinais claros de que vocês estão gastando mais energia mantendo a ferramenta do que ela devolve: lançamentos atrasados há duas semanas, discussões sobre "quem esqueceu de anotar", três cartões e duas contas para conferir, e a reunião de domingo virando sessão de digitação em vez de conversa sobre dinheiro.
 
-Foi exatamente para eliminar essa digitação que ferramentas como o **Paca Finance** existem: em vez de copiar o extrato para a coluna D, um de vocês fotografa a notinha do mercado e a IA extrai valor, data e categoria sozinha — e o lançamento já aparece em tempo real para o outro, com a divisão calculada. Dá para testar no plano grátis, sem compromisso, em [paca-web-twmh.vercel.app](https://paca-web-twmh.vercel.app). A ressalva honesta: se a planilha de vocês já roda há meses sem atrito, trocar de ferramenta só por trocar não vale o custo da mudança — app resolve o problema de quem *abandona* planilha, não de quem mantém uma feliz. Se vocês estão nesse dilema, temos um [comparativo dos apps de finanças para casal](/blog/melhor-app-financas-casal) que inclui prós e contras de cada opção (planilha inclusive).
+Foi exatamente para eliminar essa digitação que ferramentas como o **Paca Finance** existem: em vez de copiar o extrato para a coluna D, um de vocês fotografa a notinha do mercado e a IA extrai valor, data e categoria sozinha — e o lançamento já aparece em tempo real para o outro, com a divisão calculada. Dá para [criar a conta do casal no plano grátis](https://paca-web-twmh.vercel.app/signup), sem compromisso. A ressalva honesta: se a planilha de vocês já roda há meses sem atrito, trocar de ferramenta só por trocar não vale o custo da mudança — app resolve o problema de quem *abandona* planilha, não de quem mantém uma feliz. Se vocês estão nesse dilema, temos um [comparativo dos apps de finanças para casal](/blog/melhor-app-financas-casal) que inclui prós e contras de cada opção (planilha inclusive).
 
 ## Perguntas frequentes
 

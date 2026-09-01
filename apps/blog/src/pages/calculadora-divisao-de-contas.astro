@@ -1,0 +1,166 @@
+---
+/**
+ * Ferramenta: calculadora de divisão proporcional ao salário.
+ *
+ * Mira as buscas "calculadora divisão de contas casal" e "dividir contas
+ * proporcional ao salário". A conta é a mesma do artigo
+ * /blog/dividir-contas-proporcional-ao-salario — se um dos dois mudar, o
+ * outro precisa mudar junto.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CalculadoraProporcional from "../components/CalculadoraProporcional.astro";
+import { SITE_URL, APP_URL, SITE_TITLE } from "../consts";
+
+const title = "Calculadora de divisão de contas do casal";
+const description =
+  "Calculadora grátis de divisão de contas para casal: coloque as duas rendas e o total das contas do mês e veja quanto cada um paga na divisão proporcional ao salário — comparado com o 50/50.";
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: SITE_TITLE,
+      item: SITE_URL,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: title,
+      item: new URL("/calculadora-divisao-de-contas", SITE_URL).href,
+    },
+  ],
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  </Fragment>
+
+  <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+    <nav aria-label="Você está aqui" class="text-sm text-gray-600 dark:text-gray-400">
+      <a
+        href="/"
+        class="rounded font-medium text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+        >Início</a
+      >
+      <span aria-hidden="true" class="px-1.5">/</span>
+      <span>Calculadora</span>
+    </nav>
+
+    <header class="mt-4 max-w-3xl">
+      <p class="text-xs font-semibold uppercase tracking-wider text-pink-700 dark:text-pink-300">
+        Ferramenta grátis
+      </p>
+      <h1 class="mt-2 font-display text-3xl font-bold leading-tight text-gray-900 sm:text-4xl dark:text-white">
+        Calculadora de divisão de contas do casal
+      </h1>
+      <p class="mt-4 text-base leading-relaxed text-gray-700 sm:text-lg dark:text-gray-200">
+        Quando um ganha mais que o outro, dividir meio a meio cobra um preço bem
+        diferente de cada um. Coloquem as duas rendas líquidas e o total das contas
+        compartilhadas do mês: a calculadora mostra quanto cada um paga na
+        <strong class="font-semibold text-gray-900 dark:text-white">divisão proporcional ao salário</strong>,
+        quanto isso pesa no bolso de cada um e como fica no 50/50.
+      </p>
+    </header>
+
+    <div class="mt-8">
+      <CalculadoraProporcional />
+    </div>
+
+    <!-- Contexto curto: a ferramenta é a estrela, o texto só ajuda a escolher. -->
+    <section aria-labelledby="metodos" class="mt-14 max-w-3xl">
+      <h2 id="metodos" class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+        Qual método usar
+      </h2>
+      <p class="mt-3 leading-relaxed text-gray-700 dark:text-gray-200">
+        Não existe divisão certa para todo casal — existe a que vocês combinaram e
+        conseguem manter. Um resumo de quando cada uma faz sentido:
+      </p>
+
+      <div class="mt-6 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800/60">
+          <h3 class="font-display text-base font-bold text-gray-900 dark:text-white">Proporcional</h3>
+          <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+            Salários bem diferentes. Cada um entra com o mesmo percentual da própria
+            renda, então o aperto do mês é igual para os dois.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800/60">
+          <h3 class="font-display text-base font-bold text-gray-900 dark:text-white">Meio a meio</h3>
+          <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+            Rendas parecidas. É o mais simples de fechar todo mês, e simplicidade
+            também vale — a divisão que ninguém faz não serve para nada.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800/60">
+          <h3 class="font-display text-base font-bold text-gray-900 dark:text-white">Caixa único</h3>
+          <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+            Tudo junto numa conta só, sem dividir nada. Pede muita confiança e uma
+            conversa aberta sobre gastos pessoais.
+          </p>
+        </div>
+      </div>
+
+      <p class="mt-6 leading-relaxed text-gray-700 dark:text-gray-200">
+        A fórmula passo a passo, o que entra e o que fica de fora da divisão e como
+        propor a mudança sem virar briga estão no guia
+        <a
+          href="/blog/dividir-contas-proporcional-ao-salario"
+          class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+          >dividir contas proporcional ao salário</a
+        >. Para comparar todos os modelos lado a lado, veja
+        <a
+          href="/blog/como-dividir-contas-casal"
+          class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+          >como dividir as contas do casal</a
+        >.
+      </p>
+
+      <div
+        class="mt-8 rounded-2xl border-l-4 border-pink-300 bg-pink-50 py-4 pl-5 pr-4 dark:border-pink-600 dark:bg-gray-800"
+      >
+        <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          <strong class="font-semibold text-gray-900 dark:text-white">Uma ressalva honesta:</strong>
+          a proporcional também tem limite. Se a diferença de renda for muito grande,
+          quem ganha mais pode acabar bancando um padrão de vida que sozinho não
+          escolheria — nesse caso, combinem um teto de gasto conjunto antes de aplicar
+          a proporção. E a calculadora não sabe de dívidas anteriores, de quem faz mais
+          tarefas em casa nem do que vocês já combinaram. Ela dá o número; o acordo é de
+          vocês.
+        </p>
+      </div>
+    </section>
+
+    <!-- Convite discreto ao app — uma vez só, sem promessa inflada. -->
+    <aside
+      aria-label="Sobre o Paca Finance"
+      class="mt-12 max-w-3xl rounded-2xl border border-gray-200 bg-gray-50 p-5 sm:p-6 dark:border-gray-700 dark:bg-gray-800/60"
+    >
+      <div class="flex items-start gap-4">
+        <img
+          src="/logo-icon-96.png"
+          alt=""
+          width="40"
+          height="40"
+          loading="lazy"
+          class="mt-0.5 h-10 w-10 shrink-0 rounded-xl"
+        />
+        <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          Essa conta muda todo mês, conforme os gastos entram. No
+          <a
+            href={`${APP_URL}/signup`}
+            class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+            >Paca Finance</a
+          >
+          ela se refaz sozinha: vocês registram os gastos compartilhados e o app aplica a
+          proporção que vocês combinaram. Continua dando para fazer na mão aqui todo mês —
+          o app só tira o trabalho de somar.
+        </p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
