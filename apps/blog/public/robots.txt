@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://blog.pacafinance.com/sitemap-index.xml
+Sitemap: https://blog.pacafinance.com.br/sitemap-index.xml

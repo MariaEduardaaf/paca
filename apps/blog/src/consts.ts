@@ -6,7 +6,7 @@ export const SITE_DESCRIPTION =
 // Single place to change the blog's public URL.
 // astro.config.mjs mirrors this logic (it runs before app code is available).
 export const SITE_URL: string =
-  import.meta.env.SITE_URL || "https://blog.pacafinance.com";
+  import.meta.env.SITE_URL || "https://blog.pacafinance.com.br";
 
 export const APP_URL = "https://paca-web-twmh.vercel.app";
 

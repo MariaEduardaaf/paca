@@ -5,7 +5,7 @@ import sitemap from "@astrojs/sitemap";
 
 // Single source of truth lives in src/consts.ts; this mirrors the same logic
 // because astro.config runs before the app code is available.
-const SITE_URL = process.env.SITE_URL || "https://blog.pacafinance.com";
+const SITE_URL = process.env.SITE_URL || "https://blog.pacafinance.com.br";
 
 export default defineConfig({
   site: SITE_URL,
