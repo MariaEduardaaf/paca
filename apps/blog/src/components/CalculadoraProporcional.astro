@@ -43,7 +43,7 @@
           type="text"
           maxlength="24"
           placeholder="Pessoa 1"
-          class="mt-1.5 w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+          class="mt-1.5 w-full rounded-xl border border-gray-500 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
         />
 
         <label for="renda1" class="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -63,13 +63,13 @@
             autocomplete="off"
             placeholder="3.000,00"
             aria-describedby="dica-renda1 erro-renda1"
-            class="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+            class="w-full rounded-xl border border-gray-500 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
           />
         </div>
         <p id="dica-renda1" class="mt-1.5 text-xs text-gray-600 dark:text-gray-400">
           O que cai na conta, depois dos descontos.
         </p>
-        <p id="erro-renda1" hidden class="mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300"></p>
+        <p id="erro-renda1" hidden aria-live="polite" class="mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300"></p>
       </fieldset>
 
       <fieldset class="mt-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
@@ -87,7 +87,7 @@
           type="text"
           maxlength="24"
           placeholder="Pessoa 2"
-          class="mt-1.5 w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+          class="mt-1.5 w-full rounded-xl border border-gray-500 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
         />
 
         <label for="renda2" class="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -107,13 +107,13 @@
             autocomplete="off"
             placeholder="5.000,00"
             aria-describedby="dica-renda2 erro-renda2"
-            class="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+            class="w-full rounded-xl border border-gray-500 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
           />
         </div>
         <p id="dica-renda2" class="mt-1.5 text-xs text-gray-600 dark:text-gray-400">
           Se a renda varia, use a média dos últimos 3 meses.
         </p>
-        <p id="erro-renda2" hidden class="mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300"></p>
+        <p id="erro-renda2" hidden aria-live="polite" class="mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300"></p>
       </fieldset>
 
       <div class="mt-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
@@ -134,20 +134,20 @@
             autocomplete="off"
             placeholder="4.200,00"
             aria-describedby="dica-despesas erro-despesas"
-            class="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+            class="w-full rounded-xl border border-gray-500 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
           />
         </div>
         <p id="dica-despesas" class="mt-1.5 text-xs text-gray-600 dark:text-gray-400">
           Só o que serve aos dois: aluguel, condomínio, luz, água, internet, mercado do mês.
         </p>
-        <p id="erro-despesas" hidden class="mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300"></p>
+        <p id="erro-despesas" hidden aria-live="polite" class="mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300"></p>
       </div>
 
       <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
         <button
           type="button"
           id="btn-exemplo"
-          class="rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-pink-300 hover:text-pink-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-500 dark:hover:text-pink-300"
+          class="rounded-xl border border-gray-500 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-pink-300 hover:text-pink-700 dark:border-gray-500 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-500 dark:hover:text-pink-300"
         >
           Preencher com o exemplo
         </button>
@@ -406,8 +406,12 @@
       var input = f[campo];
       var alvo = erro[campo];
       if (mensagem) {
-        alvo.textContent = mensagem;
+        // Mostra ANTES de escrever: uma região viva escondida não anuncia o
+        // que já está escrita nela quando reaparece. Revelar vazia e só então
+        // preencher é o que faz o leitor de tela falar o erro sem a pessoa
+        // precisar sair do campo.
         alvo.hidden = false;
+        alvo.textContent = mensagem;
         input.setAttribute("aria-invalid", "true");
         input.classList.add("border-pink-600", "dark:border-pink-400");
       } else {

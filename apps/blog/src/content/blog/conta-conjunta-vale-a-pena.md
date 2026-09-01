@@ -70,13 +70,11 @@ O **híbrido** é o meio-termo que mais aparece na prática, e por um bom motivo
 <figure class="diagram">
 <svg viewBox="0 0 640 240" role="img" aria-label="O que muda entre os três modelos: na conjunta total existe uma conta só, que recebe a renda dos dois e paga tudo; nas contas separadas cada um mantém a sua e acerta sua parte das despesas; no híbrido as duas contas individuais continuam existindo e ganham ao lado uma conta comum que paga só aluguel, mercado e contas.">
   <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">Quantas contas existem em cada modelo</text>
-
   <text class="d-muted" x="0" y="71" font-size="13" font-weight="600">Conjunta total</text>
   <rect class="d-track" x="130" y="40" width="510" height="52" rx="10" />
   <circle cx="150" cy="66" r="5" fill="#2F8F7C" />
   <text class="d-ink" x="164" y="62" font-size="14" font-weight="600">Uma conta só do casal</text>
   <text class="d-muted" x="164" y="80" font-size="13">A renda dos dois entra aqui e todas as despesas saem daqui</text>
-
   <text class="d-muted" x="0" y="137" font-size="13" font-weight="600">Contas separadas</text>
   <rect class="d-track" x="130" y="106" width="250" height="52" rx="10" />
   <circle cx="150" cy="132" r="5" fill="#E5647A" />
@@ -86,7 +84,6 @@ O **híbrido** é o meio-termo que mais aparece na prática, e por um bom motivo
   <circle cx="410" cy="132" r="5" fill="#DC9A3E" />
   <text class="d-ink" x="424" y="128" font-size="14" font-weight="600">Conta do outro</text>
   <text class="d-muted" x="424" y="146" font-size="13">Paga sua parte</text>
-
   <text class="d-muted" x="0" y="203" font-size="13" font-weight="600">Híbrido</text>
   <rect class="d-track" x="130" y="172" width="148" height="52" rx="10" />
   <circle cx="145" cy="198" r="5" fill="#E5647A" />

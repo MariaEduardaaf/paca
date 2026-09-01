@@ -48,19 +48,16 @@ Quem nunca morou sozinho costuma subestimar a lista. Os valores abaixo são um *
 <figure class="diagram">
 <svg viewBox="0 0 640 220" role="img" aria-label="No exemplo ilustrativo de R$ 4.750 por mês, moradia responde por 58% do custo da casa, comida por 29% e contas e itens de casa por 13%.">
   <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">Onde vão os R$ 4.750 da casa, por mês</text>
-
   <text class="d-ink" x="0" y="62" font-size="14">Moradia</text>
   <rect class="d-track" x="170" y="47" width="350" height="22" rx="11" />
   <rect x="170" y="47" width="202" height="22" rx="11" fill="#E5647A" />
   <text class="d-ink" x="640" y="63" font-size="14" font-weight="700" text-anchor="end">58%</text>
   <text class="d-muted" x="0" y="88" font-size="12">R$ 2.740 · aluguel, condomínio e IPTU</text>
-
   <text class="d-ink" x="0" y="122" font-size="14">Comida</text>
   <rect class="d-track" x="170" y="107" width="350" height="22" rx="11" />
   <rect x="170" y="107" width="103" height="22" rx="11" fill="#2F8F7C" />
   <text class="d-ink" x="640" y="123" font-size="14" font-weight="700" text-anchor="end">29%</text>
   <text class="d-muted" x="0" y="148" font-size="12">R$ 1.400 · mercado do mês, feira, padaria e açougue</text>
-
   <text class="d-ink" x="0" y="182" font-size="14">Contas e casa</text>
   <rect class="d-track" x="170" y="167" width="350" height="22" rx="11" />
   <rect x="170" y="167" width="45" height="22" rx="11" fill="#DC9A3E" />

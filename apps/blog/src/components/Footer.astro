@@ -9,9 +9,11 @@ const year = new Date().getFullYear();
   <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
     <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
       <div class="lg:col-span-2">
-        <a href="/" class="inline-flex items-center gap-2.5 rounded-xl" aria-label="Paca Finance — página inicial">
+        {/* Nome acessível contém o texto visível (WCAG 2.5.3) — ver Header. */}
+        <a href="/" class="inline-flex items-center gap-2.5 rounded-xl">
           <img src="/logo-icon-96.png" alt="" class="h-9 w-9 rounded-xl" width="36" height="36" loading="lazy" />
           <span class="font-display text-xl font-bold tracking-tight text-gray-800 dark:text-white">paca<span class="text-pink-500 dark:text-pink-300">finance</span></span>
+          <span class="sr-only">— página inicial</span>
         </a>
         <p class="mt-4 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-300">
           O app brasileiro para casais organizarem o dinheiro juntos: gastos
@@ -62,7 +64,7 @@ const year = new Date().getFullYear();
       </nav>
     </div>
 
-    <div class="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 pt-6 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
+    <div class="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 pt-6 text-sm text-gray-600 dark:border-gray-800 dark:text-gray-400">
       <p>© {year} Paca Finance. Todos os direitos reservados.</p>
       <a href="/rss.xml" class="rounded-lg transition-colors hover:text-pink-700 dark:hover:text-pink-300">RSS</a>
     </div>

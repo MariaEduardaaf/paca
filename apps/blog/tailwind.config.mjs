@@ -33,6 +33,13 @@ export default {
           300: "#DEE2E6",
           400: "#ADB5BD",
           500: "#868E96",
+          /*
+           * Degrau extra só para PLACEHOLDER em fundo claro. gray-500 dá 3,3:1
+           * sobre branco (reprova em AA — placeholder é texto), e gray-600 fica
+           * tão escuro que o campo parece já preenchido. #6C757D dá 4,7:1 e
+           * continua com cara de dica.
+           */
+          550: "#6C757D",
           600: "#495057",
           700: "#343A40",
           800: "#212529",

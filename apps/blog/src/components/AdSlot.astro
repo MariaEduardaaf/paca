@@ -21,7 +21,12 @@ const { placement, class: className = "" } = Astro.props;
       class={`ad-slot my-6 text-center ${className}`}
       data-placement={placement}
     >
-      <span class="mb-1 block text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500">
+      {/*
+        O rótulo "Publicidade" é exigência de transparência: precisa ser
+        legível, não um sussurro. gray-400 dava 2,1:1 sobre branco e
+        gray-500 dava 3,7:1 no tema escuro — os dois reprovavam em AA.
+      */}
+      <span class="mb-1 block text-[10px] uppercase tracking-widest text-gray-600 dark:text-gray-400">
         Publicidade
       </span>
       <ins

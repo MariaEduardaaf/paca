@@ -12,6 +12,7 @@ import ShareBox from "../components/ShareBox.astro";
 import { SITE_TITLE, SITE_URL, APP_URL } from "../consts";
 import { CATEGORIES } from "../lib/categories";
 import { COVER_PALETTES } from "../lib/covers";
+import { ctaFor } from "../lib/ctas";
 import type { BlogPost } from "../lib/posts";
 import {
   extractFaq,
@@ -31,6 +32,11 @@ const { title, description, pubDate, updatedDate, category } = post.data;
 const categoryInfo = CATEGORIES[category];
 const palette = COVER_PALETTES[category];
 const minutes = readingTimeMinutes(post.body);
+
+// CTA de produto escrito para a dor deste artigo (src/lib/ctas.ts). Slug sem
+// entrada devolve {} e o CTABox cai nos próprios defaults — artigo novo nunca
+// fica sem CTA.
+const cta = ctaFor(post.id);
 
 // Inline "Neste artigo" TOC, only for long pieces (NerdWallet pattern).
 const tocEntries = headings.filter((h) => h.depth === 2);
@@ -139,7 +145,7 @@ const faqJsonLd =
     class="mx-auto max-w-3xl px-4 py-10 sm:px-6"
     style={`--kc:${palette.kicker};--kcd:${palette.kickerDark}`}
   >
-    <nav aria-label="Trilha de navegação" class="text-sm text-gray-500 dark:text-gray-400">
+    <nav aria-label="Trilha de navegação" class="text-sm text-gray-600 dark:text-gray-400">
       <ol class="flex flex-wrap items-center gap-1">
         <li>
           <a href="/" class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">Início</a>
@@ -180,7 +186,7 @@ const faqJsonLd =
           <a href="/sobre" class="rounded font-semibold text-gray-800 hover:text-pink-700 dark:text-gray-100 dark:hover:text-pink-300">
             Equipe Paca Finance
           </a>
-          <span class="block text-gray-500 sm:inline dark:text-gray-400">
+          <span class="block text-gray-600 sm:inline dark:text-gray-400">
             <span class="hidden sm:inline" aria-hidden="true"> · </span>
             Publicado em <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
             {
@@ -211,7 +217,7 @@ const faqJsonLd =
           aria-labelledby="toc-title"
           class="mt-8 rounded-2xl border border-gray-100 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-800/60"
         >
-          <p id="toc-title" class="text-xs font-semibold uppercase tracking-[0.12em] text-gray-500 dark:text-gray-400">
+          <p id="toc-title" class="text-xs font-semibold uppercase tracking-[0.12em] text-gray-600 dark:text-gray-400">
             Neste artigo
           </p>
           <ol class="mt-3 space-y-2 text-[15px]">
@@ -269,9 +275,9 @@ const faqJsonLd =
       )
     }
 
-    <CTABox />
+    <CTABox {...cta} />
 
-    <p class="mt-12 border-t border-gray-100 pt-6 text-[13px] leading-relaxed text-gray-500 dark:border-gray-800 dark:text-gray-400">
+    <p class="mt-12 border-t border-gray-100 pt-6 text-[13px] leading-relaxed text-gray-600 dark:border-gray-800 dark:text-gray-400">
       Conteúdo editorial do blog do Paca Finance. Não é recomendação de
       investimento. Saiba como produzimos e revisamos nossos guias na
       <a href="/sobre#politica-editorial" class="rounded underline underline-offset-2 hover:text-pink-700 dark:hover:text-pink-300">política editorial</a>.

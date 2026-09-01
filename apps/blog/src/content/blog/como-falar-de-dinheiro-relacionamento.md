@@ -48,24 +48,17 @@ Dois cuidados nessa escada:
 <svg viewBox="0 0 640 330" role="img" aria-label="Escada dos marcos do relacionamento: a conversa sobre dinheiro se aprofunda a cada fase, do estilo de gasto no namoro sério até reserva e seguros quando chega filho, imóvel ou negócio. Morar junto e noivado são os degraus em que pular a conversa custa mais caro.">
   <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">A escada da conversa sobre dinheiro</text>
   <text class="d-muted" x="0" y="36" font-size="13">Rosa: o degrau mais crítico · Âmbar: o pulo mais perigoso</text>
-
   <text class="d-ink" x="64" y="214" font-size="13" text-anchor="middle">Estilo de gasto</text>
   <rect x="4" y="224" width="120" height="44" rx="10" fill="#2F8F7C" />
-
   <text class="d-ink" x="192" y="182" font-size="13" text-anchor="middle">Orçamento antes</text>
   <rect x="132" y="192" width="120" height="76" rx="10" fill="#2F8F7C" />
-
   <text class="d-ink" x="320" y="142" font-size="13" text-anchor="middle" font-weight="700">Salários na mesa</text>
   <rect x="260" y="152" width="120" height="116" rx="10" fill="#E5647A" />
-
   <text class="d-ink" x="448" y="102" font-size="13" text-anchor="middle" font-weight="700">Dívidas e bens</text>
   <rect x="388" y="112" width="120" height="156" rx="10" fill="#DC9A3E" />
-
   <text class="d-ink" x="576" y="62" font-size="13" text-anchor="middle">Reserva e seguros</text>
   <rect x="516" y="72" width="120" height="196" rx="10" fill="#2F8F7C" />
-
   <line class="d-rule" x1="0" y1="268" x2="640" y2="268" />
-
   <text class="d-muted" x="64" y="290" font-size="13" text-anchor="middle">Namoro sério</text>
   <text class="d-muted" x="192" y="290" font-size="13" text-anchor="middle">Primeira viagem</text>
   <text class="d-muted" x="320" y="290" font-size="13" text-anchor="middle">Morar junto</text>

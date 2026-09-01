@@ -84,7 +84,6 @@ Confere: R$ 1.575 + R$ 2.625 = R$ 4.200. ✓
 <figure class="diagram">
 <svg viewBox="0 0 640 300" role="img" aria-label="Comparação do peso das contas no salário: no método 50/50 Ana compromete 70% e Bruno 42%; na divisão proporcional os dois comprometem 52,5%.">
   <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">Quanto do salário de cada um vai para as contas</text>
-
   <text class="d-muted" x="0" y="56" font-size="13" font-weight="600" letter-spacing="1">50/50</text>
   <text class="d-ink" x="0" y="88" font-size="14">Ana</text>
   <rect class="d-track" x="120" y="74" width="440" height="20" rx="10" />
@@ -94,9 +93,7 @@ Confere: R$ 1.575 + R$ 2.625 = R$ 4.200. ✓
   <rect class="d-track" x="120" y="110" width="440" height="20" rx="10" />
   <rect x="120" y="110" width="185" height="20" rx="10" fill="#2F8F7C" />
   <text class="d-ink" x="640" y="125" font-size="14" font-weight="700" text-anchor="end">42%</text>
-
   <line class="d-rule" x1="0" y1="158" x2="640" y2="158" stroke-width="1" />
-
   <text class="d-muted" x="0" y="192" font-size="13" font-weight="600" letter-spacing="1">PROPORCIONAL</text>
   <text class="d-ink" x="0" y="224" font-size="14">Ana</text>
   <rect class="d-track" x="120" y="210" width="440" height="20" rx="10" />

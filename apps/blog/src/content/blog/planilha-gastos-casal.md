@@ -96,7 +96,6 @@ Sete categorias bastam. Com vinte, cada lançamento vira um debate filosófico s
 <figure class="diagram">
 <svg viewBox="0 0 640 296" role="img" aria-label="No mês de R$ 5.200, Ana deveria pagar R$ 3.120 mas pagou R$ 4.000, e Bruno deveria pagar R$ 2.080 mas pagou R$ 1.200; por isso Bruno transfere R$ 880 para Ana.">
   <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">Acerto do mês — despesas conjuntas de R$ 5.200</text>
-
   <text class="d-muted" x="0" y="52" font-size="13" font-weight="600" letter-spacing="1">ANA — 60%</text>
   <text class="d-ink" x="0" y="84" font-size="14">Pagou</text>
   <rect class="d-track" x="130" y="70" width="380" height="20" rx="10" />
@@ -106,7 +105,6 @@ Sete categorias bastam. Com vinte, cada lançamento vira um debate filosófico s
   <rect class="d-track" x="130" y="100" width="380" height="20" rx="10" />
   <rect x="130" y="100" width="296" height="20" rx="10" fill="#7A6BB5" />
   <text class="d-ink" x="522" y="115" font-size="14">R$ 3.120</text>
-
   <text class="d-muted" x="0" y="150" font-size="13" font-weight="600" letter-spacing="1">BRUNO — 40%</text>
   <text class="d-ink" x="0" y="182" font-size="14">Pagou</text>
   <rect class="d-track" x="130" y="168" width="380" height="20" rx="10" />
@@ -116,7 +114,6 @@ Sete categorias bastam. Com vinte, cada lançamento vira um debate filosófico s
   <rect class="d-track" x="130" y="198" width="380" height="20" rx="10" />
   <rect x="130" y="198" width="198" height="20" rx="10" fill="#7A6BB5" />
   <text class="d-ink" x="522" y="213" font-size="14">R$ 2.080</text>
-
   <line class="d-rule" x1="0" y1="244" x2="640" y2="244" />
   <rect x="0" y="266" width="14" height="14" rx="4" fill="#2F8F7C" />
   <text class="d-ink" x="26" y="278" font-size="14" font-weight="600">Bruno transfere R$ 880 para Ana — um Pix só, no fim do mês</text>

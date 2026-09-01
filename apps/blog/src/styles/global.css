@@ -24,13 +24,42 @@
     @apply bg-white font-body text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100;
   }
 
-  /* Visible focus ring everywhere, brand pink, AA in both themes */
+  /*
+   * Foco visível em tudo que recebe teclado.
+   *
+   * `outline` de verdade, não `ring`: o ring do Tailwind é box-shadow e o
+   * `ring-offset` precisa saber a cor do fundo ATRÁS do elemento. O blog tem
+   * campo branco dentro de cartão cinza dentro de seção cinza (calculadora) —
+   * ali o offset pintava um halo da cor errada. O outline nativo desenha por
+   * cima de qualquer fundo e ainda acompanha o border-radius nos navegadores
+   * atuais. Contraste do indicador (WCAG 1.4.11): pink-700 sobre branco 4,9:1;
+   * pink-300 sobre gray-900 8,7:1.
+   */
   :focus-visible {
-    @apply outline-none ring-2 ring-pink-700 ring-offset-2 ring-offset-white dark:ring-pink-300 dark:ring-offset-gray-900;
+    @apply outline outline-2 outline-offset-2 outline-pink-700 dark:outline-pink-300;
   }
 
   ::selection {
     @apply bg-pink-200 text-gray-900;
+  }
+
+  /*
+   * Quem pediu menos movimento no sistema não deve levar scroll animado nem
+   * transição de hover. `scroll-smooth` fica só para quem não pediu.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
@@ -136,15 +165,20 @@
   }
 
   .diagram figcaption {
-    @apply mt-3 text-sm text-gray-500 dark:text-gray-400;
+    @apply mt-3 text-sm text-gray-600 dark:text-gray-400;
   }
 
   .diagram .d-ink {
     fill: #212529;
   }
 
+  /*
+   * `d-muted` também rotula números dentro dos diagramas (12–13px), então
+   * precisa passar AA como texto: #868e96 dava 3,3:1 sobre branco. #495057 dá
+   * 8,2:1 e continua claramente mais fraco que a tinta principal.
+   */
   .diagram .d-muted {
-    fill: #868e96;
+    fill: #495057;
   }
 
   .diagram .d-track {

@@ -13,34 +13,30 @@ const NAV = [
 ---
 
 <header class="border-b border-gray-100 bg-white/90 backdrop-blur dark:border-gray-800 dark:bg-gray-900/90">
+  {/*
+    Ordem no DOM = ordem do Tab. No celular a navegação quebra para uma
+    segunda linha, ABAIXO do botão de tema e do CTA; se ela viesse antes no
+    HTML, o foco pularia do logo para a linha de baixo e voltaria para cima.
+    Por isso as ações vêm antes no HTML e o `order` só recoloca a navegação no
+    meio a partir de `lg`, onde tudo cabe numa linha só.
+  */}
   <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-4 sm:px-6">
-    <a href="/" class="flex shrink-0 items-center gap-2.5 rounded-xl" aria-label="Paca Finance — página inicial">
+    <a href="/" class="order-1 flex shrink-0 items-center gap-2.5 rounded-xl">
       <img src="/logo-icon-96.png" alt="" class="h-9 w-9 rounded-xl" width="36" height="36" />
       <span class="font-display text-xl font-bold tracking-tight text-gray-800 dark:text-white">paca<span class="text-pink-500 dark:text-pink-300">finance</span></span>
+      {/*
+        Sufixo em vez de aria-label: o nome acessível precisa CONTER o texto
+        visível (WCAG 2.5.3), senão quem comanda por voz diz "clicar
+        pacafinance" e nada acontece.
+      */}
+      <span class="sr-only">— página inicial</span>
     </a>
 
-    <nav aria-label="Navegação principal" class="order-3 w-full lg:order-none lg:w-auto">
-      <ul class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm font-medium">
-        {
-          NAV.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class="rounded py-1 text-gray-700 transition-colors hover:text-pink-700 dark:text-gray-200 dark:hover:text-pink-300"
-              >
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-
-    <div class="flex items-center gap-3">
+    <div class="order-2 flex items-center gap-3 lg:order-3">
       <button
         type="button"
         data-theme-toggle
-        aria-label="Alternar tema claro/escuro"
+        aria-label="Mudar para o tema escuro"
         class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition-colors hover:border-pink-300 hover:text-pink-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-600 dark:hover:text-pink-300"
       >
         {/* moon shown in light mode (click -> dark), sun shown in dark mode */}
@@ -60,19 +56,57 @@ const NAV = [
         Criar conta grátis
       </a>
     </div>
+
+    <nav aria-label="Navegação principal" class="order-3 w-full lg:order-2 lg:w-auto">
+      <ul class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm font-medium">
+        {
+          NAV.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="rounded py-1 text-gray-700 transition-colors hover:text-pink-700 dark:text-gray-200 dark:hover:text-pink-300"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
   </div>
 </header>
 
 {/* Tiny inline handler — the only client JS besides the no-flash snippet. */}
 <script is:inline>
-  document.querySelectorAll("[data-theme-toggle]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var isDark = document.documentElement.classList.toggle("dark");
-      try {
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-      } catch (_) {
-        /* storage unavailable */
-      }
+  (function () {
+    /*
+     * O botão é só ícone: o nome acessível é a ÚNICA pista do que ele faz.
+     * "Alternar tema claro/escuro" não diz para onde o clique leva — o rótulo
+     * aqui anuncia o destino e é reescrito a cada clique. Sem `aria-pressed`
+     * de propósito: com um rótulo que já muda de estado, o "pressionado" do
+     * leitor de tela vira ruído contraditório.
+     */
+    function rotular(btn, isDark) {
+      btn.setAttribute(
+        "aria-label",
+        isDark ? "Mudar para o tema claro" : "Mudar para o tema escuro",
+      );
+    }
+
+    document.querySelectorAll("[data-theme-toggle]").forEach(function (btn) {
+      rotular(btn, document.documentElement.classList.contains("dark"));
+
+      btn.addEventListener("click", function () {
+        var isDark = document.documentElement.classList.toggle("dark");
+        document.querySelectorAll("[data-theme-toggle]").forEach(function (b) {
+          rotular(b, isDark);
+        });
+        try {
+          localStorage.setItem("theme", isDark ? "dark" : "light");
+        } catch (_) {
+          /* storage unavailable */
+        }
+      });
     });
-  });
+  })();
 </script>

@@ -27,40 +27,33 @@ Leiam de novo: a maioria acha que conversa e, ainda assim, quase metade esconde 
 <figure class="diagram">
 <svg viewBox="0 0 640 242" role="img" aria-label="Os três dados da Serasa 2025 formam uma contradição: 65% dos casais dizem que falam abertamente sobre dinheiro, mas 49% já esconderam um problema financeiro do parceiro, e 53% apontam dinheiro como principal motivo de brigas — e a briga torna o assunto ainda mais difícil de abrir.">
   <text class="d-ink" x="0" y="14" font-size="15" font-weight="600">Os três números da Serasa contam uma contradição</text>
-
   <rect x="75" y="32" width="40" height="5" rx="2.5" fill="#2F8F7C" />
   <rect class="d-track" x="0" y="44" width="190" height="120" rx="12" />
   <text class="d-muted" x="95" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">1 · O QUE DIZEM</text>
   <text class="d-ink" x="95" y="110" font-size="28" font-weight="700" text-anchor="middle">65%</text>
   <text class="d-ink" x="95" y="134" font-size="13" text-anchor="middle">dizem que falam</text>
   <text class="d-ink" x="95" y="152" font-size="13" text-anchor="middle">abertamente sobre dinheiro</text>
-
   <text class="d-muted" x="209" y="92" font-size="11" font-weight="700" text-anchor="middle">mas</text>
   <rect class="d-muted" x="196" y="103" width="17" height="2" />
   <polygon class="d-muted" points="213,98 223,104 213,110" />
-
   <rect x="300" y="32" width="40" height="5" rx="2.5" fill="#7A6BB5" />
   <rect class="d-track" x="225" y="44" width="190" height="120" rx="12" />
   <text class="d-muted" x="320" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">2 · O QUE FAZEM</text>
   <text class="d-ink" x="320" y="110" font-size="28" font-weight="700" text-anchor="middle">49%</text>
   <text class="d-ink" x="320" y="134" font-size="13" text-anchor="middle">já esconderam um problema</text>
   <text class="d-ink" x="320" y="152" font-size="13" text-anchor="middle">financeiro do parceiro</text>
-
   <rect class="d-muted" x="421" y="103" width="17" height="2" />
   <polygon class="d-muted" points="438,98 448,104 438,110" />
-
   <rect x="525" y="32" width="40" height="5" rx="2.5" fill="#E5647A" />
   <rect class="d-track" x="450" y="44" width="190" height="120" rx="12" />
   <text class="d-muted" x="545" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">3 · O RESULTADO</text>
   <text class="d-ink" x="545" y="110" font-size="28" font-weight="700" text-anchor="middle">53%</text>
   <text class="d-ink" x="545" y="134" font-size="13" text-anchor="middle">apontam dinheiro como o</text>
   <text class="d-ink" x="545" y="152" font-size="13" text-anchor="middle">principal motivo de brigas</text>
-
   <rect class="d-muted" x="544" y="164" width="2" height="44" />
   <rect class="d-muted" x="95" y="206" width="451" height="2" />
   <rect class="d-muted" x="94" y="178" width="2" height="30" />
   <polygon class="d-muted" points="89,178 99,178 94,169" />
-
   <text class="d-muted" x="320" y="230" font-size="13" text-anchor="middle">e o assunto que importa fica ainda mais difícil — a volta recomeça</text>
 </svg>
 <figcaption>Os três dados da Serasa (2025) não são estatísticas soltas: 65% dizem que falam abertamente sobre dinheiro, mas 49% já esconderam um problema do parceiro e 53% apontam dinheiro como principal motivo de briga — o casal acha que conversa, e o assunto que pesa continua de fora.</figcaption>

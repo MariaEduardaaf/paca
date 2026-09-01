@@ -51,25 +51,19 @@ Ana recebe R$ 4.500 líquidos e Bruno, R$ 3.500. Renda conjunta: **R$ 8.000**. A
 <svg viewBox="0 0 640 230" role="img" aria-label="Com renda conjunta de R$ 8.000, os baldes ficam em R$ 4.000 para necessidades, R$ 2.400 para desejos e R$ 1.600 para objetivos; os dois primeiros funcionam como teto do mês e o terceiro como piso.">
   <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">Renda conjunta de R$ 8.000 dividida em três baldes</text>
   <text class="d-muted" x="0" y="38" font-size="13">Ana R$ 4.500 + Bruno R$ 3.500 = R$ 8.000 líquidos</text>
-
   <rect x="0" y="54" width="312" height="42" rx="10" fill="#E5647A" />
   <rect x="320" y="54" width="187" height="42" rx="10" fill="#DC9A3E" />
   <rect x="515" y="54" width="125" height="42" rx="10" fill="#2F8F7C" />
-
   <text class="d-ink" x="0" y="122" font-size="14" font-weight="600">Necessidades</text>
   <text class="d-ink" x="0" y="146" font-size="17" font-weight="700">R$ 4.000</text>
   <text class="d-muted" x="0" y="168" font-size="13">50% da renda</text>
-
   <text class="d-ink" x="320" y="122" font-size="14" font-weight="600">Desejos</text>
   <text class="d-ink" x="320" y="146" font-size="17" font-weight="700">R$ 2.400</text>
   <text class="d-muted" x="320" y="168" font-size="13">30% da renda</text>
-
   <text class="d-ink" x="515" y="122" font-size="14" font-weight="600">Objetivos</text>
   <text class="d-ink" x="515" y="146" font-size="17" font-weight="700">R$ 1.600</text>
   <text class="d-muted" x="515" y="168" font-size="13">20% da renda</text>
-
   <line class="d-rule" x1="0" y1="188" x2="640" y2="188" stroke-width="1" />
-
   <text class="d-ink" x="0" y="212" font-size="13" font-weight="600">Teto do mês</text>
   <text class="d-ink" x="320" y="212" font-size="13" font-weight="600">Teto do mês</text>
   <text class="d-ink" x="515" y="212" font-size="13" font-weight="600">Piso do mês</text>

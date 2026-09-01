@@ -114,7 +114,13 @@ const ogImageUrl = new URL(ogImage, SITE_URL).href;
   <body class="flex min-h-full flex-col bg-white dark:bg-gray-900">
     <a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
     <Header />
-    <main id="conteudo" class="flex-1">
+    {/*
+      `tabindex="-1"` no alvo do link de pular: sem isso o Safari só rola a
+      página e devolve o Tab para o topo do cabeçalho — o link parece funcionar
+      e não funciona. Como o foco aqui é programático, o `:focus-visible` não
+      dispara e nenhum contorno estranho aparece.
+    */}
+    <main id="conteudo" tabindex="-1" class="flex-1 focus:outline-none">
       <slot />
     </main>
     <Footer />

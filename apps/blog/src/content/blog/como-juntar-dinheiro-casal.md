@@ -30,19 +30,16 @@ E se a meta de vocês for morar junto, cuidado com o valor total: além do prime
 <figure class="diagram">
 <svg viewBox="0 0 640 240" role="img" aria-label="Aporte mensal de três metas: a viagem de R$ 12.000 em 18 meses pede R$ 667 por mês, o casamento de R$ 40.000 em 30 meses pede R$ 1.334 e a entrada do apê de R$ 60.000 em 48 meses pede R$ 1.250 — o prazo pesa tanto quanto o tamanho do sonho.">
   <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">Valor total ÷ prazo = quanto sai da renda todo mês</text>
-
   <text class="d-ink" x="0" y="62" font-size="14">Viagem</text>
   <text class="d-muted" x="0" y="80" font-size="13">R$ 12.000 ÷ 18 meses</text>
   <rect class="d-track" x="250" y="54" width="305" height="22" rx="10" />
   <rect x="250" y="54" width="153" height="22" rx="10" fill="#E5647A" />
   <text class="d-ink" x="570" y="70" font-size="14" font-weight="700">R$ 667</text>
-
   <text class="d-ink" x="0" y="134" font-size="14">Casamento</text>
   <text class="d-muted" x="0" y="152" font-size="13">R$ 40.000 ÷ 30 meses</text>
   <rect class="d-track" x="250" y="126" width="305" height="22" rx="10" />
   <rect x="250" y="126" width="305" height="22" rx="10" fill="#DC9A3E" />
   <text class="d-ink" x="570" y="142" font-size="14" font-weight="700">R$ 1.334</text>
-
   <text class="d-ink" x="0" y="206" font-size="14">Entrada do apê</text>
   <text class="d-muted" x="0" y="224" font-size="13">R$ 60.000 ÷ 48 meses</text>
   <rect class="d-track" x="250" y="198" width="305" height="22" rx="10" />

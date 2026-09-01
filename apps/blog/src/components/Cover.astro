@@ -39,11 +39,17 @@ const watermarkFont = watermarkSize(palette.word, 190);
 ---
 
 <!-- Decorative duotone cover: two category colors + ink watermark. -->
+{/*
+  Sem `role="img"`: a capa é decorativa (a informação está no título ao lado),
+  e `role="img"` sem nome acessível é justamente o que os validadores apontam.
+  `aria-hidden` sozinho já diz o que ela é. `focusable="false"` porque SVG
+  entra no tab order de navegadores antigos.
+*/}
 <svg
   class={className}
   viewBox="0 0 1200 675"
-  role="img"
   aria-hidden="true"
+  focusable="false"
   preserveAspectRatio="xMidYMid slice"
 >
   <rect width="1200" height="675" fill={palette.bg}></rect>
