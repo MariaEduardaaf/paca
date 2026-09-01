@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
+import AdSlot from "../components/AdSlot.astro";
 import CTABox from "../components/CTABox.astro";
 import Cover from "../components/Cover.astro";
 import PostCard from "../components/PostCard.astro";
@@ -178,6 +179,9 @@ const faqJsonLd =
         </p>
       </div>
 
+      {/* Primeira dobra, junto do título — o slot de maior valor (ESTRATEGIA §5). */}
+      <AdSlot placement="first-fold" />
+
       <div class="mt-8 overflow-hidden rounded-2xl">
         <Cover category={category} slug={post.id} class="aspect-video w-full" />
       </div>
@@ -211,6 +215,8 @@ const faqJsonLd =
     <div class="prose-paca mt-10">
       <Content />
     </div>
+
+    <AdSlot placement="in-content" />
 
     <CTABox />
 

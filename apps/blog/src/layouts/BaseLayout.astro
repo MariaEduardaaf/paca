@@ -3,6 +3,7 @@ import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from "../consts";
+import { ADSENSE_CLIENT, ADS_ENABLED } from "../lib/monetization";
 
 interface Props {
   /** Page title (without the "| Paca Finance" suffix). */
@@ -92,6 +93,21 @@ const ogImageUrl = new URL(ogImage, SITE_URL).href;
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    {/* Rede de anúncio — só carrega quando PUBLIC_ADSENSE_CLIENT existir (lib/monetization.ts). */}
+    {
+      ADS_ENABLED && (
+        <script
+          is:inline
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossorigin="anonymous"
+        />
+      )
+    }
+
+    {/* Fase 1 (docs/arbitragem/PLANO-DE-ACAO.md): a tag de medição "Caju" e o
+        Meta Pixel entram AQUI quando a dona passar os snippets/IDs. */}
 
     <slot name="head" />
   </head>

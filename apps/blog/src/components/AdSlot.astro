@@ -1,0 +1,39 @@
+---
+import { ADSENSE_CLIENT, ADS_ENABLED } from "../lib/monetization";
+
+/**
+ * One ad placement. Network-agnostic call site: pages declare WHERE ads live
+ * ("first-fold", "in-content"); what actually renders is decided here.
+ * Renders nothing until monetization is configured (see lib/monetization.ts).
+ */
+interface Props {
+  /** Placement id — becomes data-placement for measurement/debugging. */
+  placement: "first-fold" | "in-content";
+  class?: string;
+}
+
+const { placement, class: className = "" } = Astro.props;
+---
+
+{
+  ADS_ENABLED && (
+    <div
+      class={`ad-slot my-6 text-center ${className}`}
+      data-placement={placement}
+    >
+      <span class="mb-1 block text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500">
+        Publicidade
+      </span>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+      <script is:inline>
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  )
+}
