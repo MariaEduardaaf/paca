@@ -1,0 +1,169 @@
+---
+// RASCUNHO PARA REVISÃO DA DONA — documento jurídico.
+// Descreve exatamente o que o BLOG coleta hoje (e-mail da newsletter) e o que
+// passa a valer quando os anúncios e a medição forem ligados. Ao ativar
+// AdSense/Pixel, conferir se as seções correspondentes continuam verdadeiras.
+// O app tem a política dele em APP_URL/privacy; este documento cobre o blog.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { APP_URL, SITE_URL } from "../consts";
+
+const atualizadoEm = "1º de setembro de 2026";
+---
+
+<BaseLayout
+  title="Política de Privacidade"
+  description="Como o blog do Paca Finance trata seus dados: newsletter, cookies de publicidade e seus direitos sob a LGPD."
+>
+  <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <h1 class="font-display text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
+      Política de Privacidade
+    </h1>
+    <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+      Atualizada em {atualizadoEm} · Aplica-se ao blog em {SITE_URL.replace("https://", "")}
+    </p>
+
+    <div class="prose-paca mt-8">
+      <p>
+        Esta política explica o que fazemos com os seus dados quando você lê os
+        artigos deste blog ou assina a nossa newsletter. Ela cobre
+        <strong>apenas o blog</strong>. O aplicativo Paca Finance tem a própria
+        política, que trata dos dados financeiros da sua conta:
+        <a href={`${APP_URL}/privacy`}>ver a política do aplicativo</a>.
+      </p>
+
+      <h2>Quem é responsável pelos seus dados</h2>
+      <p>
+        O blog é mantido pela equipe do Paca Finance, que é a controladora dos
+        dados descritos aqui. Para qualquer pedido relacionado a privacidade —
+        acesso, correção, exclusão ou dúvidas — fale com a gente pelo
+        <a href={`${APP_URL}/support`}>canal de suporte</a>.
+      </p>
+
+      <h2>O que coletamos, e por quê</h2>
+
+      <h3>Se você assinar a newsletter</h3>
+      <p>Guardamos somente o necessário para conseguir te enviar os e-mails:</p>
+      <ul>
+        <li><strong>Seu e-mail.</strong> É o endereço para onde o conteúdo vai.</li>
+        <li>
+          <strong>O registro do seu consentimento e a data em que ele foi
+          dado.</strong> É a prova de que você autorizou o envio, exigida pela LGPD.
+        </li>
+        <li>
+          <strong>O artigo em que você se inscreveu.</strong> Serve para
+          entendermos que conteúdo leva as pessoas a assinar.
+        </li>
+        <li>
+          <strong>Um código de descadastro.</strong> É o que faz o link de "sair
+          da lista" funcionar sem exigir login ou senha.
+        </li>
+      </ul>
+      <p>
+        <strong>Não guardamos</strong> seu nome, seu endereço de IP nem
+        informações do seu navegador junto com a inscrição.
+      </p>
+      <p>
+        <strong>Base legal:</strong> o seu consentimento, dado ao marcar a caixa
+        de seleção no formulário — que nunca vem marcada de antemão. Você pode
+        retirá-lo a qualquer momento, e retirar não afeta os envios que já
+        aconteceram.
+      </p>
+      <p>
+        <strong>Por quanto tempo:</strong> enquanto você quiser receber. Ao se
+        descadastrar, paramos os envios imediatamente e mantemos apenas o
+        registro mínimo de que houve uma baixa, para não te inscrevermos de novo
+        por engano.
+      </p>
+      <p>
+        <strong>Esta lista é separada do aplicativo.</strong> Os e-mails da
+        newsletter ficam numa base própria, que ninguém com conta no app
+        consegue acessar, e não são cruzados com os dados financeiros de quem
+        usa o Paca Finance.
+      </p>
+
+      <h3>Se você apenas ler os artigos</h3>
+      <p>
+        Não pedimos cadastro para ler. A sua preferência de tema (claro ou
+        escuro) fica guardada no seu próprio navegador e não chega até nós.
+        Como qualquer site na internet, nosso provedor de hospedagem registra
+        acessos (endereço de IP e tipo de navegador) por motivo de segurança e
+        funcionamento.
+      </p>
+
+      <h2>Publicidade</h2>
+      <p>
+        Este blog exibe anúncios do <strong>Google AdSense</strong>. Para isso, o
+        Google e seus parceiros usam cookies e identificadores no seu navegador,
+        inclusive para mostrar anúncios com base nas suas visitas a este e a
+        outros sites.
+      </p>
+      <p>
+        A gente <strong>não envia o seu e-mail nem qualquer dado da newsletter
+        para anunciantes</strong>, e não vendemos os seus dados. O que existe é o
+        uso de cookies pelas redes de anúncio, descrito acima.
+      </p>
+      <p>
+        Você pode desativar a publicidade personalizada nas
+        <a href="https://www.google.com/settings/ads" rel="noopener noreferrer" target="_blank">configurações de anúncios do Google</a>
+        ou gerenciar cookies de terceiros no
+        <a href="https://www.aboutads.info/choices/" rel="noopener noreferrer" target="_blank">aboutads.info</a>.
+        Saiba mais em
+        <a href="https://policies.google.com/technologies/partner-sites" rel="noopener noreferrer" target="_blank">como o Google usa dados de sites parceiros</a>.
+      </p>
+
+      <h2>Medição de audiência</h2>
+      <p>
+        Usamos ferramentas de medição para entender quantas pessoas leem cada
+        artigo e de onde elas vêm. Esses serviços podem usar cookies. O objetivo
+        é editorial e de desempenho: saber que conteúdo é útil e quanto custa
+        levar alguém até ele. Quando divulgamos artigos em redes sociais,
+        essas plataformas também podem registrar a visita para medir os
+        resultados da divulgação.
+      </p>
+
+      <h2>Com quem os dados são compartilhados</h2>
+      <ul>
+        <li>
+          <strong>Nosso provedor de infraestrutura</strong>, que hospeda o site e
+          armazena a lista da newsletter em nosso nome.
+        </li>
+        <li>
+          <strong>Redes de publicidade e medição</strong>, nos termos das duas
+          seções acima — que recebem dados de navegação por meio de cookies, não
+          a nossa lista de e-mails.
+        </li>
+      </ul>
+      <p>
+        Parte desses serviços fica fora do Brasil, então pode haver
+        transferência internacional de dados, sempre limitada às finalidades
+        descritas aqui.
+      </p>
+
+      <h2>Seus direitos</h2>
+      <p>
+        A LGPD te dá o direito de confirmar se tratamos dados seus, acessá-los,
+        corrigi-los, pedir a exclusão, revogar o consentimento e saber com quem
+        compartilhamos. Para exercer qualquer um deles, é só falar com a gente
+        pelo <a href={`${APP_URL}/support`}>suporte</a>.
+      </p>
+      <p>
+        Para sair da newsletter, você não precisa pedir nada a ninguém: use o
+        link de descadastro que vai em todo e-mail, ou a nossa
+        <a href="/descadastro">página de descadastro</a>.
+      </p>
+
+      <h2>Crianças e adolescentes</h2>
+      <p>
+        O conteúdo é dirigido a adultos. Não coletamos intencionalmente dados de
+        menores de 18 anos. Se isso acontecer, apague pelo link de descadastro ou
+        avise a gente que removemos.
+      </p>
+
+      <h2>Mudanças nesta política</h2>
+      <p>
+        Se mudarmos alguma coisa relevante, atualizamos a data no topo desta
+        página. Vale a versão publicada aqui.
+      </p>
+    </div>
+  </div>
+</BaseLayout>
