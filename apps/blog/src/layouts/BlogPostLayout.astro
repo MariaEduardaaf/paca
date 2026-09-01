@@ -6,6 +6,7 @@ import BaseLayout from "./BaseLayout.astro";
 import AdSlot from "../components/AdSlot.astro";
 import CTABox from "../components/CTABox.astro";
 import Cover from "../components/Cover.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
 import PostCard from "../components/PostCard.astro";
 import { SITE_TITLE, SITE_URL, APP_URL } from "../consts";
 import { CATEGORIES } from "../lib/categories";
@@ -246,6 +247,10 @@ const faqJsonLd =
         </section>
       )
     }
+
+    {/* Captura de e-mail no fim do artigo: é aqui que a intenção existe
+        (ESTRATEGIA §6). `source` = slug, para saber que conteúdo converte. */}
+    <NewsletterForm source={post.id} />
 
     <p class="mt-12 border-t border-gray-100 pt-6 text-[13px] leading-relaxed text-gray-500 dark:border-gray-800 dark:text-gray-400">
       Conteúdo editorial do blog do Paca Finance. Não é recomendação de

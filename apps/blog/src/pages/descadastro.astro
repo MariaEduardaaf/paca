@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { APP_URL } from "../consts";
+
+/**
+ * Fallback humano do descadastro.
+ *
+ * O link do rodapé de cada e-mail leva DIRETO para a função
+ * `blog-unsubscribe?token=...`, que já remove a pessoa da lista e devolve a
+ * página de confirmação. Esta página existe para quem não tem mais o e-mail em
+ * mãos, para quem clicou no link do rodapé do blog, e para deixar por escrito
+ * o que fazemos com o endereço (LGPD).
+ */
+---
+
+<BaseLayout
+  title="Descadastro da newsletter"
+  description="Como sair da lista de e-mails do blog do Paca Finance: o link de descadastro, o que fazer se você não tem mais o e-mail e como falar com a gente."
+>
+  <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <h1 class="font-display text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
+      Sair da lista de e-mails
+    </h1>
+
+    <p class="mt-3 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+      Você entra quando quer e sai quando quiser. Sem formulário longo, sem
+      perguntar o motivo.
+    </p>
+
+    <div class="prose-paca mt-8">
+      <h2>O jeito mais rápido</h2>
+      <p>
+        Abra qualquer e-mail que você recebeu da gente e clique em
+        <strong>“Cancelar inscrição”</strong>, lá no rodapé. Esse link já é o seu
+        — ele tira o seu endereço da lista na hora e mostra uma página
+        confirmando. Não precisa responder ao e-mail nem esperar aprovação.
+      </p>
+
+      <h2>Perdi o e-mail. E agora?</h2>
+      <p>
+        Sem problema: escreva para a gente pelo
+        <a href={`${APP_URL}/support`}>suporte do Paca Finance</a> a partir do
+        mesmo endereço que recebe a newsletter, pedindo o descadastro. A gente
+        remove manualmente e confirma a remoção. Pedimos que use o mesmo
+        endereço só para ter certeza de que a solicitação é sua.
+      </p>
+
+      <h2>O que acontece com o seu e-mail</h2>
+      <ul>
+        <li>
+          Ele sai da lista de envios <strong>imediatamente</strong>. Os próximos
+          e-mails não vão mais para você.
+        </li>
+        <li>
+          A lista da newsletter do blog é <strong>separada da sua conta no app
+          Paca Finance</strong>. Sair da newsletter não apaga, não altera e não
+          afeta em nada os seus dados no aplicativo — e o contrário também vale.
+        </li>
+        <li>
+          Você pode voltar depois, se quiser: é só assinar de novo em qualquer
+          artigo do blog, marcando o consentimento outra vez.
+        </li>
+      </ul>
+
+      <h2>Seus direitos</h2>
+      <p>
+        Além de sair da lista, você pode pedir a confirmação, a correção ou a
+        exclusão dos seus dados a qualquer momento, como prevê a LGPD. O caminho
+        é o mesmo: <a href={`${APP_URL}/support`}>fale com o suporte</a>. Os
+        detalhes de como tratamos e guardamos essas informações estão na
+        <a href={`${APP_URL}/privacy`}>Política de Privacidade</a>.
+      </p>
+    </div>
+
+    <p class="mt-10 border-t border-gray-100 pt-6 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
+      <a href="/blog" class="rounded underline underline-offset-2 hover:text-pink-700 dark:hover:text-pink-300">
+        Voltar para os artigos
+      </a>
+    </p>
+  </div>
+</BaseLayout>

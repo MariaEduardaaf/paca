@@ -4,6 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import PostCard from "../components/PostCard.astro";
 import CTABox from "../components/CTABox.astro";
 import Cover from "../components/Cover.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
 import { SITE_DESCRIPTION } from "../consts";
 import { formatDate, readingTimeMinutes, sortByDateDesc } from "../lib/posts";
 import { CATEGORIES } from "../lib/categories";
@@ -106,9 +107,12 @@ const featuredMinutes = readingTimeMinutes(featured.body);
           Ver todos os artigos →
         </a>
       </div>
-      <div class="mt-8 grid gap-8 pb-10 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {latest.map((post) => <PostCard post={post} headingLevel="h3" showExcerpt={false} />)}
       </div>
     </section>
+
+    <!-- Uma única captura na home, longe do CTABox para não disputar com ele -->
+    <NewsletterForm source="home" class="mb-14" />
   </div>
 </BaseLayout>
