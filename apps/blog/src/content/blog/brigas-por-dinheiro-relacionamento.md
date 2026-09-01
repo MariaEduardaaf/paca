@@ -17,30 +17,31 @@ Neste artigo, vocês vão ver o que os números dizem sobre conflito financeiro 
 
 Uma pesquisa da Serasa de 2025 colocou números nessa sensação: [53% dos casais brasileiros apontam dinheiro como o principal motivo de brigas](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) no relacionamento. Mais da metade.
 
-O mesmo levantamento traz dois dados que explicam *por que* isso acontece:
+O mesmo levantamento traz dois dados que explicam *por que* isso acontece — e eles se contradizem:
 
-- **66% dos casais nunca conversaram abertamente sobre dinheiro** (Serasa, 2025);
+- **65% dos casais dizem que falam abertamente sobre dinheiro** (Serasa, 2025);
 - **49% já esconderam algum problema financeiro do parceiro** (Serasa, 2025).
 
-Juntem as três estatísticas e o ciclo aparece inteiro: ninguém fala sobre dinheiro → alguém esconde um gasto ou uma dívida → o outro descobre → briga → falar sobre dinheiro fica ainda mais difícil → alguém esconde de novo. O problema raramente é a falta de dinheiro; é a falta de conversa. Casal com salário apertado e combinados claros briga menos que casal com renda folgada e silêncio total.
+Leiam de novo: a maioria acha que conversa e, ainda assim, quase metade esconde — e mais da metade briga. As duas coisas são verdade ao mesmo tempo porque a conversa que existe é a da rotina ("quanto foi o mercado?", "você pagou a luz?"), não a que pesa: a dívida, o medo de faltar, o que cada um espera do futuro. Aí o ciclo aparece inteiro: o assunto difícil fica de fora → alguém esconde um gasto ou uma dívida → o outro descobre → briga → tocar no assunto fica ainda mais arriscado → alguém esconde de novo. O problema raramente é a falta de dinheiro; é a falta da conversa certa. Casal com salário apertado e combinados claros briga menos que casal com renda folgada e assunto que ninguém abre.
 
 <figure class="diagram">
-<svg viewBox="0 0 640 242" role="img" aria-label="Os três dados da Serasa 2025 formam um ciclo: 66% dos casais nunca conversaram abertamente sobre dinheiro, 49% já esconderam um problema financeiro e 53% apontam dinheiro como principal motivo de brigas — e a briga torna a próxima conversa ainda mais difícil.">
-  <text class="d-ink" x="0" y="14" font-size="15" font-weight="600">Os três números da Serasa são o mesmo ciclo</text>
+<svg viewBox="0 0 640 242" role="img" aria-label="Os três dados da Serasa 2025 formam uma contradição: 65% dos casais dizem que falam abertamente sobre dinheiro, mas 49% já esconderam um problema financeiro do parceiro, e 53% apontam dinheiro como principal motivo de brigas — e a briga torna o assunto ainda mais difícil de abrir.">
+  <text class="d-ink" x="0" y="14" font-size="15" font-weight="600">Os três números da Serasa contam uma contradição</text>
 
   <rect x="75" y="32" width="40" height="5" rx="2.5" fill="#2F8F7C" />
   <rect class="d-track" x="0" y="44" width="190" height="120" rx="12" />
-  <text class="d-muted" x="95" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">1 · SILÊNCIO</text>
-  <text class="d-ink" x="95" y="110" font-size="28" font-weight="700" text-anchor="middle">66%</text>
-  <text class="d-ink" x="95" y="134" font-size="13" text-anchor="middle">nunca conversaram</text>
+  <text class="d-muted" x="95" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">1 · O QUE DIZEM</text>
+  <text class="d-ink" x="95" y="110" font-size="28" font-weight="700" text-anchor="middle">65%</text>
+  <text class="d-ink" x="95" y="134" font-size="13" text-anchor="middle">dizem que falam</text>
   <text class="d-ink" x="95" y="152" font-size="13" text-anchor="middle">abertamente sobre dinheiro</text>
 
+  <text class="d-muted" x="209" y="92" font-size="11" font-weight="700" text-anchor="middle">mas</text>
   <rect class="d-muted" x="196" y="103" width="17" height="2" />
   <polygon class="d-muted" points="213,98 223,104 213,110" />
 
   <rect x="300" y="32" width="40" height="5" rx="2.5" fill="#7A6BB5" />
   <rect class="d-track" x="225" y="44" width="190" height="120" rx="12" />
-  <text class="d-muted" x="320" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">2 · SEGREDO</text>
+  <text class="d-muted" x="320" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">2 · O QUE FAZEM</text>
   <text class="d-ink" x="320" y="110" font-size="28" font-weight="700" text-anchor="middle">49%</text>
   <text class="d-ink" x="320" y="134" font-size="13" text-anchor="middle">já esconderam um problema</text>
   <text class="d-ink" x="320" y="152" font-size="13" text-anchor="middle">financeiro do parceiro</text>
@@ -50,7 +51,7 @@ Juntem as três estatísticas e o ciclo aparece inteiro: ninguém fala sobre din
 
   <rect x="525" y="32" width="40" height="5" rx="2.5" fill="#E5647A" />
   <rect class="d-track" x="450" y="44" width="190" height="120" rx="12" />
-  <text class="d-muted" x="545" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">3 · BRIGA</text>
+  <text class="d-muted" x="545" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">3 · O RESULTADO</text>
   <text class="d-ink" x="545" y="110" font-size="28" font-weight="700" text-anchor="middle">53%</text>
   <text class="d-ink" x="545" y="134" font-size="13" text-anchor="middle">apontam dinheiro como o</text>
   <text class="d-ink" x="545" y="152" font-size="13" text-anchor="middle">principal motivo de brigas</text>
@@ -60,12 +61,12 @@ Juntem as três estatísticas e o ciclo aparece inteiro: ninguém fala sobre din
   <rect class="d-muted" x="94" y="178" width="2" height="30" />
   <polygon class="d-muted" points="89,178 99,178 94,169" />
 
-  <text class="d-muted" x="320" y="230" font-size="13" text-anchor="middle">e falar de dinheiro fica ainda mais difícil — o ciclo recomeça</text>
+  <text class="d-muted" x="320" y="230" font-size="13" text-anchor="middle">e o assunto que importa fica ainda mais difícil — a volta recomeça</text>
 </svg>
-<figcaption>Os três dados da Serasa (2025) não são estatísticas soltas: o silêncio de 66% alimenta o segredo de 49%, que alimenta a briga de 53% — e a briga fecha a volta.</figcaption>
+<figcaption>Os três dados da Serasa (2025) não são estatísticas soltas: 65% dizem que falam abertamente sobre dinheiro, mas 49% já esconderam um problema do parceiro e 53% apontam dinheiro como principal motivo de briga — o casal acha que conversa, e o assunto que pesa continua de fora.</figcaption>
 </figure>
 
-A boa notícia embutida aí: se a causa é o silêncio, a solução está ao alcance de qualquer casal — não depende de ganhar mais.
+A boa notícia embutida aí: se o que falta não é dinheiro, e sim a conversa que importa, a solução está ao alcance de qualquer casal — não depende de ganhar mais.
 
 ## As 5 causas reais por trás das brigas (não é falta de dinheiro)
 
@@ -145,7 +146,7 @@ Um sinal simples de que a ajuda externa vale a pena: se depois de três check-in
 
 ### Por que casais brigam tanto por dinheiro?
 
-Porque dinheiro carrega significado emocional: segurança, liberdade, status, medo de faltar. Quando os dois têm valores diferentes e nunca conversaram sobre eles — situação de 66% dos casais brasileiros, segundo a Serasa (2025) —, cada gasto vira um teste silencioso, e qualquer fatura pode acender a discussão. A briga aparente é sobre a compra; a briga real é sobre expectativas que nunca foram ditas em voz alta.
+Porque dinheiro carrega significado emocional: segurança, liberdade, status, medo de faltar. E a maioria acredita que já resolveu isso conversando: 65% dos casais dizem que falam abertamente sobre dinheiro, segundo a Serasa (2025) — mas 49% já esconderam um problema financeiro do parceiro. Ou seja, o que se conversa é a rotina, não os valores e as dívidas; enquanto eles ficam de fora, cada gasto vira um teste silencioso, e qualquer fatura pode acender a discussão. A briga aparente é sobre a compra; a briga real é sobre expectativas que nunca foram ditas em voz alta.
 
 ### Dinheiro pode acabar com um relacionamento?
 

@@ -9,13 +9,13 @@ draft: false
 
 Alugar o apartamento, escolher o sofá, combinar quem fica com qual lado do guarda-roupa — a mudança vem com uma lista enorme de decisões gostosas de tomar. A divisão das despesas quase nunca está entre elas. E é esse combinado, feito (ou não feito) no primeiro mês, que define se a vida a dois vai ser leve ou vai acumular ressentimento a cada boleto.
 
-Os números explicam a urgência: [53% dos casais brasileiros apontam o dinheiro como principal motivo de brigas, e 66% nunca conversaram abertamente sobre o assunto](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) (Serasa, 2025). Traduzindo: a maioria briga exatamente por aquilo sobre o qual nunca combinou nada.
+Os números explicam a urgência: [65% dos casais brasileiros dizem que falam abertamente sobre dinheiro — e, ainda assim, 53% apontam o dinheiro como principal motivo de briga e 49% já esconderam um problema financeiro do parceiro](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) (Serasa, 2025). Traduzindo: a maioria acha que conversa — e continua brigando e escondendo. A conversa que existe é a da rotina (quanto foi o mercado, quem paga a internet), não a que precisa acontecer quando o aluguel, as dívidas e o salário de cada um passam a morar na mesma casa.
 
 Este guia é o combinado que faltava: a conversa a ter antes da mudança, a lista completa de despesas, os modelos de quem paga o quê, a escolha entre 50/50 e proporcional, os custos invisíveis do primeiro ano e o passo a passo pra montar um fundo comum do zero.
 
 ## A conversa financeira antes da mudança
 
-Antes de assinar o contrato de aluguel, sentem pra uma conversa que muita gente pula: quanto cada um ganha, quanto cada um deve e quanto cada um consegue comprometer por mês. Não é burocracia, é o alicerce da casa. Ainda segundo a mesma pesquisa da Serasa (2025), 49% das pessoas já esconderam um problema financeiro do parceiro — e descobrir uma dívida depois de dividir o aluguel é muito pior do que ouvir sobre ela antes.
+Antes de assinar o contrato de aluguel, sentem pra uma conversa que muita gente pula: quanto cada um ganha, quanto cada um deve e quanto cada um consegue comprometer por mês. Não é burocracia, é o alicerce da casa. É aqui que aqueles 49% que já esconderam um problema financeiro do parceiro (Serasa, 2025) deixam de ser estatística: descobrir uma dívida depois de assinar o aluguel junto é muito pior do que ouvir sobre ela antes.
 
 O roteiro mínimo dessa conversa:
 

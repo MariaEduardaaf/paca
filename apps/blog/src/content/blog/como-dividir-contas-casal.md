@@ -15,7 +15,7 @@ Neste guia, vocês vão ver os quatro métodos com as contas feitas em reais, um
 
 ## Antes de dividir: a conversa que evita a maior parte das brigas
 
-Nenhum método funciona se vocês pularem esta etapa. Ainda de acordo com a Serasa (2025), 66% dos casais nunca conversaram abertamente sobre dinheiro — e não dá para dividir de forma justa o que nunca foi colocado na mesa. Antes de escolher qualquer fórmula, alinhem três coisas:
+Nenhum método funciona se vocês pularem esta etapa. E cuidado com a falsa sensação de que ela já está resolvida: no mesmo levantamento da Serasa, [65% dos casais dizem que falam abertamente sobre dinheiro, mas 49% já esconderam um problema financeiro do parceiro](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — e as finanças seguem sendo o principal motivo de briga. A conversa que a maioria tem é a da rotina ("quanto foi o mercado?"); a que muda a divisão é outra: dívida, medo, expectativa. E não dá para dividir de forma justa o que nunca foi colocado na mesa. Antes de escolher qualquer fórmula, alinhem três coisas:
 
 - **O que é conta do casal e o que é gasto pessoal.** Aluguel, mercado do mês, luz, internet: do casal. Academia, presente para a sogra, hobby de um dos dois: geralmente pessoal. A fronteira é de vocês, mas precisa ser explícita.
 - **Quanto cada um ganha, de verdade.** Salário líquido, freelas, comissões. Sem esse número real, qualquer divisão "justa" é chute.
