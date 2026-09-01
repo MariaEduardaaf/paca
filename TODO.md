@@ -31,7 +31,7 @@ Ordenado por retorno por hora. Nada aqui depende de você.
 ### Conversão — o funil vaza hoje
 - [x] **CTAs levavam para a tela de login** — todo botão ia para a raiz do app, que é rota protegida e cai num formulário de senha de uma conta que o leitor não tem. Agora são 92 links para o cadastro e zero para o login, com rótulos honestos ("Criar a conta do casal"). *Era o maior vazamento do site.*
 - [x] **Captura de e-mail no lugar errado** — vinha depois dos cards que convidam o leitor a sair, e só existia na home e nos posts. Agora vem antes do "Leia também" e está em /blog, nas categorias e no /sobre. O estado de sucesso deixou de ser um beco sem saída.
-- [ ] **CTA de produto igual em todo artigo.** O `CTABox` aceita título e texto como props, mas nenhuma página passa nada: "Chega de planilha" aparece igual no artigo sobre brigas de casal e no de conta conjunta. Escrever um CTA por artigo.
+- [x] **CTA de produto igual em todo artigo** — "Chega de planilha" aparecia até no artigo sobre brigas de casal. Agora cada um fala da dor do próprio texto, com ressalva honesta; o comparativo de apps declara conflito de interesse e manda ficar com outro se encaixar melhor.
 - [x] **Botão de mandar para o parceiro** — não existia, e nesse nicho é perda direta: quem lê está lendo para combinar algo com a outra pessoa. WhatsApp primeiro, copiar link e compartilhamento nativo no celular.
 
 ### Conteúdo e busca
@@ -39,7 +39,7 @@ Ordenado por retorno por hora. Nada aqui depende de você.
 - [x] **Títulos desalinhados da busca real** — agora contemplam "dividir contas" e "salários diferentes" (as formulações que as pessoas usam), sem trocar slug. Cards de compartilhamento regerados.
 - [x] **Páginas de categoria vazias** — recebem a maior parte do link interno do site e eram um título de uma palavra; /categorias respondia 404. Cada uma ganhou title, description e introdução própria, o índice foi criado e entrou no sitemap.
 - [x] **Malha de links interna com buracos** — 7 links contextuais novos; o comparativo de apps, página de maior intenção comercial, passou de 2 para 4 links recebidos.
-- [ ] **Três artigos que fecham lacunas de cluster:** "conta conjunta Nubank" (pergunta de alto volume cuja resposta correta leva ao produto), "um dos dois está desempregado" e "reserva de emergência do casal". *(1 dia cada; retorno em semanas, não dias)*
+- [x] **Três artigos novos** (14 no total): conta conjunta no Nubank, um dos dois desempregado, e reserva de emergência do casal. Cada fato conferido na fonte antes de escrever; o de reserva não recomenda produto nem cita rentabilidade.
 
 ### Ferramenta — a página que traz gente de volta
 - [x] **Calculadora de divisão proporcional** — no ar em `/calculadora-divisao-de-contas`. Três artigos ensinavam a conta e mandavam fazer na mão. A conta foi conferida contra o exemplo do artigo; roda no navegador e nada é enviado.
@@ -47,11 +47,11 @@ Ordenado por retorno por hora. Nada aqui depende de você.
 ### Performance e higiene
 - [x] **Peso e cache** — o logo tinha 186 KB exibido a 36px e o favicon 30 KB: −185 KB por carregamento (−88%). Cache immutable ligado no `vercel.json`, com `ads.txt`, RSS e sitemap protegidos.
 - [x] **Lote de correções pequenas** ✅ RSS não publica mais URL com barra final (era outra URL para a mesma página, justo no canal que agregadores citam) e `color-scheme` passou a seguir o tema — barra de rolagem e campos de formulário deixaram de destoar, o que passou a importar com o formulário de e-mail e a calculadora.
-- [ ] **Auto-hospedar as fontes** — *medir antes*. Google Fonts entra como recurso bloqueante de terceiro, mas o ganho não está confirmado. Último da fila, e só com medição.
+- [x] **Auto-hospedar as fontes — medido e descartado.** O ganho real ficou entre 8 e 20 ms (a folha do Google tem 1,2 KB e chega muito antes da primeira pintura), o que não paga 77 KB no repositório. Decisão tomada com número, não com palpite.
 
 ### Dívida técnica do app
 - [x] **Zero testes automatizados** — 265 testes no runner nativo do Node, sem dependência nova, cobrindo parser de dinheiro, datas em 4 fusos, regra de premium e conversão de moeda. Provados por mutação: 6 bugs injetados de propósito, todos pegos. Rodar: `npm test`.
-- [ ] **Acessibilidade — varredura final.** A primeira passada foi feita; ainda há botões só-ícone sem rótulo.
+- [x] **Acessibilidade — varredura completa.** Auditoria com Chrome real: 7.778 elementos em 26 páginas × 2 temas, zero reprovação AA no fim. Corrigidos contraste sistêmico do texto secundário, borda de campo (1,3:1), o link "pular para o conteúdo" que não funcionava no Safari, ordem do Tab no celular e o nome acessível do logo. Mais suporte a quem pede menos movimento.
 
 ---
 
@@ -59,12 +59,12 @@ Ordenado por retorno por hora. Nada aqui depende de você.
 
 ### Decisões que destravam a IA
 - [ ] **Planilha de verdade no Google Sheets.** O artigo se chama "modelo grátis" e avisa honestamente que não há arquivo — quem busca essa palavra quer o arquivo. A IA entrega a estrutura pronta; você cria e torna público.
-- [ ] **Provedor de e-mail.** A captura grava no banco, mas **nada envia e-mail ainda** — e o formulário promete "um e-mail por semana". Ou escolhe o provedor, ou a IA tira a promessa de periodicidade do texto.
+- [ ] **Provedor de e-mail.** A captura grava no banco, mas **nada envia e-mail ainda**. A IA já tirou a promessa de periodicidade do formulário (agora diz "avisamos quando sai um guia novo", que é verdade e não cria dívida). Falta escolher o provedor para os e-mails realmente saírem — sem isso a lista cresce e ninguém recebe nada.
 - [ ] **Autoria com pessoa real.** Hoje é "Equipe Paca Finance", sem nome nem rosto. Em finanças pessoais, é a dimensão de credibilidade que mais pesa — e o Google cobra.
 - [ ] **Prova social.** Nenhum depoimento ou número no site; o botão pede para criar conta num app que a pessoa nunca ouviu falar.
 
 ### Contas e configuração
-- [ ] `#6` ~~Desligar "Confirm email"~~ — **feito e verificado em 2026-09-01.** Falta só fechar a issue.
+- [x] `#6` **Desligar "Confirm email"** — feito, verificado pela API do Supabase e issue fechada no GitHub.
 - [ ] **Search Console + Bing** e submeter `https://blog.pacafinance.com.br/sitemap-index.xml`. Sem isso, nada do que fizermos tem número para comparar.
 - [ ] **Tag de medição (Caju) e Meta Pixel** — pontos de inserção já marcados no `BaseLayout`. Me passe os snippets.
 - [ ] `#3` `#4` **Login Google e Apple (web)** — consent screen, OAuth client, Service ID.
@@ -82,11 +82,12 @@ Ordenado por retorno por hora. Nada aqui depende de você.
 
 ---
 
-## ✅ Feito (2026-08-30 → 09-01)
+## ✅ Feito (2026-08-30 → 09-02)
 
 - **Auditoria de segurança e correção:** 80 falhas confirmadas e corrigidas — parser de dinheiro que corrompia valores 10× e 100×, sequestro de casal por escrita direta, vazamento de dados entre logins no sign-out, premium eterno quando o webhook falha, `check-budgets` sem autenticação, e a FK que impedia deletar a conta de quem criou o casal. Depois, uma revisão adversarial encontrou e corrigiu regressões das próprias correções (reembolso descartado pelo webhook, quota cobrada em save que falhou).
 - **Blog do zero:** 11 artigos pt-BR pesquisados por palavra-chave, redesenhado no padrão editorial de NerdWallet/Nubank (sem emoji), capa única por artigo, diagramas dentro dos textos, card de compartilhamento por artigo, no ar em domínio próprio com HTTPS.
 - **Captura de e-mail LGPD:** tabela isolada sem policy nenhuma, consentimento registrado, descadastro por token, honeypot e limite por IP. Auditada de forma adversarial (achou e corrigiu um furo que permitia gravar lead de qualquer site).
+- **Bug achado e corrigido em produção:** os 12 diagramas dos artigos renderizavam quebrados — linha em branco dentro do SVG encerra o bloco HTML no markdown, e o parser reabria o resto embrulhando em `<p>`. Como o texto alternativo seguia intacto, leitor de tela lia certo e o problema não aparecia no código.
 - **Infra:** repositório transferido para `MariaEduardaaf`, domínio `pacafinance.com.br` na Cloudflare com DNSSEC removido na ordem segura, blog deployando automático da branch.
 
 ---
