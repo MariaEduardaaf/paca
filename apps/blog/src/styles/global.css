@@ -102,4 +102,59 @@
   .prose-paca td {
     @apply border-b border-gray-100 px-3 py-2 dark:border-gray-800;
   }
+
+  /*
+   * Diagrams: inline SVG written straight into the article markdown. They
+   * carry information from the text (the math, the comparison), never
+   * decoration — no photos, no stock art. Colors come from these classes so
+   * one file controls both themes; the brand fills stay fixed because they
+   * hold contrast on white and on gray-900 alike.
+   */
+  .diagram {
+    @apply my-8;
+  }
+
+  .diagram svg {
+    @apply block h-auto w-full;
+  }
+
+  .diagram text {
+    font-family: "DM Sans", system-ui, sans-serif;
+  }
+
+  .diagram figcaption {
+    @apply mt-3 text-sm text-gray-500 dark:text-gray-400;
+  }
+
+  .diagram .d-ink {
+    fill: #212529;
+  }
+
+  .diagram .d-muted {
+    fill: #868e96;
+  }
+
+  .diagram .d-track {
+    fill: #f1f3f5;
+  }
+
+  .diagram .d-rule {
+    stroke: #e9ecef;
+  }
+
+  :is(.dark) .diagram .d-ink {
+    fill: #f1f3f5;
+  }
+
+  :is(.dark) .diagram .d-muted {
+    fill: #adb5bd;
+  }
+
+  :is(.dark) .diagram .d-track {
+    fill: #343a40;
+  }
+
+  :is(.dark) .diagram .d-rule {
+    stroke: #343a40;
+  }
 }

@@ -67,6 +67,43 @@ Quando um é poupador e o outro é gastador, dividir o mesmo saldo transforma ca
 
 O **híbrido** é o meio-termo que mais aparece na prática, e por um bom motivo: a conta comum recebe um aporte definido de cada um (meio a meio ou proporcional à renda) e paga só as despesas compartilhadas — aluguel, mercado, contas. O resto da renda fica na conta individual de cada um, sem prestação de contas. Vocês ganham a logística da conta conjunta e mantêm a autonomia das contas separadas. Como definir o que é despesa compartilhada e o que é pessoal é uma conversa em si — o guia de [como dividir as contas do casal](/blog/como-dividir-contas-casal) percorre essa decisão passo a passo.
 
+<figure class="diagram">
+<svg viewBox="0 0 640 240" role="img" aria-label="O que muda entre os três modelos: na conjunta total existe uma conta só, que recebe a renda dos dois e paga tudo; nas contas separadas cada um mantém a sua e acerta sua parte das despesas; no híbrido as duas contas individuais continuam existindo e ganham ao lado uma conta comum que paga só aluguel, mercado e contas.">
+  <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">Quantas contas existem em cada modelo</text>
+
+  <text class="d-muted" x="0" y="71" font-size="13" font-weight="600">Conjunta total</text>
+  <rect class="d-track" x="130" y="40" width="510" height="52" rx="10" />
+  <circle cx="150" cy="66" r="5" fill="#2F8F7C" />
+  <text class="d-ink" x="164" y="62" font-size="14" font-weight="600">Uma conta só do casal</text>
+  <text class="d-muted" x="164" y="80" font-size="13">A renda dos dois entra aqui e todas as despesas saem daqui</text>
+
+  <text class="d-muted" x="0" y="137" font-size="13" font-weight="600">Contas separadas</text>
+  <rect class="d-track" x="130" y="106" width="250" height="52" rx="10" />
+  <circle cx="150" cy="132" r="5" fill="#E5647A" />
+  <text class="d-ink" x="164" y="128" font-size="14" font-weight="600">Conta de um</text>
+  <text class="d-muted" x="164" y="146" font-size="13">Paga sua parte</text>
+  <rect class="d-track" x="390" y="106" width="250" height="52" rx="10" />
+  <circle cx="410" cy="132" r="5" fill="#DC9A3E" />
+  <text class="d-ink" x="424" y="128" font-size="14" font-weight="600">Conta do outro</text>
+  <text class="d-muted" x="424" y="146" font-size="13">Paga sua parte</text>
+
+  <text class="d-muted" x="0" y="203" font-size="13" font-weight="600">Híbrido</text>
+  <rect class="d-track" x="130" y="172" width="148" height="52" rx="10" />
+  <circle cx="145" cy="198" r="5" fill="#E5647A" />
+  <text class="d-ink" x="158" y="194" font-size="13" font-weight="600">Conta de um</text>
+  <text class="d-muted" x="158" y="212" font-size="12">Gasto pessoal</text>
+  <rect class="d-track" x="288" y="172" width="194" height="52" rx="10" />
+  <circle cx="303" cy="198" r="5" fill="#2F8F7C" />
+  <text class="d-ink" x="316" y="194" font-size="13" font-weight="600">Conta comum</text>
+  <text class="d-muted" x="316" y="212" font-size="12">Aluguel, mercado, contas</text>
+  <rect class="d-track" x="492" y="172" width="148" height="52" rx="10" />
+  <circle cx="507" cy="198" r="5" fill="#DC9A3E" />
+  <text class="d-ink" x="520" y="194" font-size="13" font-weight="600">Conta do outro</text>
+  <text class="d-muted" x="520" y="212" font-size="12">Gasto pessoal</text>
+</svg>
+<figcaption>No híbrido, a conta comum paga só as despesas da casa — o resto da renda fica na conta individual de cada um, sem prestação de contas.</figcaption>
+</figure>
+
 E há um detalhe que pouca gente fala: **vocês não precisam unificar o banco para unificar a visão**. O problema que empurra muitos casais para a conta conjunta não é pagar contas — é enxergar o dinheiro da casa num lugar só. Dá para resolver isso por software: no [Paca Finance](https://paca-web-twmh.vercel.app), cada um segue com sua conta e seus cartões, e os gastos dos dois aparecem juntos num painel compartilhado, com orçamento por categoria. Vocês ganham a transparência da conta conjunta sem assumir os riscos de dívida e separação. Sendo honesta: se vocês já têm uma [planilha de gastos](/blog/planilha-gastos-casal) que funciona e a disciplina de preenchê-la a dois, ela cumpre papel parecido — a diferença é o trabalho manual de registrar tudo.
 
 ## Para cada fase do relacionamento, uma opção

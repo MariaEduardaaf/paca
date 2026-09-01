@@ -71,6 +71,44 @@ Cada um mantém sua conta pessoal, e uma terceira conta recebe um Pix mensal de 
 
 Exemplo: contas fixas + mercado somam R$ 3.800. Com aporte proporcional 60/40, A programa um Pix de R$ 2.280 e B um de R$ 1.520, todo dia 1º. Depois disso, ninguém transfere nada para ninguém no meio do mês.
 
+<figure class="diagram">
+<svg viewBox="0 0 640 290" role="img" aria-label="No modelo dos três potes, A e B mantêm contas pessoais e enviam um Pix mensal de R$ 2.280 e R$ 1.520 para uma conta conjunta, de onde saem os R$ 3.800 de contas fixas e mercado sem nenhuma transferência entre os dois durante o mês.">
+  <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">Conjunta híbrida: o modelo dos três potes</text>
+
+  <rect class="d-track" x="0" y="36" width="250" height="44" rx="10" />
+  <rect x="14" y="51" width="14" height="14" rx="4" fill="#E5647A" />
+  <text class="d-ink" x="38" y="63" font-size="14" font-weight="600">Conta pessoal de A</text>
+
+  <rect class="d-track" x="390" y="36" width="250" height="44" rx="10" />
+  <rect x="404" y="51" width="14" height="14" rx="4" fill="#2F8F7C" />
+  <text class="d-ink" x="428" y="63" font-size="14" font-weight="600">Conta pessoal de B</text>
+
+  <text class="d-ink" x="125" y="104" font-size="13" font-weight="600" text-anchor="middle">Pix de R$ 2.280 (60%)</text>
+  <rect x="123" y="112" width="4" height="14" fill="#E5647A" />
+  <rect x="123" y="122" width="129" height="4" fill="#E5647A" />
+  <rect x="248" y="122" width="4" height="20" fill="#E5647A" />
+  <polygon points="242,142 258,142 250,150" fill="#E5647A" />
+
+  <text class="d-ink" x="515" y="104" font-size="13" font-weight="600" text-anchor="middle">Pix de R$ 1.520 (40%)</text>
+  <rect x="513" y="112" width="4" height="14" fill="#2F8F7C" />
+  <rect x="388" y="122" width="129" height="4" fill="#2F8F7C" />
+  <rect x="388" y="122" width="4" height="20" fill="#2F8F7C" />
+  <polygon points="382,142 398,142 390,150" fill="#2F8F7C" />
+
+  <text class="d-muted" x="320" y="138" font-size="13" text-anchor="middle">todo dia 1º</text>
+
+  <rect class="d-track" x="140" y="150" width="360" height="60" rx="12" />
+  <rect x="156" y="166" width="12" height="28" rx="6" fill="#7A6BB5" />
+  <text class="d-ink" x="182" y="177" font-size="15" font-weight="700">Conta conjunta</text>
+  <text class="d-muted" x="182" y="197" font-size="13">R$ 3.800 em contas fixas + mercado</text>
+
+  <rect x="318" y="212" width="4" height="26" fill="#7A6BB5" />
+  <polygon points="312,238 328,238 320,246" fill="#7A6BB5" />
+  <text class="d-ink" x="320" y="270" font-size="14" font-weight="600" text-anchor="middle">Boletos, débito automático e cartão da casa saem daqui</text>
+</svg>
+<figcaption>Um Pix de cada um no dia 1º cobre os R$ 3.800 do mês. Depois disso, ninguém precisa acertar nada com ninguém.</figcaption>
+</figure>
+
 **Funciona para:** casais que querem parar de "acertar contas" entre si — o acerto acontece uma vez, no aporte.
 **O risco:** na versão total, perda de individualidade; em ambas, exige combinar limites de gasto para a conta não virar terra de ninguém. Antes de abrir a conta, vale ler [se conta conjunta vale a pena para vocês](/blog/conta-conjunta-vale-a-pena) — há situações em que ela mais atrapalha do que ajuda.
 

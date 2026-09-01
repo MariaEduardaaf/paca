@@ -93,6 +93,37 @@ Sete categorias bastam. Com vinte, cada lançamento vira um debate filosófico s
 
 **Divisão proporcional é o padrão mais justo quando os salários são diferentes.** No exemplo acima: Ana ganha R$ 6.000 e Bruno R$ 4.000, então Ana cobre 60% dos gastos conjuntos e Bruno 40%. Se o mês fechou em R$ 5.200 de despesas compartilhadas, a conta é: Ana R$ 5.200 × 0,60 = **R$ 3.120**; Bruno R$ 5.200 × 0,40 = **R$ 2.080**. Se na prática Ana pagou R$ 4.000 e Bruno R$ 1.200, o acerto é Bruno transferir **R$ 880** para Ana (R$ 2.080 − R$ 1.200). Vocês podem preferir dividir meio a meio ou juntar tudo — [as três formas de dividir as contas têm prós e contras](/blog/como-dividir-contas-casal), e a planilha funciona com qualquer uma; só muda a linha de porcentagem na aba 3.
 
+<figure class="diagram">
+<svg viewBox="0 0 640 296" role="img" aria-label="No mês de R$ 5.200, Ana deveria pagar R$ 3.120 mas pagou R$ 4.000, e Bruno deveria pagar R$ 2.080 mas pagou R$ 1.200; por isso Bruno transfere R$ 880 para Ana.">
+  <text class="d-ink" x="0" y="16" font-size="15" font-weight="600">Acerto do mês — despesas conjuntas de R$ 5.200</text>
+
+  <text class="d-muted" x="0" y="52" font-size="13" font-weight="600" letter-spacing="1">ANA — 60%</text>
+  <text class="d-ink" x="0" y="84" font-size="14">Pagou</text>
+  <rect class="d-track" x="130" y="70" width="380" height="20" rx="10" />
+  <rect x="130" y="70" width="380" height="20" rx="10" fill="#E5647A" />
+  <text class="d-ink" x="522" y="85" font-size="14" font-weight="700">R$ 4.000</text>
+  <text class="d-ink" x="0" y="114" font-size="14">Deveria pagar</text>
+  <rect class="d-track" x="130" y="100" width="380" height="20" rx="10" />
+  <rect x="130" y="100" width="296" height="20" rx="10" fill="#7A6BB5" />
+  <text class="d-ink" x="522" y="115" font-size="14">R$ 3.120</text>
+
+  <text class="d-muted" x="0" y="150" font-size="13" font-weight="600" letter-spacing="1">BRUNO — 40%</text>
+  <text class="d-ink" x="0" y="182" font-size="14">Pagou</text>
+  <rect class="d-track" x="130" y="168" width="380" height="20" rx="10" />
+  <rect x="130" y="168" width="114" height="20" rx="10" fill="#E5647A" />
+  <text class="d-ink" x="522" y="183" font-size="14" font-weight="700">R$ 1.200</text>
+  <text class="d-ink" x="0" y="212" font-size="14">Deveria pagar</text>
+  <rect class="d-track" x="130" y="198" width="380" height="20" rx="10" />
+  <rect x="130" y="198" width="198" height="20" rx="10" fill="#7A6BB5" />
+  <text class="d-ink" x="522" y="213" font-size="14">R$ 2.080</text>
+
+  <line class="d-rule" x1="0" y1="244" x2="640" y2="244" />
+  <rect x="0" y="266" width="14" height="14" rx="4" fill="#2F8F7C" />
+  <text class="d-ink" x="26" y="278" font-size="14" font-weight="600">Bruno transfere R$ 880 para Ana — um Pix só, no fim do mês</text>
+</svg>
+<figcaption>A linha de acerto é a diferença entre o que cada um pagou e o que deveria pagar: Bruno ficou R$ 880 abaixo da parte dele, então esse é o valor do Pix.</figcaption>
+</figure>
+
 **Para definir os tetos por categoria**, um bom ponto de partida é a regra 50/30/20 popularizada por Elizabeth Warren: até 50% da renda para necessidades, 30% para desejos, 20% para poupar. No exemplo de renda total de R$ 10.000, isso significa até R$ 5.000 em moradia, mercado e contas, até R$ 3.000 em lazer e desejos, e R$ 2.000 guardados. Explicamos [como adaptar a regra 50/30/20 para a realidade de casal](/blog/regra-50-30-20-casal) em outro artigo — os tetos da tabela acima são só um exemplo, ajustem à renda de vocês.
 
 **O que entra na planilha:** só gastos conjuntos. O gasto pessoal de cada um (academia, presente para amigo, hobby) fica fora — cada um administra o seu. Misturar tudo é o caminho mais rápido para um fiscalizar o cafezinho do outro.

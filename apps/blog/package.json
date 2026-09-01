@@ -8,6 +8,7 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "typecheck": "astro check",
+    "og": "node scripts/og.mjs",
     "lint": "echo 'no linter configured yet'",
     "clean": "rm -rf dist .astro"
   },

@@ -24,6 +24,47 @@ O mesmo levantamento traz dois dados que explicam *por que* isso acontece:
 
 Juntem as três estatísticas e o ciclo aparece inteiro: ninguém fala sobre dinheiro → alguém esconde um gasto ou uma dívida → o outro descobre → briga → falar sobre dinheiro fica ainda mais difícil → alguém esconde de novo. O problema raramente é a falta de dinheiro; é a falta de conversa. Casal com salário apertado e combinados claros briga menos que casal com renda folgada e silêncio total.
 
+<figure class="diagram">
+<svg viewBox="0 0 640 242" role="img" aria-label="Os três dados da Serasa 2025 formam um ciclo: 66% dos casais nunca conversaram abertamente sobre dinheiro, 49% já esconderam um problema financeiro e 53% apontam dinheiro como principal motivo de brigas — e a briga torna a próxima conversa ainda mais difícil.">
+  <text class="d-ink" x="0" y="14" font-size="15" font-weight="600">Os três números da Serasa são o mesmo ciclo</text>
+
+  <rect x="75" y="32" width="40" height="5" rx="2.5" fill="#2F8F7C" />
+  <rect class="d-track" x="0" y="44" width="190" height="120" rx="12" />
+  <text class="d-muted" x="95" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">1 · SILÊNCIO</text>
+  <text class="d-ink" x="95" y="110" font-size="28" font-weight="700" text-anchor="middle">66%</text>
+  <text class="d-ink" x="95" y="134" font-size="13" text-anchor="middle">nunca conversaram</text>
+  <text class="d-ink" x="95" y="152" font-size="13" text-anchor="middle">abertamente sobre dinheiro</text>
+
+  <rect class="d-muted" x="196" y="103" width="17" height="2" />
+  <polygon class="d-muted" points="213,98 223,104 213,110" />
+
+  <rect x="300" y="32" width="40" height="5" rx="2.5" fill="#7A6BB5" />
+  <rect class="d-track" x="225" y="44" width="190" height="120" rx="12" />
+  <text class="d-muted" x="320" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">2 · SEGREDO</text>
+  <text class="d-ink" x="320" y="110" font-size="28" font-weight="700" text-anchor="middle">49%</text>
+  <text class="d-ink" x="320" y="134" font-size="13" text-anchor="middle">já esconderam um problema</text>
+  <text class="d-ink" x="320" y="152" font-size="13" text-anchor="middle">financeiro do parceiro</text>
+
+  <rect class="d-muted" x="421" y="103" width="17" height="2" />
+  <polygon class="d-muted" points="438,98 448,104 438,110" />
+
+  <rect x="525" y="32" width="40" height="5" rx="2.5" fill="#E5647A" />
+  <rect class="d-track" x="450" y="44" width="190" height="120" rx="12" />
+  <text class="d-muted" x="545" y="72" font-size="12" font-weight="700" letter-spacing="1" text-anchor="middle">3 · BRIGA</text>
+  <text class="d-ink" x="545" y="110" font-size="28" font-weight="700" text-anchor="middle">53%</text>
+  <text class="d-ink" x="545" y="134" font-size="13" text-anchor="middle">apontam dinheiro como o</text>
+  <text class="d-ink" x="545" y="152" font-size="13" text-anchor="middle">principal motivo de brigas</text>
+
+  <rect class="d-muted" x="544" y="164" width="2" height="44" />
+  <rect class="d-muted" x="95" y="206" width="451" height="2" />
+  <rect class="d-muted" x="94" y="178" width="2" height="30" />
+  <polygon class="d-muted" points="89,178 99,178 94,169" />
+
+  <text class="d-muted" x="320" y="230" font-size="13" text-anchor="middle">e falar de dinheiro fica ainda mais difícil — o ciclo recomeça</text>
+</svg>
+<figcaption>Os três dados da Serasa (2025) não são estatísticas soltas: o silêncio de 66% alimenta o segredo de 49%, que alimenta a briga de 53% — e a briga fecha a volta.</figcaption>
+</figure>
+
 A boa notícia embutida aí: se a causa é o silêncio, a solução está ao alcance de qualquer casal — não depende de ganhar mais.
 
 ## As 5 causas reais por trás das brigas (não é falta de dinheiro)

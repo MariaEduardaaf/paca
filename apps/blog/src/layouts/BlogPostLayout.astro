@@ -1,4 +1,6 @@
 ---
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { getCollection, render } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
 import AdSlot from "../components/AdSlot.astro";
@@ -35,6 +37,16 @@ const showToc = tocEntries.length >= 4;
 const postUrl = new URL(`/blog/${post.id}`, SITE_URL).href;
 const logoUrl = new URL("/logo-icon-large.png", SITE_URL).href;
 
+// Card de compartilhamento próprio do artigo, gerado por `npm run og` e
+// versionado em public/og/ (scripts/og.mjs explica o porquê). Se o PNG do post
+// ainda não foi gerado, cai no /og-default.png — o build nunca quebra por isso.
+// (process.cwd() e não import.meta.url: no build o Astro empacota este layout
+// num chunk, então import.meta.url aponta para o bundle, não para src/layouts.)
+const ogPath = `/og/${post.id}.png`;
+const ogImage = existsSync(join(process.cwd(), "public", "og", `${post.id}.png`))
+  ? ogPath
+  : "/og-default.png";
+
 // "Leia também": same category first, padded with recent posts from others.
 const allPosts = sortByDateDesc(
   await getCollection("blog", ({ data }) => !data.draft),
@@ -62,7 +74,7 @@ const blogPostingJsonLd = {
     name: SITE_TITLE,
     logo: { "@type": "ImageObject", url: logoUrl },
   },
-  image: [new URL("/og-default.png", SITE_URL).href],
+  image: [new URL(ogImage, SITE_URL).href],
 };
 
 const breadcrumbJsonLd = {
@@ -108,7 +120,7 @@ const faqJsonLd =
     : null;
 ---
 
-<BaseLayout title={title} description={description} type="article">
+<BaseLayout title={title} description={description} type="article" ogImage={ogImage}>
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(blogPostingJsonLd)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
