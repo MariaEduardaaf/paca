@@ -65,7 +65,7 @@ Ordenado por retorno por hora. Nada aqui depende de você.
 
 ### Contas e configuração
 - [x] `#6` **Desligar "Confirm email"** — feito, verificado pela API do Supabase e issue fechada no GitHub.
-- [ ] **Search Console + Bing** e submeter `https://blog.pacafinance.com.br/sitemap-index.xml`. Sem isso, nada do que fizermos tem número para comparar.
+- [x] ✅ **Search Console** (2026-09-02): domínio verificado por DNS (cobre blog, app e subdomínios futuros) e sitemap com as 27 URLs submetido. Indexar leva de dias a semanas — site novo não ranqueia rápido. Bing fica como próximo passo opcional.
 - [ ] **Tag de medição (Caju) e Meta Pixel** — pontos de inserção já marcados no `BaseLayout`. Me passe os snippets.
 - [ ] `#3` `#4` **Login Google e Apple (web)** — consent screen, OAuth client, Service ID.
 - [ ] `#7` `#8` **RevenueCat + produtos de assinatura nas lojas** (mensal R$ 24,90 / anual R$ 179,90, trial 7 dias).
