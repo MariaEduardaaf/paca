@@ -1,6 +1,6 @@
 # Paca Finance — board de trabalho
 
-> **Fonte de verdade:** o **código** (verificado em 2026-09-02: typecheck 7/7 verde, 265 testes passando) e o **que responde na internet**. Doc é hipótese; em conflito, vale o código.
+> **Fonte de verdade:** o **código** e o que responde em produção (verificado em 2026-09-02: typecheck 7/7, 265 testes, migrations aplicadas) e o **que responde na internet**. Doc é hipótese; em conflito, vale o código.
 > **Como usar:** `🤖` = a IA faz sozinha · `👤` = depende de você (conta externa, decisão, dado pessoal) · `🔴` = está travando dinheiro ou lançamento.
 > `#NN` = issue no GitHub (`MariaEduardaaf/paca`).
 
@@ -12,13 +12,13 @@ Três produtos, estados diferentes:
 - **App web** — no ar, mas em endereço da Vercel, que não passa confiança. Backend restaurado e saudável.
 - **App mobile** — código pronto, faltam três integrações nativas e a submissão nas lojas.
 
-**O gargalo do momento:** o banco de produção está **11 migrations atrás do código** (00023–00033). Todo o hardening de segurança que fizemos, mais a tabela de leads do blog, só passam a valer depois de aplicar.
+**O gargalo do momento:** definir a **conta de anúncio** (nenhuma das existentes serve) e o **domínio próprio do app**. O banco já está em dia com o código.
 
 ---
 
 ## 🔴 Bloqueadores
 
-- [ ] 👤 **Aplicar as migrations 00023–00033 e redeployar as edge functions.** Runbook completo em [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) — **a ordem importa**. Sem isso: a captura de e-mail do blog grava em tabela que não existe, o fluxo de convite de casal continua quebrado por RLS, e deletar a conta de quem criou o casal falha em produção. Depois: setar `CRON_SECRET`, agendar o `check-budgets` (`#11`) e semear `admin_users`.
+- [x] ✅ **Migrations 00023–00033 aplicadas e funções redeployadas** (2026-09-02). A captura de e-mail do blog passou a gravar de verdade (antes o formulário estava no ar perdendo assinante em silêncio), o fluxo de convite de casal foi para as RPCs novas, e deletar conta de quem criou o casal parou de falhar. `CRON_SECRET` configurado e `check-budgets` agendado (`#11` fechada). **Achado no caminho:** a `check-budgets` estava **publicamente executável** com a chave anônima do app — o código que corrigia isso nunca tinha sido deployado. Verificado ponta a ponta: inscrição real gravando, consentimento e e-mail inválido recusados, leitura dos leads negada até com chave anônima.
 - [ ] 👤 **Definir a conta de anúncio.** As contas existentes ou são de terceiros ou estão no perfil espanhol em euro (ver histórico de 2026-09-01). Precisa de uma AdSense no CNPJ, criada com um login Google limpo. Com o `pub-…` em mãos, a IA preenche o `ads.txt` e a env `PUBLIC_ADSENSE_CLIENT` — o anúncio liga sem deploy de código.
 - [ ] 👤 **Domínio próprio para o app web** → `app.pacafinance.com.br`. Ordem: (1) adicionar o domínio no projeto Vercel do app (está na conta **madualvesfr**; antes conferir qual dos dois projetos duplicados, `paca-web` × `paca-web-twmh`, está em uso); (2) CNAME `app` → `cname.vercel-dns.com` na Cloudflare, nuvem cinza; (3) Supabase → Authentication → URL Configuration: incluir o novo endereço no *Site URL* e nos *Redirect URLs*; (4) 🤖 IA troca as 16 referências no código.
 
