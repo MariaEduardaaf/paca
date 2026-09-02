@@ -1,10 +1,14 @@
 ---
-import { ADSENSE_CLIENT, ADS_ENABLED } from "../lib/monetization";
+import { ADSENSE_CLIENT, ADS_ENABLED, adSlotId } from "../lib/monetization";
 
 /**
  * One ad placement. Network-agnostic call site: pages declare WHERE ads live
  * ("first-fold", "in-content"); what actually renders is decided here.
- * Renders nothing until monetization is configured (see lib/monetization.ts).
+ *
+ * Renders nothing até existirem AS DUAS pontas (ver lib/monetization.ts):
+ * o `pub-` da conta E o ID deste bloco. Faltando o ID, o `<ins>` seria um
+ * bloco inválido — o AdSense o processa e nunca preenche, deixando 280px em
+ * branco com o rótulo "Publicidade" por cima. Melhor não desenhar nada.
  */
 interface Props {
   /** Placement id — becomes data-placement for measurement/debugging. */
@@ -13,10 +17,13 @@ interface Props {
 }
 
 const { placement, class: className = "" } = Astro.props;
+
+const slot = adSlotId(placement);
+const render = ADS_ENABLED && slot.length > 0;
 ---
 
 {
-  ADS_ENABLED && (
+  render && (
     <div
       class={`ad-slot my-6 text-center ${className}`}
       data-placement={placement}
@@ -33,6 +40,7 @@ const { placement, class: className = "" } = Astro.props;
         class="adsbygoogle"
         style="display:block"
         data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={slot}
         data-ad-format="auto"
         data-full-width-responsive="true"
       />

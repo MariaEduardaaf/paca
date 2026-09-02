@@ -1,15 +1,48 @@
 /**
- * Monetization config — single switch for the whole blog.
+ * Monetization config — as duas chaves do blog.
  *
- * The ad network is intentionally decoupled behind AdSlot.astro so swapping
- * AdSense -> AdSeleto (AdX) later only touches this file + that component.
+ * A rede fica desacoplada atrás do AdSlot.astro de propósito: trocar
+ * AdSense -> AdSeleto (AdX) mais tarde toca só este arquivo + aquele componente.
  *
- * Nothing renders while ADSENSE_CLIENT is empty: the blog ships clean (better
- * for the AdSense review itself), and ads turn on by setting the env var in
- * Vercel (PUBLIC_ADSENSE_CLIENT=ca-pub-XXXXXXXXXXXXXXXX) — no code change.
- * Remember to also fill public/ads.txt when the ID exists.
+ * SÃO DUAS CHAVES, E NÃO UMA. A versão anterior tinha só `ADSENSE_CLIENT`
+ * governando as duas coisas abaixo, e isso quebrou na prática: assim que o
+ * `pub-` foi preenchido na Vercel (necessário para o Google verificar o site),
+ * os blocos de anúncio passaram a ser desenhados também — e blocos de anúncio
+ * SEM `data-ad-slot` nunca preenchem. Resultado no ar: duas faixas de 280px em
+ * branco por artigo, com o rótulo "Publicidade" em cima de nada, justamente
+ * enquanto o revisor do AdSense estava olhando o site.
+ *
+ * 1. ADSENSE_CLIENT (PUBLIC_ADSENSE_CLIENT=ca-pub-XXXXXXXXXXXXXXXX)
+ *    Carrega o script do Google no <head>. É o código de verificação do site:
+ *    precisa estar no ar DURANTE a análise, antes de existir qualquer anúncio.
+ *    Preencher também public/ads.txt com o mesmo pub-.
+ *
+ * 2. AD_SLOT_IDS (PUBLIC_ADSENSE_SLOT_*)
+ *    O ID de cada bloco de anúncio, gerado no painel do AdSense em
+ *    Anúncios > Por unidade de anúncio. Esses IDs SÓ EXISTEM DEPOIS DA
+ *    APROVAÇÃO — é por isso que eles são uma chave separada.
+ *
+ * Enquanto o ID de um bloco estiver vazio, aquele bloco não é desenhado: nada
+ * de espaço morto, nada de rótulo sobre o vazio. No dia em que os IDs forem
+ * preenchidos na Vercel, os anúncios aparecem sozinhos — sem mudar código.
  */
 export const ADSENSE_CLIENT: string =
   import.meta.env.PUBLIC_ADSENSE_CLIENT || "";
 
+/** O script do Google no <head> (verificação do site + Anúncios Automáticos). */
 export const ADS_ENABLED = ADSENSE_CLIENT.length > 0;
+
+/**
+ * ID do bloco de anúncio por posição. A chave é a mesma `placement` que as
+ * páginas passam para o AdSlot, para o call site continuar falando de ONDE o
+ * anúncio vive e não de qual número ele tem.
+ */
+export const AD_SLOT_IDS: Record<string, string> = {
+  "first-fold": import.meta.env.PUBLIC_ADSENSE_SLOT_FIRST_FOLD || "",
+  "in-content": import.meta.env.PUBLIC_ADSENSE_SLOT_IN_CONTENT || "",
+};
+
+/** ID do bloco, ou "" quando ainda não existe (aí o bloco não é desenhado). */
+export function adSlotId(placement: string): string {
+  return AD_SLOT_IDS[placement] || "";
+}
