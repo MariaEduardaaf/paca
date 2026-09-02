@@ -31,7 +31,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 // arquivo sozinho.
 
 const BLOG_URL = "https://blog.pacafinance.com.br";
-const PRIVACY_URL = "https://paca-web-twmh.vercel.app/privacy";
+const PRIVACY_URL = "https://app.pacafinance.com.br/privacy";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

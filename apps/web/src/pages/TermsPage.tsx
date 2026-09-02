@@ -6,7 +6,7 @@ export function TermsPage() {
       <p>
         By creating an account on Paca Finance ("the app") you agree to these
         terms. They govern your use of the iOS app and the web version at
-        paca-web-twmh.vercel.app.
+        app.pacafinance.com.br.
       </p>
 
       <h2>Eligibility</h2>

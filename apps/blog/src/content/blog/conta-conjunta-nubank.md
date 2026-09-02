@@ -104,7 +104,7 @@ Três regras que fazem esse arranjo parar de pé:
 
 Vale separar os dois problemas, porque quase ninguém faz isso: **pagar as contas** e **enxergar o dinheiro da casa** são coisas diferentes. Conta conjunta resolve as duas de uma vez — e por isso parece a resposta. Mas o Pix agendado resolve o pagamento sozinho, e a visão compartilhada dá para resolver por software, sem mexer no banco.
 
-É aí que entra o Paca Finance: cada um segue com sua conta do Nubank, seus cartões e sua vida financeira, e os gastos dos dois aparecem juntos num painel do casal, com orçamento por categoria. Vocês ganham a transparência que buscavam na conta conjunta sem assumir o risco de dívida compartilhada — dá para [criar a conta do casal no plano grátis](https://paca-web-twmh.vercel.app/signup) e testar por um mês. E a ressalva honesta: se vocês já têm uma planilha que funciona e a disciplina de preenchê-la a dois, ela cumpre o mesmo papel — não precisam trocar de ferramenta, precisam só não abandonar o hábito.
+É aí que entra o Paca Finance: cada um segue com sua conta do Nubank, seus cartões e sua vida financeira, e os gastos dos dois aparecem juntos num painel do casal, com orçamento por categoria. Vocês ganham a transparência que buscavam na conta conjunta sem assumir o risco de dívida compartilhada — dá para [criar a conta do casal no plano grátis](https://app.pacafinance.com.br/signup) e testar por um mês. E a ressalva honesta: se vocês já têm uma planilha que funciona e a disciplina de preenchê-la a dois, ela cumpre o mesmo papel — não precisam trocar de ferramenta, precisam só não abandonar o hábito.
 
 ## Antes de trocar de banco por causa disso
 

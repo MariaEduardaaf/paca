@@ -8,7 +8,7 @@ export const SITE_DESCRIPTION =
 export const SITE_URL: string =
   import.meta.env.SITE_URL || "https://blog.pacafinance.com.br";
 
-export const APP_URL = "https://paca-web-twmh.vercel.app";
+export const APP_URL = "https://app.pacafinance.com.br";
 
 // Destino de TODO botão de conversão do blog. A raiz do app é rota protegida:
 // quem não tem conta cai numa tela de senha, que é o pior lugar para entregar

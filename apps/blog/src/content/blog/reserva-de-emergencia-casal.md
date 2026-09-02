@@ -117,7 +117,7 @@ Se cada um destinar o 13º inteiro à reserva, entram R$ 4.000 + R$ 6.000 = **R$
 
 Um Pix agendado ou uma transferência automática para o dia seguinte ao salário. Guardar primeiro e gastar o que sobra funciona; o contrário quase nunca. Se vocês tiverem que *decidir* guardar todo mês, em algum mês a decisão vai ser não.
 
-Acompanhar o progresso ajuda mais do que parece — ver a barra encher é o que sustenta o hábito nos meses chatos do meio. Pode ser numa planilha, num caderno ou num app: no Paca Finance, a reserva vira uma meta compartilhada que os dois enxergam no mesmo painel, e dá para [criar a conta do casal no plano grátis](https://paca-web-twmh.vercel.app/signup). A ressalva de sempre: se vocês já têm uma planilha que funciona e a revisão mensal acontece de verdade, não precisam trocar de ferramenta. O que faz a reserva crescer é o aporte automático, não o app. O passo a passo de transformar meta em valor mensal está em [como juntar dinheiro em casal](/blog/como-juntar-dinheiro-casal).
+Acompanhar o progresso ajuda mais do que parece — ver a barra encher é o que sustenta o hábito nos meses chatos do meio. Pode ser numa planilha, num caderno ou num app: no Paca Finance, a reserva vira uma meta compartilhada que os dois enxergam no mesmo painel, e dá para [criar a conta do casal no plano grátis](https://app.pacafinance.com.br/signup). A ressalva de sempre: se vocês já têm uma planilha que funciona e a revisão mensal acontece de verdade, não precisam trocar de ferramenta. O que faz a reserva crescer é o aporte automático, não o app. O passo a passo de transformar meta em valor mensal está em [como juntar dinheiro em casal](/blog/como-juntar-dinheiro-casal).
 
 ## Quando usar (e quando não)
 

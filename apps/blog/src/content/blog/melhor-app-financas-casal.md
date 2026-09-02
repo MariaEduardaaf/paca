@@ -45,7 +45,7 @@ Transparência primeiro: **o Paca é o nosso app**. Levem esta análise com esse
 
 O Paca Finance foi feito para o problema específico deste artigo: casal acompanhando gastos compartilhados em tempo real. Os dois lançam, os dois veem, e a divisão da conta sai automática. Os diferenciais são dois recursos de IA: o **scanner de nota fiscal** (foto do cupom do mercado vira lançamento categorizado, sem digitar item por item) e o **conselheiro de compras**, que ajuda a decidir se aquela compra cabe no orçamento do casal antes de passar o cartão.
 
-O plano grátis inclui 10 escaneamentos de nota e 3 consultas ao conselheiro por mês — dá para [criar a conta do casal e testar o fluxo real](https://paca-web-twmh.vercel.app/signup) sem pagar nada. O Premium custa R$ 24,90/mês ou R$ 179,90/ano, com 7 dias de teste. Fazendo a conta: 12 × R$ 24,90 = R$ 298,80 por ano no mensal, contra R$ 179,90 no anual — **economia de R$ 118,90 (cerca de 40%)**.
+O plano grátis inclui 10 escaneamentos de nota e 3 consultas ao conselheiro por mês — dá para [criar a conta do casal e testar o fluxo real](https://app.pacafinance.com.br/signup) sem pagar nada. O Premium custa R$ 24,90/mês ou R$ 179,90/ano, com 7 dias de teste. Fazendo a conta: 12 × R$ 24,90 = R$ 298,80 por ano no mensal, contra R$ 179,90 no anual — **economia de R$ 118,90 (cerca de 40%)**.
 
 **Contras honestos:** os apps para iPhone e Android ainda estão chegando às lojas — hoje o uso é pelo web app, que funciona no celular mas não é a mesma coisa que um app nativo. E os limites do plano grátis são apertados para quem escaneia nota toda semana.
 

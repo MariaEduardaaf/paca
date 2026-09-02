@@ -515,7 +515,7 @@ export default function Profile() {
         <SectionTitle title={t.profile.support} />
         <View className="mx-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 mb-4">
           <TouchableOpacity
-            onPress={() => Linking.openURL("https://paca-web-twmh.vercel.app/terms")}
+            onPress={() => Linking.openURL("https://app.pacafinance.com.br/terms")}
             className="flex-row items-center justify-between px-5 py-4 border-b border-gray-50 dark:border-gray-700/50"
             activeOpacity={0.7}
           >
@@ -528,7 +528,7 @@ export default function Profile() {
             <Ionicons name="chevron-forward" size={18} color="#D1D5DB" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => Linking.openURL("https://paca-web-twmh.vercel.app/privacy")}
+            onPress={() => Linking.openURL("https://app.pacafinance.com.br/privacy")}
             className="flex-row items-center justify-between px-5 py-4"
             activeOpacity={0.7}
           >

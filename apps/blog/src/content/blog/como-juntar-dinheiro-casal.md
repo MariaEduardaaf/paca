@@ -130,7 +130,7 @@ Plano sem acompanhamento vira lembrança. O que sustenta a meta não é a empolg
 3. **Algum gasto fugiu do padrão?** Fatura do cartão e variáveis na mesa, sem tom de tribunal — o objetivo é ajustar, não julgar.
 4. **Mudou alguma coisa?** Renda nova, imprevisto, prazo do sonho — o plano se adapta, não quebra.
 
-A ferramenta importa menos que a constância — mas ela muda o custo do ritual. Com orçamentos por categoria e metas compartilhadas no Paca Finance, os dois registram os gastos ao longo do mês e a revisão vira 5 minutos de app aberto juntos — os números já estão lá, atualizados pros dois — em vez de uma noite montando planilha; dá pra [criar a conta do casal no plano grátis](https://paca-web-twmh.vercel.app/signup) e testar o ritual por um mês. Dito isso, com honestidade: se vocês já têm uma planilha que funciona e a revisão mensal *acontece de verdade*, não precisam trocar de ferramenta — precisam só não pular o ritual.
+A ferramenta importa menos que a constância — mas ela muda o custo do ritual. Com orçamentos por categoria e metas compartilhadas no Paca Finance, os dois registram os gastos ao longo do mês e a revisão vira 5 minutos de app aberto juntos — os números já estão lá, atualizados pros dois — em vez de uma noite montando planilha; dá pra [criar a conta do casal no plano grátis](https://app.pacafinance.com.br/signup) e testar o ritual por um mês. Dito isso, com honestidade: se vocês já têm uma planilha que funciona e a revisão mensal *acontece de verdade*, não precisam trocar de ferramenta — precisam só não pular o ritual.
 
 Última dica do ritual: comemorem os marcos. 25%, 50%, 75% da meta merecem pelo menos um brinde. Meta de casal que só cobra e nunca celebra vira obrigação — e obrigação a gente abandona.
 
