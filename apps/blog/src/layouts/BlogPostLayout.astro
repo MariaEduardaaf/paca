@@ -8,6 +8,7 @@ import CTABox from "../components/CTABox.astro";
 import Cover from "../components/Cover.astro";
 import NewsletterForm from "../components/NewsletterForm.astro";
 import PostCard from "../components/PostCard.astro";
+import RecirculationPanel from "../components/RecirculationPanel.astro";
 import ShareBox from "../components/ShareBox.astro";
 import { SITE_TITLE, SITE_URL, APP_URL } from "../consts";
 import { CATEGORIES } from "../lib/categories";
@@ -70,6 +71,33 @@ const others = allPosts.filter(
   (p) => p.id !== post.id && p.data.category !== category,
 );
 const related = [...sameCategory, ...others].slice(0, 3);
+
+/*
+ * Recirculação (barra lateral no desktop, bloco no fim do texto no celular).
+ * Mesma prioridade do "Leia também": mesma categoria primeiro, depois os
+ * outros por data.
+ */
+const recircPool = [...sameCategory, ...others];
+
+/*
+ * Lateral: 6 links. A coluna já começa com o cartão da calculadora, e o que
+ * passar disso cai fora da janela num notebook — o excedente só seria
+ * alcançável pelo scroll interno da coluna, que quase ninguém descobre. Os 3
+ * primeiros repetem o "Leia também" de propósito: no desktop a lateral aparece
+ * DURANTE a leitura e os cartões só depois dela.
+ */
+const sidebarPosts = recircPool.slice(0, 6);
+
+/*
+ * Celular e tablet: aqui não existe lateral, então este bloco e o "Leia
+ * também" ficam a poucas telas um do outro. Repetir os mesmos 3 títulos nesse
+ * espaço só gastava rolagem, então o bloco do fim mostra os SEGUINTES — somados
+ * aos cartões, o leitor de celular termina com 9 destinos distintos. São 6 (e
+ * não 5) para a grade de duas colunas do tablet fechar 3 + 3, sem meia linha
+ * vazia embaixo.
+ */
+const relatedIds = new Set(related.map((p) => p.id));
+const inlinePosts = recircPool.filter((p) => !relatedIds.has(p.id)).slice(0, 6);
 
 const blogPostingJsonLd = {
   "@context": "https://schema.org",
@@ -141,146 +169,198 @@ const faqJsonLd =
     {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
   </Fragment>
 
-  <article
-    class="mx-auto max-w-3xl px-4 py-10 sm:px-6"
-    style={`--kc:${palette.kicker};--kcd:${palette.kickerDark}`}
-  >
-    <nav aria-label="Trilha de navegação" class="text-sm text-gray-600 dark:text-gray-400">
-      <ol class="flex flex-wrap items-center gap-1">
-        <li>
-          <a href="/" class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">Início</a>
-        </li>
-        <li aria-hidden="true">›</li>
-        <li>
-          <a href="/blog" class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">Blog</a>
-        </li>
-        <li aria-hidden="true">›</li>
-        <li>
-          <a href={`/categorias/${category}`} class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">
-            {categoryInfo.label}
-          </a>
-        </li>
-      </ol>
-    </nav>
+  {/*
+    Duas colunas só a partir de 1152px. A conta que decide o breakpoint: a
+    coluna de texto tem 45rem (720px) — exatamente a medida de leitura de antes,
+    quando o artigo era `max-w-3xl px-4` —, a lateral tem 280px e o vão 40px.
+    São 1040px; 1152 é o ponto em que o `max-w-6xl` chega ao próprio limite e
+    sobram 1104px de conteúdo, ou seja 64px de folga sem tirar um pixel do
+    texto. Em 1024 sobrariam 976px e a única forma de encaixar seria espremendo
+    o texto, que é justamente o que segura a pessoa lendo — então aí não tem
+    lateral e o conteúdo dela vai para o fim do artigo.
 
-    <header class="mt-6">
-      <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--kc)] dark:text-[color:var(--kcd)]">
-        <a href={`/categorias/${category}`} class="rounded">{categoryInfo.label}</a>
-      </p>
+    Não é `xl:` (1280px) porque a faixa 1152–1279 é onde mora o notebook de
+    1280x800 (a janela dá ~1265px com a barra de rolagem): com `xl` ele caía no
+    layout de celular tendo espaço de sobra para a lateral.
 
-      <h1 class="mt-3 font-display text-[2.1rem] font-bold leading-[1.15] text-gray-800 sm:text-[2.6rem] dark:text-white">
-        {title}
-      </h1>
+    `justify-center` mantém o artigo centralizado abaixo desse ponto, onde a
+    lateral é `display:none` e some da linha.
+  */}
+  <div class="mx-auto flex max-w-6xl justify-center gap-10 px-4 py-10 sm:px-6">
+    <article
+      class="w-full min-w-0 max-w-[45rem]"
+      style={`--kc:${palette.kicker};--kcd:${palette.kickerDark}`}
+    >
+      <nav aria-label="Trilha de navegação" class="text-sm text-gray-600 dark:text-gray-400">
+        <ol class="flex flex-wrap items-center gap-1">
+          <li>
+            <a href="/" class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">Início</a>
+          </li>
+          <li aria-hidden="true">›</li>
+          <li>
+            <a href="/blog" class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">Blog</a>
+          </li>
+          <li aria-hidden="true">›</li>
+          <li>
+            <a href={`/categorias/${category}`} class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">
+              {categoryInfo.label}
+            </a>
+          </li>
+        </ol>
+      </nav>
 
-      <p class="mt-4 text-lg leading-relaxed text-gray-600 dark:text-gray-300">{description}</p>
-
-      <div class="mt-6 flex items-center gap-3 border-y border-gray-100 py-4 dark:border-gray-800">
-        <img
-          src="/logo-icon-96.png"
-          alt=""
-          class="h-9 w-9 rounded-full"
-          width="36"
-          height="36"
-        />
-        <p class="text-sm text-gray-600 dark:text-gray-300">
-          <a href="/sobre" class="rounded font-semibold text-gray-800 hover:text-pink-700 dark:text-gray-100 dark:hover:text-pink-300">
-            Equipe Paca Finance
-          </a>
-          <span class="block text-gray-600 sm:inline dark:text-gray-400">
-            <span class="hidden sm:inline" aria-hidden="true"> · </span>
-            Publicado em <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-            {
-              updatedDate && (
-                <>
-                  <span aria-hidden="true"> · </span>
-                  Atualizado em <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
-                </>
-              )
-            }
-            <span aria-hidden="true"> · </span>
-            {minutes} min de leitura
-          </span>
+      <header class="mt-6">
+        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--kc)] dark:text-[color:var(--kcd)]">
+          <a href={`/categorias/${category}`} class="rounded">{categoryInfo.label}</a>
         </p>
-      </div>
 
-      {/* Primeira dobra, junto do título — o slot de maior valor (ESTRATEGIA §5). */}
-      <AdSlot placement="first-fold" />
+        <h1 class="mt-3 font-display text-[2.1rem] font-bold leading-[1.15] text-gray-800 sm:text-[2.6rem] dark:text-white">
+          {title}
+        </h1>
 
-      <div class="mt-8 overflow-hidden rounded-2xl">
-        <Cover category={category} slug={post.id} class="aspect-video w-full" />
-      </div>
-    </header>
+        <p class="mt-4 text-lg leading-relaxed text-gray-600 dark:text-gray-300">{description}</p>
 
-    {
-      showToc && (
-        <nav
-          aria-labelledby="toc-title"
-          class="mt-8 rounded-2xl border border-gray-100 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-800/60"
-        >
-          <p id="toc-title" class="text-xs font-semibold uppercase tracking-[0.12em] text-gray-600 dark:text-gray-400">
-            Neste artigo
+        <div class="mt-6 flex items-center gap-3 border-y border-gray-100 py-4 dark:border-gray-800">
+          <img
+            src="/logo-icon-96.png"
+            alt=""
+            class="h-9 w-9 rounded-full"
+            width="36"
+            height="36"
+          />
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            <a href="/sobre" class="rounded font-semibold text-gray-800 hover:text-pink-700 dark:text-gray-100 dark:hover:text-pink-300">
+              Equipe Paca Finance
+            </a>
+            <span class="block text-gray-600 sm:inline dark:text-gray-400">
+              <span class="hidden sm:inline" aria-hidden="true"> · </span>
+              Publicado em <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+              {
+                updatedDate && (
+                  <>
+                    <span aria-hidden="true"> · </span>
+                    Atualizado em <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+                  </>
+                )
+              }
+              <span aria-hidden="true"> · </span>
+              {minutes} min de leitura
+            </span>
           </p>
-          <ol class="mt-3 space-y-2 text-[15px]">
-            {tocEntries.map((h) => (
-              <li>
-                <a
-                  href={`#${h.slug}`}
-                  class="rounded text-gray-700 transition-colors hover:text-pink-700 dark:text-gray-200 dark:hover:text-pink-300"
-                >
-                  {h.text}
-                </a>
-              </li>
-            ))}
-          </ol>
-        </nav>
-      )
-    }
+        </div>
 
-    <div class="prose-paca mt-10">
-      <Content />
-    </div>
+        {/* Primeira dobra, junto do título — o slot de maior valor (ESTRATEGIA §5). */}
+        <AdSlot placement="first-fold" />
+
+        <div class="mt-8 overflow-hidden rounded-2xl">
+          <Cover category={category} slug={post.id} class="aspect-video w-full" />
+        </div>
+      </header>
+
+      {
+        showToc && (
+          <nav
+            aria-labelledby="toc-title"
+            class="mt-8 rounded-2xl border border-gray-100 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-800/60"
+          >
+            <p id="toc-title" class="text-xs font-semibold uppercase tracking-[0.12em] text-gray-600 dark:text-gray-400">
+              Neste artigo
+            </p>
+            <ol class="mt-3 space-y-2 text-[15px]">
+              {tocEntries.map((h) => (
+                <li>
+                  <a
+                    href={`#${h.slug}`}
+                    class="rounded text-gray-700 transition-colors hover:text-pink-700 dark:text-gray-200 dark:hover:text-pink-300"
+                  >
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+
+      <div class="prose-paca mt-10">
+        <Content />
+      </div>
+
+      {/*
+        Celular e tablet: o conteúdo da lateral entra AQUI, no ponto em que o
+        texto acabou de terminar — o mesmo momento em que a lateral estaria
+        visível no desktop, e o de maior chance de clique. Nada do que já existia
+        no fim do artigo saiu do lugar: tudo abaixo continua na ordem de antes.
+      */}
+      <aside
+        aria-label="Continue navegando no blog"
+        class="mt-12 border-t border-gray-100 pt-8 min-[1152px]:hidden dark:border-gray-800"
+      >
+        <RecirculationPanel posts={inlinePosts} variant="inline" />
+      </aside>
+
+      {/*
+        Ordem do fim do artigo, de propósito (o texto termina aqui):
+
+        1. Compartilhar — o passo que o próprio artigo pede ("combina com a outra
+           pessoa"). É um convite leve e a favor do leitor, então vem primeiro.
+        2. Anúncio.
+        3. Newsletter — o único pedido de e-mail da página, ANTES dos cards de
+           "Leia também". Depois deles, quem ia clicar já clicou.
+        4. "Leia também".
+        5. CTABox (produto) — fecha a página. Fica longe da newsletter de
+           propósito: os dois pedidos colados viravam um muro no fim do texto, e
+           a grade de artigos entre eles dá o respiro.
+      */}
+      <ShareBox url={postUrl} title={title} />
+
+      <AdSlot placement="in-content" />
+
+      {/* `source` = slug, para saber que conteúdo converte (ESTRATEGIA §6). */}
+      <NewsletterForm source={post.id} />
+
+      {
+        related.length > 0 && (
+          <section aria-labelledby="relacionados" class="mt-14 border-t border-gray-100 pt-10 dark:border-gray-800">
+            <h2 id="relacionados" class="font-display text-xl font-bold text-gray-800 sm:text-2xl dark:text-white">
+              Leia também
+            </h2>
+            <div class="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((p) => (
+                <PostCard post={p} showExcerpt={false} />
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <CTABox {...cta} />
+
+      <p class="mt-12 border-t border-gray-100 pt-6 text-[13px] leading-relaxed text-gray-600 dark:border-gray-800 dark:text-gray-400">
+        Conteúdo editorial do blog do Paca Finance. Não é recomendação de
+        investimento. Saiba como produzimos e revisamos nossos guias na
+        <a href="/sobre#politica-editorial" class="rounded underline underline-offset-2 hover:text-pink-700 dark:hover:text-pink-300">política editorial</a>.
+      </p>
+    </article>
 
     {/*
-      Ordem do fim do artigo, de propósito (o texto termina aqui):
+      Depois do artigo no HTML de propósito: quem navega por Tab lê o texto
+      inteiro antes de cair na lateral, mesmo com o desenho pondo as duas lado
+      a lado. `sticky` para acompanhar a leitura — é isso que faz a
+      recirculação funcionar. O `max-h` + `overflow-y-auto` são o seguro para
+      quando a lista crescer e ficar mais alta que a janela: sem eles o pé da
+      lateral ficaria inalcançável. A margem negativa com o padding de volta
+      só existe para o contorno de foco não ser cortado pela borda do scroll.
 
-      1. Compartilhar — o passo que o próprio artigo pede ("combina com a outra
-         pessoa"). É um convite leve e a favor do leitor, então vem primeiro.
-      2. Anúncio.
-      3. Newsletter — o único pedido de e-mail da página, ANTES dos cards de
-         "Leia também". Depois deles, quem ia clicar já clicou.
-      4. "Leia também".
-      5. CTABox (produto) — fecha a página. Fica longe da newsletter de
-         propósito: os dois pedidos colados viravam um muro no fim do texto, e
-         a grade de artigos entre eles dá o respiro.
+      SEM `overscroll-contain` de propósito: com ele, quem estivesse com o
+      cursor sobre a lateral rolava a lateral até o fim e a PÁGINA parava de
+      rolar — o leitor ficava preso. Deixando o padrão, a rolagem encadeia:
+      termina a lateral, continua o artigo.
     */}
-    <ShareBox url={postUrl} title={title} />
-
-    <AdSlot placement="in-content" />
-
-    {/* `source` = slug, para saber que conteúdo converte (ESTRATEGIA §6). */}
-    <NewsletterForm source={post.id} />
-
-    {
-      related.length > 0 && (
-        <section aria-labelledby="relacionados" class="mt-14 border-t border-gray-100 pt-10 dark:border-gray-800">
-          <h2 id="relacionados" class="font-display text-xl font-bold text-gray-800 sm:text-2xl dark:text-white">
-            Leia também
-          </h2>
-          <div class="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((p) => (
-              <PostCard post={p} showExcerpt={false} />
-            ))}
-          </div>
-        </section>
-      )
-    }
-
-    <CTABox {...cta} />
-
-    <p class="mt-12 border-t border-gray-100 pt-6 text-[13px] leading-relaxed text-gray-600 dark:border-gray-800 dark:text-gray-400">
-      Conteúdo editorial do blog do Paca Finance. Não é recomendação de
-      investimento. Saiba como produzimos e revisamos nossos guias na
-      <a href="/sobre#politica-editorial" class="rounded underline underline-offset-2 hover:text-pink-700 dark:hover:text-pink-300">política editorial</a>.
-    </p>
-  </article>
+    <aside aria-label="Continue navegando no blog" class="hidden w-[17.5rem] shrink-0 min-[1152px]:block">
+      <div class="sticky top-8 -mx-1 max-h-[calc(100vh-4rem)] overflow-y-auto px-1 py-1">
+        <RecirculationPanel posts={sidebarPosts} variant="sidebar" />
+      </div>
+    </aside>
+  </div>
 </BaseLayout>

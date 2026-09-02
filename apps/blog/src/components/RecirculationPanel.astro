@@ -1,0 +1,120 @@
+---
+import type { BlogPost } from "../lib/posts";
+import { readingTimeMinutes } from "../lib/posts";
+
+/**
+ * Bloco de recirculação das páginas de artigo: a calculadora e outros guias.
+ *
+ * Renderizado DUAS vezes pelo BlogPostLayout, com `variant` diferente:
+ *  - "sidebar": coluna grudada (sticky) ao lado do texto, só nas telas largas;
+ *  - "inline":  o mesmo formato no fim do texto, para celular e tablet.
+ * Só um dos dois fica visível por vez (`hidden .../block` / `...:hidden`), então
+ * o leitor de tela também enxerga um só — `display:none` sai da árvore de
+ * acessibilidade. Por isso os ids dos títulos levam sufixo: os dois existem no
+ * HTML ao mesmo tempo e id repetido quebraria o `aria-labelledby`.
+ *
+ * A calculadora vem PRIMEIRO nos dois modos. Na lateral isso é o que garante
+ * que ela apareça: a coluna é mais alta que a janela em tela de notebook, e o
+ * que fica embaixo depende de um scroll interno que quase ninguém descobre.
+ *
+ * Sem lista de categorias aqui de propósito: os mesmos cinco links já estão no
+ * menu do topo e de novo no rodapé de toda página. Uma terceira cópia só
+ * alongava o bloco e empurrava o resto para fora da janela.
+ *
+ * Sem anúncio aqui de propósito (decisão separada).
+ */
+
+interface Props {
+  /** Já ordenados e sem o artigo atual — o layout decide a prioridade. */
+  posts: BlogPost[];
+  variant?: "sidebar" | "inline";
+}
+
+const { posts, variant = "sidebar" } = Astro.props;
+
+const isSidebar = variant === "sidebar";
+const suffix = isSidebar ? "lateral" : "fim";
+const guiasId = `recirc-guias-${suffix}`;
+const calcId = `recirc-calculadora-${suffix}`;
+
+const headingClass = [
+  "font-display font-bold text-gray-800 dark:text-white",
+  isSidebar ? "text-base" : "text-lg sm:text-xl",
+].join(" ");
+
+// No modo lateral a lista é uma coluna só (divisória entre itens, sem a última).
+// No modo fim de artigo ela vira duas colunas a partir de `sm`, e aí cada item
+// mantém a própria divisória — em grade, "o último" é só um dos dois da linha
+// de baixo, e tirar a borda de um só deixa a base torta.
+const listClass = isSidebar
+  ? "mt-3"
+  : "mt-4 sm:grid sm:grid-cols-2 sm:gap-x-10";
+const itemClass = [
+  "border-b border-gray-100 dark:border-gray-800",
+  isSidebar ? "last:border-b-0" : "",
+].join(" ");
+---
+
+<div class={isSidebar ? "space-y-8" : "space-y-10"}>
+  {/*
+    A calculadora é o melhor destino de recirculação que temos: é a única
+    página que a mesma pessoa abre mais de uma vez. Cartão inteiro clicável
+    pelo `after:inset-0` do link do título — assim o nome acessível do link
+    continua sendo o título, e não o cartão inteiro lido em voz alta.
+  */}
+  <section
+    aria-labelledby={calcId}
+    class="group relative rounded-2xl border border-pink-200 bg-pink-50 p-5 transition-colors hover:border-pink-300 dark:border-pink-800/60 dark:bg-pink-900/15 dark:hover:border-pink-700"
+  >
+    <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-pink-800 dark:text-pink-200">
+      Ferramenta grátis
+    </p>
+    <h2 id={calcId} class={`mt-1.5 ${headingClass}`}>
+      <a
+        href="/calculadora-divisao-de-contas"
+        class="rounded transition-colors after:absolute after:inset-0 after:content-[''] hover:text-pink-800 dark:hover:text-pink-200"
+      >
+        Calculadora de divisão de contas
+      </a>
+    </h2>
+    <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+      Coloque as duas rendas e o total das contas do mês: ela mostra quanto cada
+      um paga na divisão proporcional ao salário, comparado com o meio a meio.
+    </p>
+    {/*
+      Afordância visual, não um segundo link: quem usa leitor de tela já ouviu
+      o link do título e não precisa de "Abrir a calculadora" logo depois.
+    */}
+    <p class="mt-3 text-sm font-semibold text-pink-800 group-hover:underline group-hover:underline-offset-2 dark:text-pink-200">
+      Abrir a calculadora <span aria-hidden="true">→</span>
+    </p>
+  </section>
+
+  {
+    posts.length > 0 && (
+      <nav aria-labelledby={guiasId}>
+        <h2 id={guiasId} class={headingClass}>
+          Outros guias
+        </h2>
+
+        <ul class={listClass}>
+          {posts.map((p) => (
+            <li class={itemClass}>
+              <a
+                href={`/blog/${p.id}`}
+                class="group block rounded py-3 transition-colors"
+              >
+                <span class="block font-display text-[15px] font-semibold leading-snug text-gray-800 group-hover:text-pink-700 dark:text-gray-100 dark:group-hover:text-pink-300">
+                  {p.data.title}
+                </span>
+                <span class="mt-1 block text-xs text-gray-600 dark:text-gray-400">
+                  {readingTimeMinutes(p.body)} min de leitura
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+</div>
