@@ -1,70 +1,41 @@
 ---
-import type { CategoryId } from "../lib/categories";
-import { COVER_INK, COVER_PALETTES } from "../lib/covers";
-import { coverArt, MOTIF_BOX, watermarkSize } from "../lib/motifs.mjs";
+/**
+ * Capa do artigo no SITE.
+ *
+ * A palavra gigante aqui é a CATEGORIA, não o título: no site o título já está
+ * escrito logo abaixo do card (e no topo do artigo, logo acima), então repetir
+ * seria redundante. O título só entra na palavra gigante do card de
+ * compartilhamento (scripts/og.mjs), onde a imagem viaja sozinha.
+ *
+ * O desenho inteiro vive em src/lib/cover-art.mjs + src/styles/cover.css — este
+ * componente só resolve o rótulo da categoria e monta o elemento. Nenhuma regra
+ * de estilo de capa aqui dentro.
+ */
+import "../styles/cover.css";
+import { CATEGORIES, type CategoryId } from "../lib/categories";
+import { coverArt } from "../lib/cover-art.mjs";
 
 interface Props {
   category: CategoryId;
+  /** Slug do artigo — define o fundo e o motivo. As páginas de categoria
+   *  passam o id da própria categoria. */
   slug: string;
   class?: string;
 }
 
 const { category, slug, class: className = "" } = Astro.props;
-const palette = COVER_PALETTES[category];
 
-// O motivo vem de src/lib/motifs.mjs — um por artigo, com fallback por
-// categoria — desenhado numa caixa 620x620 com origem no canto. Aqui a gente só
-// posiciona essa caixa dentro do viewBox 1200x675, sangrando por uma das bordas.
-// A variação determinística por slug (lado, giro, espelho) vem junto.
-const art = coverArt(slug, category, palette.fg);
-
-const SCALE = 1.06; // 620 -> 657, quase a altura toda da capa
-const boxed = MOTIF_BOX * SCALE;
-const originX = art.mirrored ? -120 : 1200 + 120 - boxed;
-const center = MOTIF_BOX / 2;
-
-const motifTransform = [
-  `translate(${originX.toFixed(1)} 9)`,
-  `scale(${SCALE})`,
-  art.flip ? `translate(${MOTIF_BOX} 0) scale(-1 1)` : "",
-  `rotate(${art.rotation} ${center} ${center})`,
-]
-  .filter(Boolean)
-  .join(" ");
-
-const watermarkY = art.watermarkTop ? 200 : 640;
-const watermarkX = art.mirrored ? 1180 : 24;
-const watermarkAnchor = art.mirrored ? "end" : "start";
-const watermarkFont = watermarkSize(palette.word, 190);
+const { html, style } = coverArt({
+  slug,
+  category,
+  categoryLabel: CATEGORIES[category]?.label ?? category,
+  mode: "category",
+});
 ---
 
-<!-- Decorative duotone cover: two category colors + ink watermark. -->
 {/*
-  Sem `role="img"`: a capa é decorativa (a informação está no título ao lado),
-  e `role="img"` sem nome acessível é justamente o que os validadores apontam.
-  `aria-hidden` sozinho já diz o que ela é. `focusable="false"` porque SVG
-  entra no tab order de navegadores antigos.
+  A capa é DECORATIVA: tudo que ela diz (categoria, título) está em texto de
+  verdade ao lado. `aria-hidden` é o que descreve isso corretamente — `role="img"`
+  sem nome acessível é justamente o que os validadores apontam.
 */}
-<svg
-  class={className}
-  viewBox="0 0 1200 675"
-  aria-hidden="true"
-  focusable="false"
-  preserveAspectRatio="xMidYMid slice"
->
-  <rect width="1200" height="675" fill={palette.bg}></rect>
-
-  <text
-    x={watermarkX}
-    y={watermarkY}
-    text-anchor={watermarkAnchor}
-    fill={COVER_INK}
-    opacity="0.08"
-    font-family="'Bricolage Grotesque', system-ui, sans-serif"
-    font-weight="800"
-    font-size={watermarkFont}
-    letter-spacing={-(watermarkFont / 32).toFixed(1)}
-  >{palette.word}</text>
-
-  <g transform={motifTransform} set:html={art.svg}></g>
-</svg>
+<div class:list={["paca-cover", className]} style={style} aria-hidden="true" set:html={html} />

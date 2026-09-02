@@ -8,7 +8,6 @@ import NewsletterForm from "../components/NewsletterForm.astro";
 import { SITE_DESCRIPTION } from "../consts";
 import { formatDate, readingTimeMinutes, sortByDateDesc } from "../lib/posts";
 import { CATEGORIES } from "../lib/categories";
-import { COVER_PALETTES } from "../lib/covers";
 
 const sorted = sortByDateDesc(await getCollection("blog", ({ data }) => !data.draft));
 // The welcome note never takes an editorial slot — it goes last.
@@ -25,7 +24,6 @@ const picks = rest.slice(0, 3);
 const latest = rest.slice(3);
 
 const featuredCategory = CATEGORIES[featured.data.category];
-const featuredPalette = COVER_PALETTES[featured.data.category];
 const featuredMinutes = readingTimeMinutes(featured.body);
 ---
 
@@ -47,7 +45,7 @@ const featuredMinutes = readingTimeMinutes(featured.body);
       <h2 id="destaque" class="sr-only">Em destaque</h2>
       <article
         class="group relative grid items-center gap-6 lg:grid-cols-[7fr_5fr] lg:gap-10"
-        style={`--kc:${featuredPalette.kicker};--kcd:${featuredPalette.kickerDark}`}
+        style={`--kc:${featuredCategory.accent};--kcd:${featuredCategory.accentDark}`}
       >
         <div class="overflow-hidden rounded-2xl">
           <Cover

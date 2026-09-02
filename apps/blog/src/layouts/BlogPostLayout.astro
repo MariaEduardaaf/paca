@@ -12,7 +12,6 @@ import RecirculationPanel from "../components/RecirculationPanel.astro";
 import ShareBox from "../components/ShareBox.astro";
 import { SITE_TITLE, SITE_URL, APP_URL } from "../consts";
 import { CATEGORIES } from "../lib/categories";
-import { COVER_PALETTES } from "../lib/covers";
 import { ctaFor } from "../lib/ctas";
 import type { BlogPost } from "../lib/posts";
 import {
@@ -31,7 +30,6 @@ const { Content, headings } = await render(post);
 
 const { title, description, pubDate, updatedDate, category } = post.data;
 const categoryInfo = CATEGORIES[category];
-const palette = COVER_PALETTES[category];
 const minutes = readingTimeMinutes(post.body);
 
 // CTA de produto escrito para a dor deste artigo (src/lib/ctas.ts). Slug sem
@@ -189,7 +187,7 @@ const faqJsonLd =
   <div class="mx-auto flex max-w-6xl justify-center gap-10 px-4 py-10 sm:px-6">
     <article
       class="w-full min-w-0 max-w-[45rem]"
-      style={`--kc:${palette.kicker};--kcd:${palette.kickerDark}`}
+      style={`--kc:${categoryInfo.accent};--kcd:${categoryInfo.accentDark}`}
     >
       <nav aria-label="Trilha de navegação" class="text-sm text-gray-600 dark:text-gray-400">
         <ol class="flex flex-wrap items-center gap-1">

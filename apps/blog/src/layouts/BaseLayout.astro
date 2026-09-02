@@ -89,8 +89,16 @@ const ogImageUrl = new URL(ogImage, SITE_URL).href;
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/*
+      Bricolage Grotesque com o EIXO ÓPTICO (opsz 12..96) e o peso 800: é o que
+      a palavra gigante das capas usa (src/lib/cover-art.mjs). Sem o 800 a capa
+      cai no 700 e sai visivelmente mais leve que o desenho aprovado; sem o eixo
+      óptico, o corpo de 172px sai com o desenho de letra pensado para texto
+      corrido. scripts/og.mjs carrega exatamente a mesma lista (com
+      display=block, porque screenshot não espera swap).
+    */}
     <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
 

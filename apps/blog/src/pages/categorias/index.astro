@@ -3,14 +3,12 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Cover from "../../components/Cover.astro";
 import { CATEGORIES, CATEGORY_IDS } from "../../lib/categories";
-import { COVER_PALETTES } from "../../lib/covers";
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 
 const categories = CATEGORY_IDS.map((id) => ({
   id,
   ...CATEGORIES[id],
-  palette: COVER_PALETTES[id],
   count: posts.filter((post) => post.data.category === id).length,
 }));
 
@@ -51,7 +49,7 @@ const total = posts.length;
         categories.map((category) => (
           <li
             class="group relative rounded-2xl border border-gray-200 bg-white p-4 transition-colors hover:border-pink-300 sm:p-5 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-pink-600"
-            style={`--kc:${category.palette.kicker};--kcd:${category.palette.kickerDark}`}
+            style={`--kc:${category.accent};--kcd:${category.accentDark}`}
           >
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
               <div class="w-full shrink-0 overflow-hidden rounded-xl sm:w-44">

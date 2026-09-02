@@ -5,7 +5,6 @@ import PostCard from "../../components/PostCard.astro";
 import Cover from "../../components/Cover.astro";
 import NewsletterForm from "../../components/NewsletterForm.astro";
 import { CATEGORIES, CATEGORY_IDS, type CategoryId } from "../../lib/categories";
-import { COVER_PALETTES } from "../../lib/covers";
 import { formatDate, readingTimeMinutes, sortByDateDesc } from "../../lib/posts";
 
 export async function getStaticPaths() {
@@ -24,7 +23,6 @@ const posts = all.filter((post) => post.data.category === category);
 // "leia também" com posts de outras categorias fecha a página.
 const isSingle = posts.length === 1;
 const single = posts[0];
-const singlePalette = single ? COVER_PALETTES[single.data.category] : null;
 
 const alsoRead =
   posts.length > 0 && posts.length < 3
@@ -91,10 +89,10 @@ const alsoRead =
       <h2 id="artigos" class="sr-only">Artigos em {info.label}</h2>
 
       {
-        isSingle && single && singlePalette && (
+        isSingle && single && (
           <article
             class="group relative grid items-center gap-6 lg:grid-cols-[7fr_5fr] lg:gap-10"
-            style={`--kc:${singlePalette.kicker};--kcd:${singlePalette.kickerDark}`}
+            style={`--kc:${info.accent};--kcd:${info.accentDark}`}
           >
             <div class="overflow-hidden rounded-2xl">
               <Cover

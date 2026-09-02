@@ -1,0 +1,142 @@
+/*
+ * CAPAS DO BLOG — FOLHA DE ESTILO ÚNICA
+ *
+ * Esta folha e src/lib/cover-art.mjs (a marcação) são as DUAS ÚNICAS peças do
+ * sistema de capas. Os dois renderizadores só as consomem:
+ *   - src/components/Cover.astro  → importa este arquivo (Astro empacota 1x por página);
+ *   - scripts/og.mjs              → lê este arquivo do disco e injeta num <style>.
+ * Nunca escreva regra de capa em outro lugar: qualquer duplicata volta a fazer
+ * o card de compartilhamento divergir da capa do site (era o bug do sistema antigo).
+ *
+ * SISTEMA DE UNIDADES — por que `--u` e não pixel
+ * A arte é desenhada UMA vez na caixa de 1200x630 do canvas. No site a mesma
+ * capa aparece em vários tamanhos (miniatura de 176px na lista de categorias,
+ * card de ~380px na home, destaque de ~700px, topo do artigo). Em vez de
+ * recalcular tipografia por breakpoint, o container vira uma "container query"
+ * e `--u` passa a valer largura_do_container / 1200. Todo número da spec entra
+ * como `calc(N * var(--u))`: a 1200px, 1u = 1px (o card de OG sai idêntico ao
+ * canvas); a 380px, 1u = 0,3167px e a arte inteira encolhe junto, no MESMO
+ * ponto de quebra de linha — que é o requisito: o texto nunca quebra diferente
+ * conforme o tamanho.
+ *
+ * ATENÇÃO: `em` não serve aqui. `left: 70em` num elemento com `font-size: 172u`
+ * resolveria contra o próprio corpo da fonte (70 x 172u). Só `letter-spacing`
+ * usa `em` de propósito — ali a proporção com o corpo é o que a spec pede.
+ *
+ * ENQUADRAMENTO
+ * O palco tem exatamente a proporção 1200:630; o container pode ser mais alto
+ * (as chamadas usam `aspect-video`, 16:9). Nesse caso o palco fica centrado
+ * verticalmente e sobram duas faixas — pintadas com a MESMA cor de fundo da
+ * arte (`--bg` está no container, não no palco), então a emenda é invisível e
+ * nada é cortado. É o oposto de `object-fit: cover`, e de propósito: com corte
+ * a pílula da categoria e o mascote perderiam a margem de segurança da spec.
+ */
+
+.paca-cover {
+  container-type: inline-size;
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Proporção padrão, na especificidade ZERO de propósito: o palco é absoluto e
+   sem isso a capa teria altura 0 quando ninguém enquadra. Qualquer classe do
+   chamador (hoje `aspect-video`) ganha desta, independente da ordem do CSS. */
+:where(.paca-cover) {
+  aspect-ratio: 1200 / 630;
+}
+
+.paca-cover__stage {
+  --u: calc(100cqw / 1200);
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: calc(630 * var(--u));
+  transform: translateY(-50%);
+  font-family: "DM Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Navegador sem container query (Safari < 16): a arte sai no tamanho nativo e
+   o container corta. Feio, mas legível — melhor que capa em branco. */
+@supports not (container-type: inline-size) {
+  .paca-cover__stage {
+    --u: 1px;
+  }
+}
+
+/* Pílula da categoria — left 76, top 64, padding 9/18, raio total. */
+.paca-cover__pill {
+  position: absolute;
+  left: calc(76 * var(--u));
+  top: calc(64 * var(--u));
+  display: inline-flex;
+  align-items: center;
+  padding: calc(9 * var(--u)) calc(18 * var(--u));
+  border-radius: 999px;
+  background: var(--pill-bg);
+  color: var(--pill-text);
+  font-size: calc(15 * var(--u));
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Elemento gráfico do canto superior direito. A caixa encolhe até o conteúdo:
+   cada motivo tem largura própria e todos alinham pela base e pela direita. */
+.paca-cover__motif {
+  position: absolute;
+  right: calc(64 * var(--u));
+  top: calc(52 * var(--u));
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+/* Palavra gigante — categoria no site, título do artigo no card de OG.
+   `font-size` e `line-height` chegam inline (variam por categoria/comprimento). */
+.paca-cover__word {
+  position: absolute;
+  left: calc(70 * var(--u));
+  top: calc(150 * var(--u));
+  /* A cabeça do mascote começa em x≈804u; 700u de coluna deixa ~34u de folga. */
+  max-width: calc(700 * var(--u));
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+/* Modo "categoria": maiúsculas e quebras fixas (vêm de cover-art.mjs). */
+.paca-cover__word--category {
+  text-transform: uppercase;
+}
+
+/* Modo "título": caixa normal, entrelinha um pouco mais aberta e tracking mais
+   suave — em caixa alta o -.05em da spec fecha demais um texto longo. */
+.paca-cover__word--title {
+  letter-spacing: -0.03em;
+}
+
+.paca-cover__address {
+  position: absolute;
+  left: calc(76 * var(--u));
+  bottom: calc(60 * var(--u));
+  font-size: calc(20 * var(--u));
+  font-weight: 500;
+  line-height: 1;
+  color: var(--address);
+}
+
+.paca-cover__mascot {
+  position: absolute;
+  right: calc(56 * var(--u));
+  bottom: calc(44 * var(--u));
+  height: calc(400 * var(--u));
+  width: auto;
+  display: block;
+}

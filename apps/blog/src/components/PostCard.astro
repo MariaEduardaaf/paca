@@ -2,7 +2,6 @@
 import type { BlogPost } from "../lib/posts";
 import { formatDate, readingTimeMinutes } from "../lib/posts";
 import { CATEGORIES } from "../lib/categories";
-import { COVER_PALETTES } from "../lib/covers";
 import Cover from "./Cover.astro";
 
 interface Props {
@@ -16,13 +15,12 @@ interface Props {
 const { post, headingLevel = "h3", showExcerpt = true } = Astro.props;
 const Heading = headingLevel;
 const category = CATEGORIES[post.data.category];
-const palette = COVER_PALETTES[post.data.category];
 const minutes = readingTimeMinutes(post.body);
 ---
 
 <article
   class="group relative flex h-full flex-col"
-  style={`--kc:${palette.kicker};--kcd:${palette.kickerDark}`}
+  style={`--kc:${category.accent};--kcd:${category.accentDark}`}
 >
   <div class="overflow-hidden rounded-2xl">
     <Cover

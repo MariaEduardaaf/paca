@@ -2,22 +2,29 @@
  * Gerador das imagens de compartilhamento (Open Graph) — uma por artigo.
  *
  * POR QUE ISSO EXISTE
- * Antes, todo link do blog compartilhado no WhatsApp/Facebook mostrava a mesma
- * /og-default.png. Agora cada artigo tem o seu card 1200x630 em public/og/<slug>.png,
- * usando a mesma identidade visual das capas do site (src/lib/covers.ts + Cover.astro):
- * fundo na cor da categoria, rótulo da categoria, título em Bricolage Grotesque,
- * o motivo geométrico DO ARTIGO e a assinatura "paca finance".
- * Os motivos vêm de src/lib/motifs.mjs — o mesmo módulo que o Cover.astro usa,
- * para card e capa nunca divergirem.
+ * Sem ele, todo link do blog compartilhado no WhatsApp/Facebook mostraria a
+ * mesma /og-default.png. Aqui cada artigo ganha o seu card 1200x630 em
+ * public/og/<slug>.png.
+ *
+ * MESMA ARTE DO SITE, UMA DIFERENÇA DE PROPÓSITO
+ * A marcação vem de src/lib/cover-art.mjs e o estilo de src/styles/cover.css —
+ * exatamente os mesmos arquivos que a capa do site (src/components/Cover.astro)
+ * consome. Não existe segunda cópia do desenho: mudou lá, mudou aqui.
+ * A única diferença é a PALAVRA GIGANTE:
+ *   - no site   → a CATEGORIA (o título já aparece embaixo do card; repetir seria redundante);
+ *   - aqui      → o TÍTULO do artigo (a imagem viaja sozinha e precisa se explicar).
  *
  * QUANDO RODAR DE NOVO
  *   npm run og            (dentro de apps/blog)
  * Rode sempre que:
  *   - publicar um artigo novo (ou tirar um post de draft);
  *   - mudar o `title` ou a `category` de um artigo já publicado;
- *   - mexer nas paletas de COVER_PALETTES, nos motivos de src/lib/motifs.mjs
- *     ou no visual do card aqui.
+ *   - mexer em src/lib/cover-art.mjs ou src/styles/cover.css.
  * Depois de rodar, **comite os PNGs alterados**.
+ *
+ * O script também AUDITA as regras do sistema de capas antes de desenhar
+ * (auditCovers): fundo repetido entre vizinhos da listagem, ou motivo repetido
+ * dentro de uma categoria, param a execução com a instrução do que corrigir.
  *
  * POR QUE OS PNGs SÃO VERSIONADOS DE PROPÓSITO
  * O blog é Astro estático buildado na Vercel, e o projeto não aceita dependência
@@ -48,53 +55,44 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Motivos e variação por slug: MESMO módulo que o site usa (Cover.astro).
+// A arte inteira: temas, motivos, atribuição por slug e a marcação.
 // É .mjs justamente para este script Node conseguir importar sem build.
-import { coverArt, watermarkSize } from "../src/lib/motifs.mjs";
+import { auditCovers, coverArt } from "../src/lib/cover-art.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT_DIR = join(ROOT, "src", "content", "blog");
 const PUBLIC_DIR = join(ROOT, "public");
 const OUT_DIR = join(PUBLIC_DIR, "og");
+const COVER_CSS_PATH = join(ROOT, "src", "styles", "cover.css");
 
 const CHROME =
   process.env.CHROME_BIN ||
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
-// ---------------------------------------------------------------------------
-// Paletas e rótulos — espelham src/lib/covers.ts e src/lib/categories.ts.
-// Se mudar lá, mude aqui (não dá para importar .ts de um script Node puro).
-// Os MOTIVOS não estão aqui de propósito: vêm de src/lib/motifs.mjs, importado
-// no topo, para existir uma cópia só das formas.
-// ---------------------------------------------------------------------------
-
-const COVER_INK = "#2A1B22";
-
-const COVER_PALETTES = {
-  "dividir-contas": {
-    bg: "#FFE1E9", fg: "#E5647A", word: "dividir",
-    kicker: "#C2445C", label: "Dividir contas",
-  },
-  organizacao: {
-    bg: "#E9F7F0", fg: "#3E8E7A", word: "organizar",
-    kicker: "#2E7263", label: "Organização",
-  },
-  "conversas-sobre-dinheiro": {
-    bg: "#FDEAE4", fg: "#D96A50", word: "conversar",
-    kicker: "#B24A33", label: "Conversas sobre dinheiro",
-  },
-  "metas-e-sonhos": {
-    bg: "#FFF3E0", fg: "#DC9A3E", word: "sonhar",
-    kicker: "#8F6314", label: "Metas e sonhos",
-  },
-  ferramentas: {
-    bg: "#EFECF7", fg: "#7A6BB5", word: "ferramentas",
-    kicker: "#5D4E96", label: "Ferramentas",
-  },
+/**
+ * Rótulos das categorias — espelham `label` de src/lib/categories.ts, que é
+ * TypeScript e um script Node puro não importa. É a ÚNICA coisa duplicada do
+ * sistema de capas; se mudar um rótulo lá, mude aqui.
+ */
+const CATEGORY_LABELS = {
+  "dividir-contas": "Dividir contas",
+  organizacao: "Organização",
+  "conversas-sobre-dinheiro": "Conversas sobre dinheiro",
+  "metas-e-sonhos": "Metas e sonhos",
+  ferramentas: "Ferramentas",
 };
 
+/**
+ * A mesma família de fontes do site (src/layouts/BaseLayout.astro), com o eixo
+ * óptico e o peso 800 que a palavra gigante precisa — sem o 800 a tipografia
+ * sai visivelmente mais leve que o desenho aprovado. `display=block` porque um
+ * screenshot não espera swap: com `swap` o card sairia na fonte de fallback.
+ */
+const FONTS_URL =
+  "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&display=block";
+
 // ---------------------------------------------------------------------------
-// Frontmatter (parser mínimo: só title / category / draft)
+// Frontmatter (parser mínimo: só title / category / pubDate / draft)
 // ---------------------------------------------------------------------------
 
 function parseFrontmatter(raw) {
@@ -120,34 +118,20 @@ function parseFrontmatter(raw) {
 // HTML do card
 // ---------------------------------------------------------------------------
 
-const escapeHtml = (s) =>
-  s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-
 /**
- * Título longo tem que quebrar em linhas e continuar legível: a fonte encolhe
- * por faixas de comprimento, calibradas para a coluna de 646px do card (a
- * largura livre à esquerda do motivo geométrico).
+ * A página do screenshot. O corpo é UM `.paca-cover` de 1200x630 — como ele é
+ * a "container query" da folha compartilhada, `--u` vale exatamente 1px aqui e
+ * cada número da spec cai no pixel do canvas.
  */
-function titleStyle(title) {
-  const n = title.length;
-  if (n <= 28) return { size: 82, lh: 1.05, track: -2.5 };
-  if (n <= 42) return { size: 72, lh: 1.06, track: -2 };
-  if (n <= 58) return { size: 63, lh: 1.08, track: -1.6 };
-  if (n <= 74) return { size: 55, lh: 1.1, track: -1.2 };
-  if (n <= 95) return { size: 47, lh: 1.12, track: -0.8 };
-  return { size: 40, lh: 1.14, track: -0.4 };
-}
-
-function cardHtml({ title, category, slug, logoDataUri }) {
-  const palette = COVER_PALETTES[category];
-  const art = coverArt(slug, category, palette.fg);
-  const t = titleStyle(title);
-  // Mesma conta da capa do site: iguala a largura aparente das cinco palavras.
-  const wm = watermarkSize(palette.word, 200);
+function cardHtml({ title, category, slug, css, mascot }) {
+  const { html, style } = coverArt({
+    slug,
+    category,
+    categoryLabel: CATEGORY_LABELS[category] || category,
+    mode: "title",
+    title,
+    mascot,
+  });
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -155,80 +139,18 @@ function cardHtml({ title, category, slug, logoDataUri }) {
 <meta charset="utf-8" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=DM+Sans:wght@500;700&display=block" rel="stylesheet" />
+<link href="${FONTS_URL}" rel="stylesheet" />
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 1200px; height: 630px; }
-  body {
-    overflow: hidden;
-    background: ${palette.bg};
-    font-family: 'DM Sans', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  .card { position: relative; width: 1200px; height: 630px; overflow: hidden; }
-
-  /* Marca d'água tipográfica: a mesma palavra das capas, cortada pela borda.
-     Fica sozinha na faixa de baixo — a assinatura da marca subiu para o topo
-     justamente para nada se sobrepor a ela. */
-  .watermark {
-    position: absolute; left: 62px; bottom: ${Math.round(-0.37 * wm)}px;
-    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
-    font-weight: 800; font-size: ${wm}px; line-height: 1;
-    letter-spacing: ${-(wm / 29).toFixed(1)}px; color: ${COVER_INK}; opacity: 0.055;
-    white-space: nowrap;
-  }
-
-  /* Motivo do artigo (src/lib/motifs.mjs), sangrando pela direita.
-     A caixa de desenho é 620x620 — mesma do site; aqui ela entra 1:1. */
-  .motif {
-    position: absolute; right: -118px; top: 12px;
-    width: 620px; height: 620px;
-    transform: rotate(${art.rotation}deg)${art.flip ? " scaleX(-1)" : ""};
-  }
-
-  /* Assinatura da marca, no canto superior esquerdo. */
-  .brand {
-    position: absolute; left: 80px; top: 64px;
-    display: flex; align-items: center; gap: 14px;
-  }
-  .brand img { width: 54px; height: 54px; border-radius: 50%; display: block; }
-  .brand span {
-    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
-    font-weight: 700; font-size: 28px; letter-spacing: -0.4px;
-    color: ${COVER_INK}; opacity: 0.85;
-  }
-
-  .kicker {
-    position: absolute; left: 80px; top: 156px;
-    font-family: 'DM Sans', system-ui, sans-serif;
-    font-weight: 700; font-size: 23px; line-height: 1;
-    letter-spacing: 3.2px; text-transform: uppercase;
-    color: ${palette.kicker};
-  }
-
-  h1 {
-    position: absolute; left: 80px; top: 206px; width: 646px;
-    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
-    font-weight: 700;
-    font-size: ${t.size}px;
-    line-height: ${t.lh};
-    letter-spacing: ${t.track}px;
-    color: ${COVER_INK};
-    text-wrap: balance;
-  }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  .paca-cover { width: 1200px; height: 630px; }
+</style>
+<style>
+${css}
 </style>
 </head>
 <body>
-  <div class="card">
-    <div class="watermark">${escapeHtml(palette.word)}</div>
-    <svg class="motif" viewBox="0 0 620 620" aria-hidden="true">${art.svg}</svg>
-    <div class="brand">
-      <img src="${logoDataUri}" alt="" />
-      <span>paca finance</span>
-    </div>
-    <div class="kicker">${escapeHtml(palette.label)}</div>
-    <h1>${escapeHtml(title)}</h1>
-  </div>
+  <div class="paca-cover" style="${style}">${html}</div>
 </body>
 </html>`;
 }
@@ -298,22 +220,8 @@ async function shoot({ htmlPath, outPath, profileDir }) {
   }
 }
 
-async function main() {
-  if (!existsSync(CHROME)) {
-    console.error(
-      `[og] Chrome não encontrado em: ${CHROME}\n` +
-        `     Instale o Google Chrome ou aponte CHROME_BIN para o binário.`,
-    );
-    process.exit(1);
-  }
-
-  const logoPath = join(PUBLIC_DIR, "logo-icon-large.png");
-  const logoDataUri = `data:image/png;base64,${readFileSync(logoPath).toString("base64")}`;
-
-  // Sem argumentos: gera tudo. Com argumentos: só os slugs pedidos (útil ao
-  // iterar no visual). Ex.: node scripts/og.mjs planilha-gastos-casal
-  const only = new Set(process.argv.slice(2));
-
+/** Lê todos os artigos publicados (sem draft), com o que a capa precisa. */
+function readPosts() {
   const files = readdirSync(CONTENT_DIR)
     .filter((f) => f.endsWith(".md"))
     .sort();
@@ -321,7 +229,6 @@ async function main() {
   const posts = [];
   for (const file of files) {
     const slug = file.replace(/\.md$/, "");
-    if (only.size > 0 && !only.has(slug)) continue;
     const data = parseFrontmatter(readFileSync(join(CONTENT_DIR, file), "utf8"));
     if (!data) {
       console.warn(`[og] pulando ${file}: sem frontmatter`);
@@ -331,23 +238,74 @@ async function main() {
       console.log(`[og] pulando ${slug}: draft`);
       continue;
     }
-    if (!data.title || !COVER_PALETTES[data.category]) {
+    if (!data.title || !CATEGORY_LABELS[data.category]) {
       console.warn(`[og] pulando ${file}: title/category inválidos`);
       continue;
     }
-    posts.push({ slug, title: data.title, category: data.category });
+    posts.push({
+      slug,
+      title: data.title,
+      category: data.category,
+      pubDate: data.pubDate,
+    });
   }
+  return posts;
+}
+
+async function main() {
+  const posts = readPosts();
+
+  // As regras do sistema de capas, verificadas contra os artigos de verdade —
+  // antes de gastar 18 screenshots numa grade que ficou repetida.
+  const { rows, problems } = auditCovers(posts);
+  console.log("[og] fundo e motivo de cada artigo (ordem da listagem):\n");
+  for (const r of rows) {
+    console.log(
+      `      ${r.theme.padEnd(6)} ${r.motif.padEnd(16)} ${r.category.padEnd(25)} ${r.slug}`,
+    );
+  }
+  console.log("");
+  if (problems.length > 0) {
+    console.error(`[og] o sistema de capas quebrou ${problems.length} regra(s):`);
+    for (const p of problems) console.error(`      ${p}`);
+    process.exit(1);
+  }
+
+  if (!existsSync(CHROME)) {
+    console.error(
+      `[og] Chrome não encontrado em: ${CHROME}\n` +
+        `     Instale o Google Chrome ou aponte CHROME_BIN para o binário.`,
+    );
+    process.exit(1);
+  }
+
+  // O mascote entra como data URI: o HTML mora num diretório temporário, então
+  // um caminho relativo não acharia o PNG de public/.
+  const dataUri = (name) =>
+    `data:image/png;base64,${readFileSync(join(PUBLIC_DIR, name)).toString("base64")}`;
+  const mascot = {
+    light: dataUri("paca-mascote.png"),
+    dark: dataUri("paca-mascote-dark.png"),
+  };
+
+  const css = readFileSync(COVER_CSS_PATH, "utf8");
+
+  // Sem argumentos: gera tudo. Com argumentos: só os slugs pedidos (útil ao
+  // iterar no visual). Ex.: node scripts/og.mjs planilha-gastos-casal
+  const only = new Set(process.argv.slice(2));
+  const targets =
+    only.size > 0 ? posts.filter((p) => only.has(p.slug)) : posts;
 
   mkdirSync(OUT_DIR, { recursive: true });
   const work = mkdtempSync(join(tmpdir(), "paca-og-"));
 
   let ok = 0;
   try {
-    for (const post of posts) {
+    for (const post of targets) {
       const htmlPath = join(work, `${post.slug}.html`);
       const outPath = join(OUT_DIR, `${post.slug}.png`);
       rmSync(outPath, { force: true }); // não confundir sobra antiga com sucesso
-      writeFileSync(htmlPath, cardHtml({ ...post, logoDataUri }), "utf8");
+      writeFileSync(htmlPath, cardHtml({ ...post, css, mascot }), "utf8");
 
       await shoot({
         htmlPath,
@@ -363,7 +321,7 @@ async function main() {
   }
 
   console.log(
-    `\n[og] ${ok}/${posts.length} imagens em public/og/ — lembre de commitar os PNGs.`,
+    `\n[og] ${ok}/${targets.length} imagens em public/og/ — lembre de commitar os PNGs.`,
   );
 }
 

@@ -1,7 +1,10 @@
 /**
  * Categorias do blog — fonte única de verdade.
  *
- * Cada categoria carrega quatro coisas, e cada uma tem um uso próprio:
+ * Cada categoria carrega, e cada campo tem um uso próprio:
+ *  - `accent` / `accentDark`: a cor do rótulo da categoria em texto pequeno
+ *    (kicker dos cards), no tema claro e no escuro. São tons legíveis, não as
+ *    cores da capa — a arte da capa tem paleta própria em src/lib/cover-art.mjs;
  *  - `label`: rótulo curto (menu, pílulas, kicker dos cards);
  *  - `description`: uma frase, usada no índice /categorias e como resumo;
  *  - `title`: título da página /categorias/<id>, escrito para busca (vai para
@@ -12,6 +15,8 @@
  */
 export const CATEGORIES = {
   organizacao: {
+    accent: "#2E7263",
+    accentDark: "#7BD4BC",
     label: "Organização",
     description:
       "Rotinas e métodos práticos para o casal organizar as finanças no dia a dia, sem complicação.",
@@ -25,6 +30,8 @@ export const CATEGORIES = {
     ],
   },
   "conversas-sobre-dinheiro": {
+    accent: "#B24A33",
+    accentDark: "#F5A28C",
     label: "Conversas sobre dinheiro",
     description:
       "Como falar de dinheiro a dois sem briga: transparência, combinados e alinhamento de expectativas.",
@@ -38,6 +45,8 @@ export const CATEGORIES = {
     ],
   },
   "metas-e-sonhos": {
+    accent: "#8F6314",
+    accentDark: "#F0C078",
     label: "Metas e sonhos",
     description:
       "Planejamento de objetivos em casal: viagem, casa própria, reserva de emergência e outros sonhos.",
@@ -50,6 +59,8 @@ export const CATEGORIES = {
     ],
   },
   "dividir-contas": {
+    accent: "#C2445C",
+    accentDark: "#FFA9BF",
     label: "Dividir contas",
     description:
       "Formas justas de dividir as despesas a dois: meio a meio, proporcional à renda e tudo no meio do caminho.",
@@ -63,6 +74,8 @@ export const CATEGORIES = {
     ],
   },
   ferramentas: {
+    accent: "#5D4E96",
+    accentDark: "#B4A7E8",
     label: "Ferramentas",
     description:
       "Apps, métodos e recursos que ajudam o casal a cuidar do dinheiro junto — incluindo o Paca Finance.",
