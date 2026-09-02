@@ -12,14 +12,14 @@ Três produtos, estados diferentes:
 - **App web** — no ar, mas em endereço da Vercel, que não passa confiança. Backend restaurado e saudável.
 - **App mobile** — código pronto, faltam três integrações nativas e a submissão nas lojas.
 
-**O gargalo do momento:** definir a **conta de anúncio** (nenhuma das existentes serve) e o **domínio próprio do app**. O banco já está em dia com o código.
+**O gargalo do momento:** o blog não tem tráfego. O Search Console ainda não foi configurado, então o Google mal sabe que o site existe — e anúncio sem visitante não paga nada. Backend, domínios e monetização já estão resolvidos.
 
 ---
 
 ## 🔴 Bloqueadores
 
 - [x] ✅ **Migrations 00023–00033 aplicadas e funções redeployadas** (2026-09-02). A captura de e-mail do blog passou a gravar de verdade (antes o formulário estava no ar perdendo assinante em silêncio), o fluxo de convite de casal foi para as RPCs novas, e deletar conta de quem criou o casal parou de falhar. `CRON_SECRET` configurado e `check-budgets` agendado (`#11` fechada). **Achado no caminho:** a `check-budgets` estava **publicamente executável** com a chave anônima do app — o código que corrigia isso nunca tinha sido deployado. Verificado ponta a ponta: inscrição real gravando, consentimento e e-mail inválido recusados, leitura dos leads negada até com chave anônima.
-- [ ] 👤 **Definir a conta de anúncio.** As contas existentes ou são de terceiros ou estão no perfil espanhol em euro (ver histórico de 2026-09-01). Precisa de uma AdSense no CNPJ, criada com um login Google limpo. Com o `pub-…` em mãos, a IA preenche o `ads.txt` e a env `PUBLIC_ADSENSE_CLIENT` — o anúncio liga sem deploy de código.
+- [x] ✅ **AdSense configurado e em análise** (2026-09-02). Conta nova criada (as antigas eram de terceiros ou do perfil espanhol). Publisher `ca-pub-6444699882561703` ligado por env na Vercel, `ads.txt` com a linha real, propriedade verificada, revisão solicitada e mensagem de consentimento escolhida (a de três opções, com botão de recusar — a de duas já rendeu autuação na Europa). **Decisão revista:** a conta ficou na Espanha, não no CNPJ, porque a dona mora lá como estudante — o endereço recebe a carta com o código de saque, que era o risco real. A regra do `docs/arbitragem` assumia operação brasileira; a premissa mudou. De quebra, o apex `pacafinance.com.br` passou a redirecionar para o blog (era exigência da verificação, e antes era endereço morto). **Agora é esperar a análise** — dias a semanas.
 - [x] ✅ **Domínio próprio do app** (2026-09-02): **https://app.pacafinance.com.br** no ar com certificado válido. De quebra, os dois projetos Vercel foram consolidados numa conta só — o `paca-web` antigo (na outra conta) era duplicata e o `paca-web` da conta atual servia um site em francês sem relação com o Paca. As 19 referências ao endereço da Vercel foram trocadas no código (blog, política, termos, mobile, função de descadastro e `SUBMISSION.md`, que alimenta as lojas). **Falta:** apagar o projeto antigo `paca-web-twmh` e incluir o novo endereço no *Site URL* e nos *Redirect URLs* do Supabase.
 
 ---
