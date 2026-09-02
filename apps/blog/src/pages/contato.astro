@@ -1,0 +1,103 @@
+---
+/**
+ * A página de contato.
+ *
+ * ── POR QUE ELA EXISTE ────────────────────────────────────────────────────
+ * O site tinha Sobre, Privacidade e Descadastro, mas nenhum endereço de
+ * contato em lugar nenhum — e "não há como falar com o site" é um dos motivos
+ * citados de recusa em programas de anúncio, além de ser o canal que a LGPD
+ * pressupõe quando alguém quer exercer um direito.
+ *
+ * ── ⚠️ POR QUE O E-MAIL É ESTE, E NÃO UM `@pacafinance.com.br` ───────────
+ * O domínio publica um registro MX nulo (`0 .`), que declara por especificação
+ * que ele NÃO recebe e-mail — qualquer `contato@pacafinance.com.br` quicaria,
+ * e uma página de contato com endereço que quica é pior que não ter página.
+ * Então o endereço é o MESMO que a página de suporte do app já usa: um só dono
+ * para o mesmo canal. No dia em que o domínio ganhar caixa de entrada, troca-se
+ * aqui e lá, e a constante abaixo é o único lugar deste arquivo que muda.
+ *
+ * ⚠️ Se este e-mail mudar, mude TAMBÉM em `apps/web/src/pages/SupportPage.tsx`.
+ * São duas cópias do mesmo fato, e é assim de propósito: o app precisa
+ * funcionar sem o blog, e o blog sem o app.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CTABox from "../components/CTABox.astro";
+import { APP_URL } from "../consts";
+
+const EMAIL = "madualvesfr@gmail.com";
+---
+
+<BaseLayout
+  title="Contato"
+  description="Como falar com o time do Paca Finance: dúvidas sobre os artigos, sugestões de pauta, correções e pedidos relacionados aos seus dados."
+>
+  <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <h1 class="font-display text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
+      Contato
+    </h1>
+
+    <div class="prose-paca mt-8">
+      <p>
+        Escreva para <a href={`mailto:${EMAIL}`}>{EMAIL}</a>. É o mesmo endereço
+        que atende o suporte do aplicativo, e quem responde é a equipe do Paca
+        Finance — não há robô no meio.
+      </p>
+
+      <h2 id="sobre-o-que-escrever">Sobre o que escrever</h2>
+      <ul>
+        <li>
+          <strong>Dúvida sobre um artigo:</strong> mande o link junto. Se a
+          dúvida for comum, ela costuma virar um trecho novo no próprio texto.
+        </li>
+        <li>
+          <strong>Erro ou informação desatualizada:</strong> é o e-mail que a
+          gente mais gosta de receber. Diga qual artigo e qual trecho — os
+          textos são revisados e atualizados quando algo muda.
+        </li>
+        <li>
+          <strong>Sugestão de pauta:</strong> conte qual é a situação de vocês.
+          Boa parte do que está publicado nasceu de pergunta de leitor.
+        </li>
+        <li>
+          <strong>Imprensa e parcerias:</strong> mesmo endereço, com o assunto
+          no título da mensagem.
+        </li>
+      </ul>
+
+      <h2 id="conta-e-dados">Conta no aplicativo e seus dados</h2>
+      <p>
+        Se o assunto for a sua conta no app — login, cobrança, exclusão de
+        dados —, o caminho mais rápido é o
+        <a href={`${APP_URL}/support`}>suporte do Paca Finance</a>, que já tem o
+        contexto da conta. Pedidos previstos na <strong>LGPD</strong>
+        (confirmação, correção ou exclusão dos seus dados) podem vir por
+        qualquer um dos dois canais: escreva do mesmo endereço de e-mail que
+        você usa na conta, para a gente ter certeza de que o pedido é seu.
+      </p>
+      <p>
+        Para sair da lista de e-mails do blog, o caminho próprio é a página de
+        <a href="/descadastro">descadastro</a> — não precisa escrever para
+        ninguém.
+      </p>
+
+      <h2 id="prazo">Quanto tempo demora</h2>
+      <p>
+        A gente lê tudo e responde em <strong>até três dias úteis</strong>. Se
+        passar disso, reenvie: é mais provável que a mensagem tenha se perdido
+        do que que ela tenha sido ignorada.
+      </p>
+
+      <h2 id="o-que-nao-fazemos">O que a gente não faz</h2>
+      <p>
+        Não damos <strong>recomendação individual de investimento</strong> nem
+        orientação sobre a situação financeira específica de ninguém. O conteúdo
+        do blog é educativo e vale para o caso geral; decisão sobre o seu
+        dinheiro é sua, e para casos delicados o certo é procurar um
+        profissional habilitado. Também não publicamos texto patrocinado — a
+        política está no <a href="/sobre#politica-editorial">Sobre</a>.
+      </p>
+    </div>
+
+    <CTABox />
+  </div>
+</BaseLayout>
