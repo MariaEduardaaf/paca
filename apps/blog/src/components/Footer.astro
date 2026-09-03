@@ -67,9 +67,15 @@ const year = new Date().getFullYear();
       </nav>
     </div>
 
-    <div class="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 pt-6 text-sm text-gray-600 dark:border-gray-800 dark:text-gray-400">
+    {/*
+      Sem link visível para o RSS aqui de propósito. O feed continua existindo
+      e continua sendo anunciado no <head> pelo <link rel="alternate">, que é
+      como leitor de feed e agregador o encontram — nenhum deles depende de um
+      link na página. O rótulo "RSS" no rodapé só falava com quem já sabe o que
+      é, e ocupava o lugar de igual para igual com o aviso de direitos.
+    */}
+    <div class="mt-10 border-t border-gray-200 pt-6 text-sm text-gray-600 dark:border-gray-800 dark:text-gray-400">
       <p>© {year} Paca Finance. Todos os direitos reservados.</p>
-      <a href="/rss.xml" class="rounded-lg transition-colors hover:text-pink-700 dark:hover:text-pink-300">RSS</a>
     </div>
   </div>
 </footer>

@@ -7,13 +7,21 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   description="A página que você procura não existe ou mudou de endereço."
 >
   <div class="mx-auto flex max-w-3xl flex-col items-center px-4 py-24 text-center sm:px-6">
-    <div
-      class="flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-50 via-pink-100 to-pink-200 dark:from-pink-900/50 dark:via-gray-800 dark:to-pink-900/30"
+    {/*
+      O número é o elemento gráfico — não há ilustração aqui, e não deve haver
+      emoji: o site inteiro é tipográfico (as capas são a palavra da categoria
+      em corpo enorme, na Bricolage), e uma lupa desenhada quebrava esse padrão
+      logo na página que mais precisa parecer o resto do site.
+      `aria-hidden` porque o h1 logo abaixo já diz o que aconteceu; sem isso o
+      leitor de tela anuncia "quatro zero quatro" antes da frase que importa.
+    */}
+    <p
+      class="font-display text-[7rem] leading-none font-extrabold tracking-tight text-pink-primary sm:text-[9rem] dark:text-pink-400"
       aria-hidden="true"
     >
-      <span class="text-6xl">🔍</span>
-    </div>
-    <h1 class="mt-8 font-display text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
+      404
+    </p>
+    <h1 class="mt-4 font-display text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
       Página não encontrada
     </h1>
     <p class="mt-4 max-w-md text-lg leading-relaxed text-gray-600 dark:text-gray-300">

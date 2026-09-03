@@ -30,10 +30,10 @@ Não. Os guias funcionam para qualquer casal, com qualquer ferramenta. O Paca s�
 
 ### Com que frequência saem posts novos?
 
-A meta é pelo menos um artigo novo por semana. Assine o [feed RSS](/rss.xml) para não perder nenhum.
+A meta é pelo menos um artigo novo por semana. Se quiser ser avisado quando sair, deixe seu e-mail no fim de qualquer artigo — a gente não manda mais nada além disso.
 
 ### Posso sugerir um tema?
 
-Pode e deve! Manda a ideia pelo suporte dentro do app — os próximos artigos nascem das dúvidas de quem usa.
+Pode e deve. Manda a ideia pelo [contato](/contato) — os próximos artigos nascem das dúvidas de quem lê.
 
-Bora organizar o dinheiro de vocês? 💛
+Bora organizar o dinheiro de vocês?

@@ -70,7 +70,7 @@ Vamos aos números. Ana ganha R$ 3.000 líquidos e Bruno, R$ 5.000.
 - Ana: R$ 4.200 × 37,5% = **R$ 1.575**
 - Bruno: R$ 4.200 × 62,5% = **R$ 2.625**
 
-Confere: R$ 1.575 + R$ 2.625 = R$ 4.200. ✓
+Confere: R$ 1.575 + R$ 2.625 = R$ 4.200, que é exatamente o total das contas.
 
 ### Proporcional vs 50/50: o peso real no bolso
 
