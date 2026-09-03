@@ -38,12 +38,12 @@ const faq = [
   },
   {
     q: "Quanto custa?",
-    a: "Hoje é grátis. A cobrança ainda não foi ligada, então não existe plano pago e o cadastro não pede cartão: e-mail, senha e o nome que vai aparecer para a outra pessoa.",
+    a: "Hoje é grátis. A cobrança ainda não foi ligada, então não existe plano pago e o cadastro não pede cartão: e-mail, senha e o nome que vai aparecer para a outra pessoa. O único limite é a leitura de recibo por IA: são 10 por mês para o casal, e no momento não há como aumentar esse número. Digitar transação à mão não tem limite.",
   },
   {
     q: "Como as duas pessoas ficam na mesma conta?",
-    a: "Uma das duas cria o casal e o app gera um código no formato PACA-XXXXXX. Você manda o código para a outra pessoa, ela digita na tela de início e pronto: as duas passam a ver as mesmas transações, o mesmo orçamento e as mesmas contas do mês. Um casal tem no máximo duas pessoas.",
-    html: 'Uma das duas cria o casal e o app gera um código no formato <code>PACA-XXXXXX</code>. Você manda o código para a outra pessoa, ela digita na tela de início e pronto: as duas passam a ver as mesmas transações, o mesmo orçamento e as mesmas contas do mês. Um casal tem no máximo duas pessoas.',
+    a: "Uma das duas cria o casal e o app gera um código no formato PACA-K7RMX3PBQ4. Você manda o código para a outra pessoa, ela digita na tela de início e pronto: as duas passam a ver as mesmas transações, o mesmo orçamento e as mesmas contas do mês. Um casal tem no máximo duas pessoas.",
+    html: 'Uma das duas cria o casal e o app gera um código no formato <code>PACA-K7RMX3PBQ4</code>. Você manda o código para a outra pessoa, ela digita na tela de início e pronto: as duas passam a ver as mesmas transações, o mesmo orçamento e as mesmas contas do mês. Um casal tem no máximo duas pessoas.',
   },
   {
     q: "Preciso conectar o banco?",
@@ -132,7 +132,7 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
 
           <div class="hero-phone">
             <div class="hero-phone-tilt">
-              <div class="float-chip float-chip-1">
+              <div class="float-chip float-chip-1" aria-hidden="true">
                 <span class="chip-avatar" style="background:var(--indigo)">M</span>
                 <span>
                   <span class="chip-title">Marina lançou agora</span>
@@ -140,7 +140,7 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
                 </span>
               </div>
 
-              <div class="float-chip float-chip-2">
+              <div class="float-chip float-chip-2" aria-hidden="true">
                 <span style="color:var(--indigo-2);display:flex"
                   ><Icon name="sparkles" size="18" /></span
                 >
@@ -152,7 +152,7 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
                 </span>
               </div>
 
-              <div class="float-chip float-chip-3">
+              <div class="float-chip float-chip-3" aria-hidden="true">
                 <span class="chip-avatar av-green"><Icon name="arrow-up" size="14" /></span>
                 <span>
                   <span class="chip-title">Salário recebido</span>
@@ -333,7 +333,7 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
             <span class="step-num" aria-hidden="true">2</span>
             <h3>Gere o código do casal</h3>
             <p>
-              O app cria um código no formato <code>PACA-XXXXXX</code>. Mande por mensagem, leia em
+              O app cria um código no formato <code>PACA-K7RMX3PBQ4</code>. Mande por mensagem, leia em
               voz alta, escreva num papel — tanto faz.
             </p>
           </article>
@@ -543,13 +543,22 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
 
           <article class="intl-card">
             <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Multimoeda</span>
+            {/*
+              ATENÇÃO AO VERBO. A versão anterior dizia "vocês lançam cada gasto na moeda em que
+              ele aconteceu". Não é verdade: ao digitar uma transação à mão não há seletor de
+              moeda — apps/web/src/pages/NewTransactionPage.tsx:84 grava sempre
+              `couple.primary_currency`. Quem lê a moeda estrangeira é a IA, a partir do recibo
+              (supabase/functions/scan-receipt). Manter a transação NA moeda original, em vez de
+              converter, é recurso pago (o comentário está no mesmo arquivo) e a cobrança ainda
+              nem foi ligada. Então a frase descreve o que a tela faz hoje, e não o roadmap.
+            */}
             <h3>
-              Lance na moeda original, <span class="gradient-text">leia na sua.</span>
+              Recibo em outra moeda, <span class="gradient-text">conta na sua.</span>
             </h3>
             <p>
-              Salário em euro, aluguel em real, viagem em iene. Vocês lançam cada gasto na moeda em
-              que ele aconteceu e o app converte para a moeda principal do casal, pela cotação do
-              dia. São {CURRENCY_COUNT} moedas.
+              Vocês escolhem a moeda principal do casal entre {CURRENCY_COUNT}. Fotografou um
+              recibo em euro ou em iene? A IA lê o valor na moeda do papel e converte para a de
+              vocês, pela cotação do dia — a conta do mês fecha num número só.
             </p>
             {/*
               As três linhas ilustram a conversão, não pessoas: saíram os nomes,

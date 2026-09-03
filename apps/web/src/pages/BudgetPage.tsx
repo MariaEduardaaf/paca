@@ -7,6 +7,7 @@ import {
   useCategories,
   useI18n,
   useAppStore,
+  useRealtimeTransactions,
 } from "@paca/api";
 import { supabase } from "@paca/api";
 import {
@@ -34,6 +35,13 @@ export function BudgetPage() {
   const ownerId = mode === "personal" ? profile?.id ?? null : null;
   const [month, setMonth] = useState(getCurrentMonth());
   const [showSetup, setShowSetup] = useState(false);
+
+  // Sem isto a tela de Orçamento era a única que NÃO recebia o gasto que a
+  // outra pessoa acabou de lançar: o Dashboard e as Transações assinavam, ela
+  // não. Quem estivesse com o Orçamento aberto via o número velho até recarregar
+  // — justamente na tela onde os dois combinam quanto ainda dá para gastar.
+  // O hook já invalida a chave "budget"; faltava só chamá-lo aqui.
+  useRealtimeTransactions(coupleId || undefined);
 
   const { data: budget, isLoading } = useBudget({ coupleId, month, mode, ownerId });
 
