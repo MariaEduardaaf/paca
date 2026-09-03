@@ -29,55 +29,60 @@ Três produtos, estados diferentes:
 
 ## 🤖 Fila de execução da IA
 
-Achados da auditoria de 6 frentes (2026-09-03), já filtrados por revisores céticos. Ordenado por retorno por hora. Nada aqui depende de você.
+Achados da auditoria de 6 frentes (2026-09-03). O que sobrou aqui é o que **não** dá para resolver
+só com código — precisa de decisão de conteúdo ou de um dado que ainda não existe.
 
-### Receita — o teto do RPS
+### Aberto
 
-- [ ] **O segundo anúncio fica a 82% da rolagem** — medido em tela de celular: o artigo tem no máximo 2 impressões possíveis, e a segunda exige chegar à 18ª tela de 22. Na prática o RPS nasce preso a ~1 impressão por sessão. É o teto de receita do modelo inteiro.
-- [ ] **Zero anúncio em 14 páginas que não são artigo** — inclusive a calculadora, que é o destino natural de um anúncio seu no Meta ("calculadora de divisão de contas"). Hoje é receita zero em cima de tráfego que você vai *comprar*.
-- [ ] **Nenhum link do blog carrega UTM** — sem isso não dá para separar a sessão que veio da campanha paga da que veio do reengajamento, que a estratégia manda medir separado.
+- [ ] **Zero imagem indexável nos 18 artigos** — nenhum `<img>` de conteúdo, então Google Imagens
+  fica em zero por construção e o card grande do Discover não aparece. Os diagramas existem, mas são
+  SVG embutido no texto, que o Google não indexa como imagem. O `meta robots` que liga a prévia
+  grande já está no ar esperando por isso. *É o maior item aberto da fila e precisa de uma decisão:
+  usar a capa de cada artigo como imagem de verdade no topo, ou produzir imagem por artigo.*
+- [ ] **8 títulos ainda passam de 60 caracteres** — dois deles com 70, visivelmente cortados no
+  Google. Encurtar custa palavra-chave, então é troca e não conserto: precisa da sua decisão caso a caso.
+- [ ] **Nenhum link do blog carrega UTM** — sem isso não dá para separar a sessão que veio da campanha
+  paga da que veio do reengajamento. *Faz parte do mesmo trabalho da medição (bloqueador acima) e só
+  vale fazer junto.*
+- [ ] **A newsletter não tem isca** — promete "avisamos quando sai um guia novo" para quem chegou de
+  um anúncio há 12 minutos. A isca óbvia seria a planilha, que depende de você criar (👤 abaixo).
+- [ ] **A home não tem anúncio** — decisão em aberto, não esquecimento: ela virou a porta da marca e
+  anúncio ali cobra um preço de confiança. Vale rever quando houver receita medida.
+- [ ] **`app.pacafinance.com.br` ainda responde 200 em URL inexistente** — o `robots.txt` já barra o
+  rastreamento, mas o soft-404 de verdade só some mexendo no roteamento do app web.
 
-### Conteúdo — erro factual e promessa que não se cumpre
+### Feito em 2026-09-03
 
-- [ ] **"53% dos casais" em 11 artigos, quando as fontes dizem "53% dos brasileiros"** — é o número mais repetido do site e está na descrição que aparece no Google. Mesmo tipo de erro da estatística da Serasa que já foi corrigida uma vez.
-- [ ] **O título "Planilha de gastos: modelo grátis" promete um arquivo que o 2º parágrafo do próprio artigo diz não existir** — a honestidade está certa; o título é que está errado. É a página onde o clique pago vai queimar. *Conserto definitivo depende da planilha real (👤 abaixo); enquanto isso, o título pode parar de prometer.*
-
-### Descoberta — canais fechados por construção
-
-- [ ] **Zero imagem indexável nos 18 artigos** — nenhum `<img>` de conteúdo. Google Imagens fica em zero por construção, e o card grande do Discover não existe. Discover é o canal que mais entrega volume barato em conteúdo de finanças pessoais.
-- [ ] **Nenhuma página emite `meta robots`** — falta `max-image-preview:large`, que liga a prévia de imagem grande em todas as superfícies do Google. Só rende quando existir imagem indexável, então anda junto com o item acima.
-- [ ] **As 4 páginas de crédito e dívida não recebem nenhum link editorial** — são justamente os ângulos de maior valor comercial, e estão órfãs na malha interna.
-- [ ] **17 dos 18 títulos passam de 60 caracteres** depois do sufixo "| Paca Finance" — o Google trunca e às vezes reescreve; nos piores o corte cai em cima da palavra-chave.
-- [ ] **Os 5 hubs de categoria têm H1 de uma palavra** ("Organização") enquanto o `<title>` da mesma página já carrega o termo pronto.
-- [ ] **`/` e `/blog` são duas listas quase idênticas**, ambas indexáveis e ambas no sitemap — 80% das frases se repetem. Risco de o Google eleger a errada como entrada da marca.
-- [ ] **Nenhum JSON-LD fora dos artigos** — falta `Organization` com `sameAs` e `WebSite`. Sem entidade de site, o Google não tem sinal para separar o blog do projeto de cripto homônimo (ver risco abaixo).
-- [ ] **A calculadora está fora do menu e de todos os hubs** — inclusive do hub que se chama "Ferramentas", que promete uma ferramenta e entrega 5 artigos.
-- [ ] **Sitemap sem `lastmod`** em nenhuma das 31 URLs — sem esse sinal, atualizar conteúdo (a alavanca orgânica mais barata) não avisa ninguém.
-
-### Funil — o celular não tem recirculação
-
-- [ ] **A barra lateral só existe acima de 1152px** — no celular, que é onde o tráfego pago vai cair, a única recirculação está depois de 2.400 palavras. A estrutura entrega perto de 1 pageview monetizável por sessão.
-- [ ] **A calculadora não pede e-mail** — é o clique de maior intenção do site (a pessoa acabou de digitar as duas rendas do casal) e a única página de alta intenção sem captura.
-- [ ] **A newsletter não tem isca** — promete "avisamos quando sai um guia novo" para alguém que chegou de um anúncio há 12 minutos e não conhece a marca.
-
-### Higiene e conformidade
-
-- [ ] **A página de descadastro chega ao leitor como código HTML cru** — o gateway do Supabase rebaixa o `Content-Type` para `text/plain`. A baixa é gravada de verdade, então o opt-out é honrado; o dano é de percepção, no único canal onde a margem fecha. *Exige redeploy da função.*
-- [ ] **`PRIVACY_URL` da função `blog-unsubscribe` ainda aponta para a política do app** — mesmo problema dos links já corrigidos no site; só muda com redeploy da função.
-- [ ] **`app.pacafinance.com.br` devolve 200 para qualquer URL inexistente e não tem `robots.txt`** — soft-404 infinito num domínio irmão da marca, sem `noindex`. Piora o problema de entidade em vez de ajudar.
-
-### Feito nesta rodada
-
-- [x] **Blocos de anúncio vazios em produção** — cada artigo servia duas faixas de 280px em branco com o rótulo "Publicidade" em cima do vazio, justamente durante a análise do AdSense. Causa: uma chave só governava duas coisas com tempos diferentes — o `pub-` (necessário na análise) ligava também os blocos, que precisam de um `data-ad-slot` que só existe depois da aprovação. Agora são duas chaves.
-- [x] **Cinco artigos com data de publicação no futuro** (até 08/09, com hoje em 03/09) — e eram os de maior valor comercial. Data futura lê como manipulação numa revisão manual. As 18 datas foram reatribuídas preservando a ordem; a tabela de fundos das capas foi resolvida por busca, porque as três regras de vizinhança se cruzam e corrigir à mão quebrava outra duas linhas abaixo.
-- [x] **Três links "Política de Privacidade" levavam para a política do app**, em inglês, que diz "We do not sell or share your data with advertisers" — o oposto do que este site faz, na página que o revisor do AdSense abre.
-- [x] **Capas novas com o mascote** — as antigas eram formas geométricas genéricas; a grade lia como banco de imagem e o card de compartilhamento não levava marca nenhuma. Palavra gigante = categoria no site, título no compartilhamento.
-- [x] **CTAs levavam para a tela de login** — todo botão ia para a raiz do app, que é rota protegida. Agora são 92 links para o cadastro e zero para o login. *Era o maior vazamento do site.*
-- [x] **Estatística da Serasa invertida** — o blog publicava "66% nunca conversaram sobre dinheiro"; a fonte diz "65% **falam** abertamente". Erro de briefing da própria IA.
-- [x] **Os 12 diagramas renderizavam quebrados em produção** — linha em branco dentro de bloco `<svg>` encerra o HTML no markdown. O texto alternativo seguia certo, então nada denunciava no código.
-- [x] **Zero testes automatizados** — 265 testes no runner nativo do Node, sem dependência nova. Provados por mutação: 6 bugs injetados, todos pegos. Rodar: `npm test`.
-- [x] **Acessibilidade** — 7.778 elementos em 26 páginas × 2 temas, zero reprovação AA no fim.
-- [x] **Auto-hospedar as fontes — medido e descartado.** Ganho de 8 a 20 ms não paga 77 KB no repositório. Decisão com número, não palpite.
+- [x] **Anúncios presos em 4% e 82% da rolagem** — a segunda impressão exigia chegar à 18ª tela de 22,
+  então a receita por sessão nascia presa a ~1 impressão. Agora são 4 posições: 2%, 28%, 52% e 80%.
+- [x] **A calculadora não tinha anúncio nem captura** — é o destino natural de um anúncio do Meta e o
+  momento de maior intenção do site. Ganhou 2 blocos e o pedido de e-mail.
+- [x] **Sufixo de marca truncava 17 dos 18 títulos** — "| Paca Finance" era somado sempre. Virou
+  condicional: 17 → 8 acima de 60 caracteres.
+- [x] **Nenhuma página emitia `meta robots`** — `max-image-preview:large` agora em 32/32.
+- [x] **Nenhum dado estruturado fora dos artigos** — `Organization` + `WebSite` nas 32 páginas. Sem
+  `SearchAction`: não existe rota de busca no blog e não se inventa uma.
+- [x] **H1 dos 5 hubs era uma palavra** — passou a usar o termo completo, que já existia em
+  `categories.ts`.
+- [x] **Sitemap sem `lastmod`** — agora em 26 das 31 URLs (as 5 sem data são páginas fixas).
+- [x] **A calculadora estava fora do menu e de todos os hubs** — inclusive do hub "Ferramentas".
+  Entrou em primeiro no menu; "Contato" cedeu o lugar e segue no rodapé de todas as páginas.
+- [x] **`/` e `/blog` eram duas listas dos mesmos 18 artigos** — a home virou porta da marca (pilar
+  em destaque + 4 caminhos por situação) e `/blog` virou arquivo por mês. Sobreposição: 80% → 34%.
+- [x] **No celular a recirculação só vinha após 2.400 palavras** — agora há um bloco a 38% do artigo.
+- [x] **4 páginas de crédito e dívida sem link editorial** — os ângulos de maior valor comercial
+  estavam órfãos. Cada uma recebe 3 links agora.
+- [x] **"53% dos casais" em 11 artigos** — a fonte diz "53% dos **brasileiros**". Era o número mais
+  repetido do site, e estava até na meta description e dentro do SVG de um diagrama.
+- [x] **Título prometia planilha que não existe** — o 2º parágrafo do próprio artigo desmentia o
+  título. Agora promete o que a página entrega, mantendo o termo de busca.
+- [x] **Descadastro chegava como código HTML cru** — o gateway do Supabase reescreve toda resposta de
+  função para `text/plain`, e nenhum cabeçalho contorna isso: a página bonita que a função montava
+  nunca ia chegar. A função agora faz a baixa e redireciona para `/descadastro?estado=…`. Verificado
+  no ar: 302 → 200 `text/html`.
+- [x] **`PRIVACY_URL` da função apontava para a política do app** — sumiu junto com a página.
+- [x] **`app.pacafinance.com.br` sem `robots.txt`** — nem o próprio `/robots.txt` escapava do rewrite
+  do SPA. Ganhou um, com o porquê escrito no arquivo.
 
 ---
 
