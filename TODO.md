@@ -34,24 +34,42 @@ só com código — precisa de decisão de conteúdo ou de um dado que ainda nã
 
 ### Aberto
 
-- [ ] **Zero imagem indexável nos 18 artigos** — nenhum `<img>` de conteúdo, então Google Imagens
-  fica em zero por construção e o card grande do Discover não aparece. Os diagramas existem, mas são
-  SVG embutido no texto, que o Google não indexa como imagem. O `meta robots` que liga a prévia
-  grande já está no ar esperando por isso. *É o maior item aberto da fila e precisa de uma decisão:
-  usar a capa de cada artigo como imagem de verdade no topo, ou produzir imagem por artigo.*
-- [ ] **8 títulos ainda passam de 60 caracteres** — dois deles com 70, visivelmente cortados no
-  Google. Encurtar custa palavra-chave, então é troca e não conserto: precisa da sua decisão caso a caso.
-- [ ] **Nenhum link do blog carrega UTM** — sem isso não dá para separar a sessão que veio da campanha
-  paga da que veio do reengajamento. *Faz parte do mesmo trabalho da medição (bloqueador acima) e só
-  vale fazer junto.*
+- [ ] **4 títulos ainda passam do corte do Google** — 62 a 69 caracteres, contra ~60 de limite. Há
+  proposta pronta para os quatro, mantendo a palavra-chave; encurtar custa nuance, então é **decisão
+  dela**, não conserto. Outros quatro estão em 61 — dentro do ruído, não vale mexer.
 - [ ] **A newsletter não tem isca** — promete "avisamos quando sai um guia novo" para quem chegou de
-  um anúncio há 12 minutos. A isca óbvia seria a planilha, que depende de você criar (👤 abaixo).
-- [ ] **A home não tem anúncio** — decisão em aberto, não esquecimento: ela virou a porta da marca e
-  anúncio ali cobra um preço de confiança. Vale rever quando houver receita medida.
-- [ ] **`app.pacafinance.com.br` ainda responde 200 em URL inexistente** — o `robots.txt` já barra o
-  rastreamento, mas o soft-404 de verdade só some mexendo no roteamento do app web.
+  um anúncio há 12 minutos. A isca óbvia é a planilha, que depende de você criar (👤 abaixo).
+- [ ] **A home não tem anúncio** — decisão em aberto, não esquecimento: ela é a porta da marca e
+  anúncio ali cobra um preço de confiança. Rever quando houver receita medida.
+- [ ] **O UTM de ENTRADA não é levado adiante** — hoje o blog marca de onde a pessoa clicou *dentro
+  do site*, mas o app não sabe se ela veio do anúncio ou do e-mail, porque esse dado só existe na URL
+  de chegada. Fechar isso é guardar o UTM de entrada na sessão e repassar. *Só vale fazer junto com o
+  Pixel — depende do ID que você vai passar.*
+- [ ] **Os PNGs de `/og` não foram comprimidos** — 1,3 MB que virariam ~350 KB com o mesmo tratamento
+  dado às capas novas. Deixado de fora de propósito: o AdSense está em análise e não quis mexer em
+  arquivo que o revisor pode estar olhando. Fazer depois da aprovação.
 
-### Feito em 2026-09-03
+### Feito em 2026-09-03 (segunda rodada)
+
+- [x] **Zero imagem indexável nos 18 artigos** — era o maior item da fila. A capa era desenhada em
+  HTML/CSS, então Google Imagens ficava em zero por construção e o card grande do Discover não
+  aparecia. Agora cada capa é PNG de verdade (23 arquivos, 20 KB de média), com `alt` que descreve a
+  imagem e o assunto. O componente mudou por dentro: os 5 pontos de uso não mudaram uma linha.
+  Herói com `eager`+`fetchpriority`, listagem com `lazy`. Gerar: `npm run capas`.
+- [x] **Nenhum link carregava UTM** — sem isso não dava para saber, artigo por artigo, se vale
+  empurrar o app ou segurar a pessoa no blog. Ficou centralizado no `BaseLayout`: marcar os ~10
+  arquivos à mão seria frágil, porque o próximo link nasceria sem UTM. O `utm_medium` sai da
+  estrutura do DOM, não de rótulo — mudar um texto não pode trocar coluna de relatório em silêncio.
+  Como é JS, o rastreador vê a URL limpa: nada de URL duplicada no índice.
+- [x] **Estrutura do Meta Pixel montada e desligada** — mesmo padrão do AdSense: sem
+  `PUBLIC_META_PIXEL_ID` não sai nada (0 arquivos); com ela, 32/32. Falta só o seu ID.
+- [x] **`app.pacafinance.com.br` respondia 200 em URL inexistente** — espaço infinito de soft-404 num
+  domínio que já disputa nome com um projeto de cripto. Ganhou rota curinga com `noindex`. Limite
+  honesto: em SPA estático a resposta segue 200 — o `noindex` resolve o índice, não o status.
+- [x] **`/capas` sem cache** — ganhou o mesmo header `immutable` que `/og` já tinha; sem ele os 480 KB
+  revalidavam a cada navegação.
+
+### Feito em 2026-09-03 (primeira rodada)
 
 - [x] **Anúncios presos em 4% e 82% da rolagem** — a segunda impressão exigia chegar à 18ª tela de 22,
   então a receita por sessão nascia presa a ~1 impressão. Agora são 4 posições: 2%, 28%, 52% e 80%.
