@@ -18,7 +18,12 @@ Três produtos, estados diferentes:
 
 ## 🔴 Bloqueadores
 
-- [ ] 🤖👤 **Medição zero no blog** — não há Meta Pixel nem analytics; o `BaseLayout` tem só um comentário marcando onde entram. Sem isso: (a) o RPS é incalculável, então a régua `CPL ≤ RPS × 1,30` não tem denominador; (b) a campanha do Meta não pode ser otimizada por conversão nem devolver sinal por CAPI. **A IA instala** o analytics e a estrutura de UTM sozinha; **você passa** o ID do Pixel. *É o item que trava tudo o que vem depois.*
+- [x] ✅ **Medição ligada** (2026-09-03). Meta Pixel `1762784665056623` no blog (32/32 páginas) e na
+  landing, com guarda de domínio — não dispara em localhost nem em pré-visualização da Vercel, que
+  sujariam justamente o número que decide o gasto. Provado no ar: o Facebook respondeu com a
+  configuração do pixel para `blog.pacafinance.com.br`. Só `PageView`; nenhum dado financeiro, que
+  as Ferramentas Comerciais da Meta proíbem. **Correspondência avançada automática ficou DESLIGADA**:
+  ela varre formulário e mandaria o e-mail da newsletter ao Meta, contradizendo a política e a LGPD.
 - [ ] 👤 **Análise do AdSense em curso** — nada a fazer além de não estragar. Conta `ca-pub-6444699882561703`, propriedade verificada, `ads.txt` correto, mensagem de consentimento escolhida. Leva de dias a semanas.
 - [ ] 👤🤖 **No dia da aprovação, três passos na ordem** — (1) criar **duas unidades de anúncio** no painel do AdSense; (2) pôr os IDs na Vercel (`PUBLIC_ADSENSE_SLOT_FIRST_FOLD`, `PUBLIC_ADSENSE_SLOT_IN_CONTENT`); (3) **forçar um redeploy**. O blog é estático e assa a variável no build — sem o passo 3 você cola os IDs, não vê anúncio nenhum e vai caçar bug que não existe.
 - [x] ✅ **Migrations 00023–00033 aplicadas e funções redeployadas** (2026-09-02). A captura de e-mail passou a gravar de verdade (antes o formulário estava no ar perdendo assinante em silêncio), o convite de casal foi para as RPCs novas, e deletar conta de quem criou o casal parou de falhar. **Achado no caminho:** a `check-budgets` estava **publicamente executável** com a chave anônima do app — o código que corrigia isso nunca tinha sido deployado.
@@ -108,7 +113,6 @@ só com código — precisa de decisão de conteúdo ou de um dado que ainda nã
 
 ### Decisões que destravam a IA
 
-- [ ] **ID do Meta Pixel** — a metade do bloqueador de medição que depende de você.
 - [ ] **Autoria com pessoa real.** Hoje é "Equipe Paca Finance", sem nome nem rosto, e o schema declara autor como organização. Finanças é a categoria em que o Google aplica a régua mais dura, e essa é a lacuna mais visível do site. *A IA monta a estrutura inteira; você passa o texto sobre você e decide se topa assinar.*
 - [ ] **CNPJ ou razão social na política de privacidade** — não existe nenhuma identificação de quem é juridicamente o controlador dos dados. Custa uma linha de texto. Também importa no recebimento: o AdSense paga a um titular identificado.
 - [ ] **Planilha de verdade no Google Sheets.** O artigo se chama "modelo grátis" e avisa que não há arquivo — quem busca essa palavra quer o arquivo. A IA entrega a estrutura pronta; você cria e torna público.
