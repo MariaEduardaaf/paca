@@ -1,7 +1,7 @@
 ---
 title: "Brigas por dinheiro no relacionamento: como parar o ciclo"
 description: "Dinheiro é o motivo nº 1 de brigas em 53% dos casais no Brasil. Entenda as causas reais e siga um passo a passo para sair do ciclo."
-pubDate: 2026-08-26
+pubDate: 2026-08-22
 category: "conversas-sobre-dinheiro"
 tags: ["brigas por dinheiro", "conflitos financeiros", "relacionamento", "finanças do casal"]
 draft: false

@@ -404,7 +404,11 @@ export function hashSlug(slug) {
  * @type {Record<string, keyof typeof THEMES>}
  */
 export const THEME_BY_SLUG = {
-  // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem)
+  // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
+  // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
+  // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e
+  // mexer num fundo à mão costuma quebrar outra regra duas linhas abaixo.
+  // Se a ordem dos artigos mudar, rode a busca de novo e confira com auditCovers().
   "quanto-custa-casar": "rosa", // metas-e-sonhos
   "casal-endividado-como-sair-das-dividas": "creme", // organizacao
   "comprar-casa-juntos-financiamento": "preto", // metas-e-sonhos
@@ -412,17 +416,17 @@ export const THEME_BY_SLUG = {
   "reserva-de-emergencia-casal": "creme", // metas-e-sonhos
   "um-dos-dois-desempregado-financas-casal": "rosa", // dividir-contas
   "conta-conjunta-nubank": "preto", // organizacao
+  "dividir-contas-proporcional-ao-salario": "creme", // dividir-contas
   "bem-vindos-ao-blog-do-paca": "rosa", // organizacao
-  "dividir-contas-proporcional-ao-salario": "preto", // dividir-contas
   "melhor-app-financas-casal": "creme", // ferramentas
   "planilha-gastos-casal": "preto", // ferramentas
-  "como-dividir-contas-casal": "creme", // dividir-contas
-  "brigas-por-dinheiro-relacionamento": "rosa", // conversas-sobre-dinheiro
+  "como-dividir-contas-casal": "rosa", // dividir-contas
+  "brigas-por-dinheiro-relacionamento": "preto", // conversas-sobre-dinheiro
   "conta-conjunta-vale-a-pena": "creme", // organizacao
   "como-juntar-dinheiro-casal": "rosa", // metas-e-sonhos
   "regra-50-30-20-casal": "preto", // organizacao
-  "morar-junto-dividir-despesas": "rosa", // dividir-contas
-  "como-falar-de-dinheiro-relacionamento": "preto", // conversas-sobre-dinheiro
+  "morar-junto-dividir-despesas": "creme", // dividir-contas
+  "como-falar-de-dinheiro-relacionamento": "rosa", // conversas-sobre-dinheiro
 
   // capas das PÁGINAS de categoria (Cover é chamado com slug = id da categoria),
   // na ordem em que a lista de /categorias as mostra

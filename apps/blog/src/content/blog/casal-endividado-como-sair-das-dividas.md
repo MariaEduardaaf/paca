@@ -1,7 +1,7 @@
 ---
 title: "Casal endividado: o plano para sair das dívidas juntos"
 description: "Todas as dívidas na mesa, qual atacar primeiro com a conta em R$, como renegociar e como não transformar a saída em cobrança dentro de casa."
-pubDate: 2026-09-07
+pubDate: 2026-09-02
 category: "organizacao"
 tags: ["dívidas", "renegociação", "finanças do casal", "organização financeira", "orçamento"]
 draft: false

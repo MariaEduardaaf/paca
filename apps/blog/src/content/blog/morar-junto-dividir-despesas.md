@@ -1,7 +1,7 @@
 ---
 title: "Morar junto: como dividir as despesas desde o 1º mês"
 description: "Vão morar juntos? Quem paga o quê, como dividir aluguel e mercado, os custos que ninguém lembra e os acordos a fazer antes da mudança."
-pubDate: 2026-08-22
+pubDate: 2026-08-18
 category: "dividir-contas"
 tags: ["morar junto", "dividir contas", "despesas do casal", "vida a dois", "orçamento"]
 draft: false

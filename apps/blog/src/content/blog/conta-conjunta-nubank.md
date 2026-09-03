@@ -1,7 +1,7 @@
 ---
 title: "Nubank tem conta conjunta? A resposta e as alternativas reais"
 description: "O Nubank não oferece conta conjunta com dois titulares. Veja o que existe dentro do app, as alternativas fora dele e como o casal resolve o dia a dia mesmo assim."
-pubDate: 2026-09-02
+pubDate: 2026-08-28
 category: "organizacao"
 tags: ["nubank", "conta conjunta", "finanças do casal", "organização financeira", "bancos digitais"]
 draft: false

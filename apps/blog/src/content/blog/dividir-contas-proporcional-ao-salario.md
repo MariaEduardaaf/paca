@@ -1,7 +1,7 @@
 ---
 title: "Dividir contas com salários diferentes: método proporcional"
 description: "Salários diferentes no casal? Veja a fórmula da divisão proporcional, exemplos com números reais em R$ e como parar de refazer a conta todo mês."
-pubDate: 2026-08-30
+pubDate: 2026-08-27
 category: "dividir-contas"
 tags: ["dividir contas", "divisão proporcional", "finanças de casal", "salários diferentes", "orçamento a dois"]
 draft: false

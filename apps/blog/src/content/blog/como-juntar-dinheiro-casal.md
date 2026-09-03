@@ -1,7 +1,7 @@
 ---
 title: "Como juntar dinheiro em casal: plano prático em 6 passos"
 description: "Do sonho ao valor mensal: plano de 6 passos para juntar dinheiro em casal para viagem, casamento ou casa própria — sem apertar demais."
-pubDate: 2026-08-24
+pubDate: 2026-08-20
 category: "metas-e-sonhos"
 tags: ["juntar dinheiro", "metas financeiras", "casal", "poupar junto", "planejamento"]
 draft: false

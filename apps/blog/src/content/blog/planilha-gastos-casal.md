@@ -1,7 +1,7 @@
 ---
 title: "Planilha de gastos para casal: modelo grátis e como usar"
 description: "Monte uma planilha de gastos para casal em 10 minutos: estrutura pronta para copiar, rotina semanal e quando trocar a planilha por um app."
-pubDate: 2026-08-28
+pubDate: 2026-08-24
 category: "ferramentas"
 tags: ["planilha", "orçamento", "casal", "google sheets", "controle de gastos"]
 draft: false

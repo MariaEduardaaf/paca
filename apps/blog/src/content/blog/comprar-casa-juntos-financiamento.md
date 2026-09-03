@@ -1,7 +1,7 @@
 ---
 title: "Comprar a casa juntos: financiamento em nome dos dois"
 description: "Composição de renda, entrada, ITBI e cartório, FGTS dos dois e o combinado se o relacionamento acabar — com as contas em R$ e as fontes oficiais."
-pubDate: 2026-09-06
+pubDate: 2026-09-01
 category: "metas-e-sonhos"
 tags: ["casa própria", "financiamento imobiliário", "FGTS", "composição de renda", "metas do casal"]
 draft: false

@@ -1,7 +1,7 @@
 ---
 title: "Como falar de dinheiro com seu parceiro sem brigar"
 description: "65% dos casais dizem que falam de dinheiro — e 49% já esconderam um problema financeiro. Quando ter a conversa, 20 perguntas e como virar rotina."
-pubDate: 2026-08-21
+pubDate: 2026-08-17
 category: "conversas-sobre-dinheiro"
 tags: ["conversa sobre dinheiro", "transparência financeira", "relacionamento", "finanças do casal"]
 draft: false

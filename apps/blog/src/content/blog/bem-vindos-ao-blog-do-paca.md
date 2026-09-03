@@ -1,7 +1,7 @@
 ---
 title: "Bem-vindos ao blog do Paca"
 description: "O que você vai encontrar por aqui: guias práticos de finanças para casais, sem jargão e sem julgamento — do jeito que a vida a dois merece."
-pubDate: 2026-08-30
+pubDate: 2026-08-26
 category: "organizacao"
 tags: ["paca-finance", "financas-de-casal"]
 ---

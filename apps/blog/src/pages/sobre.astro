@@ -54,10 +54,18 @@ import { APP_URL, SIGNUP_URL } from "../consts";
         recebemos comissão de produtos citados. Dúvidas ou sugestões? Fale com a
         gente pelo <a href={`${APP_URL}/support`}>suporte</a>.
       </p>
+      {/*
+        A privacidade aponta para a DO BLOG (/privacidade), não para a do app.
+        São documentos diferentes e o link errado era material de reprovação: a
+        do app está em inglês e diz "We do not sell or share your data with
+        advertisers" — exatamente o contrário do que este site faz, e é a página
+        que o revisor do AdSense abre ao clicar num link chamado "Política de
+        Privacidade". Os Termos seguem sendo os do app, que é o que eles regem.
+      */}
       <p>
         Veja também a nossa
-        <a href={`${APP_URL}/privacy`}>Política de Privacidade</a> e os
-        <a href={`${APP_URL}/terms`}>Termos de Uso</a>.
+        <a href="/privacidade">Política de Privacidade</a> e os
+        <a href={`${APP_URL}/terms`}>Termos de Uso do app</a>.
       </p>
     </div>
 

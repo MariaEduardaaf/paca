@@ -1,7 +1,7 @@
 ---
 title: "Melhor app de finanças para casal dividir contas: 7 opções"
 description: "Comparamos os melhores apps para casal dividir contas e gastos em 2026: preços, recursos com IA, prós e contras honestos de cada um."
-pubDate: 2026-08-29
+pubDate: 2026-08-25
 category: "ferramentas"
 tags: ["apps de finanças", "casal", "dividir contas", "gastos compartilhados", "comparativo"]
 draft: false

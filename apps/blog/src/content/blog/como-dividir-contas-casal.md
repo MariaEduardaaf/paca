@@ -1,7 +1,7 @@
 ---
 title: "Como dividir as contas do casal: 4 métodos que funcionam"
 description: "50/50, proporcional ao salário, conta conjunta ou por responsabilidade? Compare os 4 métodos de dividir as contas e escolha o de vocês."
-pubDate: 2026-08-27
+pubDate: 2026-08-23
 category: "dividir-contas"
 tags: ["dividir contas", "finanças do casal", "orçamento a dois", "vida a dois"]
 draft: false

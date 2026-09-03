@@ -1,7 +1,7 @@
 ---
 title: "Conta conjunta vale a pena? Prós, contras e alternativas"
 description: "Conta conjunta vale a pena para o casal? Vantagens, riscos, o que acontece na separação e o modelo híbrido que mais funciona na prática."
-pubDate: 2026-08-25
+pubDate: 2026-08-21
 category: "organizacao"
 tags: ["conta conjunta", "finanças do casal", "organização financeira", "dividir contas"]
 draft: false

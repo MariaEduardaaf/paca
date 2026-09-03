@@ -1,7 +1,7 @@
 ---
 title: "Um dos dois ficou desempregado: como reorganizar as finanças do casal"
 description: "Quando uma renda acaba, a divisão de contas quebra. Como refazer o orçamento do casal, cortar por prioridade e proteger a relação — com as contas em R$."
-pubDate: 2026-09-03
+pubDate: 2026-08-29
 category: "dividir-contas"
 tags: ["desemprego", "finanças do casal", "dividir contas", "reserva de emergência", "orçamento"]
 draft: false

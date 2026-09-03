@@ -1,7 +1,7 @@
 ---
 title: "Regra 50/30/20 para casais: como adaptar o método a dois"
 description: "Como aplicar a regra 50/30/20 com duas rendas: exemplo real em reais, o que muda com salários diferentes e quando ajustar os percentuais."
-pubDate: 2026-08-23
+pubDate: 2026-08-19
 category: "organizacao"
 tags: ["regra 50 30 20", "orçamento de casal", "planejamento financeiro", "organização financeira"]
 draft: false
