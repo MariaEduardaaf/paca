@@ -7,11 +7,17 @@
 
 /* ─────────────────────────── tokens ─────────────────────────── */
 :root {
-  --pink: #ff8fb1;
-  --pink-2: #ff6fa0;
-  --indigo: #6366f1;
-  --indigo-2: #818cf8;
-  --purple: #a855f7;
+  /*
+   * PALETA DO PRODUTO — os valores vêm de apps/web/tailwind.config.ts, não de
+   * escolha nova. O desenho original trazia índigo (#6366F1) e roxo (#A855F7),
+   * que não existem em nenhum lugar do Paca: a landing parecia outro produto.
+   * O rosa já batia; o resto foi mapeado para o que o app de fato usa.
+   */
+  --pink: #ff8fb1; /* pink.primary */
+  --pink-2: #ff4778; /* pink.500 */
+  --pink-3: #cc3a5c; /* pink.700 — fecha o degradê sem sair da família */
+  --teal: #4ecdc4; /* green.primary do app: o acento não-rosa da marca */
+  --teal-2: #7fdbd4;
 
   --bg: #0a0a0f;
   --bg-2: #111118;
@@ -41,10 +47,13 @@
   --line-2: rgba(255, 255, 255, 0.06);
   --glass: rgba(255, 255, 255, 0.04);
 
-  --green: #34d399;
-  --red: #f87171;
+  --green: #4ecdc4; /* green.primary */
+  --red: #ff6b6b; /* red.primary */
 
-  --font: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* As mesmas do app e do blog: quem vem de um artigo tem de reconhecer que
+     chegou no lugar certo. Manrope não é usada em nenhuma outra propriedade. */
+  --font: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Bricolage Grotesque", var(--font);
 }
 
 * {
@@ -233,6 +242,7 @@ h1,
 h2,
 h3,
 h4 {
+  font-family: var(--font-display);
   letter-spacing: -0.025em;
   margin: 0;
   font-weight: 800;
@@ -261,7 +271,7 @@ h4 {
   margin: 0;
 }
 .gradient-text {
-  background: linear-gradient(120deg, var(--pink) 0%, var(--indigo) 70%, var(--purple) 100%);
+  background: linear-gradient(120deg, var(--pink) 0%, var(--pink-2) 55%, var(--pink-3) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -497,7 +507,7 @@ html:not(.js) .reveal-cascade > * {
 .orb-2 {
   width: 380px;
   height: 380px;
-  background: var(--indigo);
+  background: var(--teal);
   bottom: -120px;
   left: -80px;
   animation: orbFloat2 14s ease-in-out infinite;
@@ -505,7 +515,7 @@ html:not(.js) .reveal-cascade > * {
 .orb-3 {
   width: 280px;
   height: 280px;
-  background: var(--purple);
+  background: var(--pink-3);
   top: 40%;
   left: 30%;
   opacity: 0.32;
@@ -610,11 +620,15 @@ html:not(.js) .reveal-cascade > * {
   animation-delay: 0s;
 }
 .float-chip-2 {
-  top: 48%;
+  /* 48% caía em cima do título "Últimas Transações" depois que o aparelho
+     encolheu — notificação cobrindo cabeçalho lê como erro de posicionamento.
+     Aqui ela pousa sobre uma linha da lista, que é o lugar onde uma
+     notificação de verdade apareceria. */
+  top: 57%;
   left: calc(100% + 12px);
   animation-delay: 1.5s;
-  background: rgba(60, 62, 130, 0.55);
-  border-color: rgba(129, 140, 248, 0.42);
+  background: rgba(30, 78, 76, 0.62);
+  border-color: rgba(78, 205, 196, 0.42);
 }
 .float-chip-3 {
   bottom: 12%;
@@ -680,9 +694,24 @@ html:not(.js) .reveal-cascade > * {
     0 0 0 1px rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
 }
+/* O aparelho foi desenhado em 380px para uma tela larga. Num notebook comum
+   (1440–1512px) ele domina a metade direita e empurra as fichas para fora da
+   janela — o problema aparecia como "ficha cortada", mas a origem é o tamanho
+   dele. Encolhe conforme o espaço: a proporção é fixa, então tudo dentro da
+   tela acompanha (o raio da borda e os tamanhos de fonte saem de --phone-w). */
+@media (max-width: 1600px) {
+  .phone {
+    --phone-w: 320px;
+  }
+}
+@media (max-width: 1280px) {
+  .phone {
+    --phone-w: 300px;
+  }
+}
 @media (max-width: 460px) {
   .phone {
-    --phone-w: min(340px, calc(100vw - 56px));
+    --phone-w: min(300px, calc(100vw - 56px));
   }
 }
 .phone-notch {
@@ -787,8 +816,8 @@ html:not(.js) .reveal-cascade > * {
   background: var(--pink);
   color: #0a0a0f !important;
 }
-.av-indigo {
-  background: var(--indigo);
+.av-teal {
+  background: var(--teal);
 }
 .av-green {
   background: rgba(52, 211, 153, 0.2);
@@ -799,7 +828,7 @@ html:not(.js) .reveal-cascade > * {
   margin: 1.25em 1em 0;
   padding: 1.4em 1.4em 1.5em;
   border-radius: 1.75em;
-  background: linear-gradient(140deg, var(--pink) 0%, var(--indigo) 100%);
+  background: linear-gradient(140deg, var(--pink) 0%, var(--teal) 100%);
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -842,6 +871,11 @@ html:not(.js) .reveal-cascade > * {
   font-weight: 700;
 }
 .scr-balance-foot span {
+  /* Sem isto a pílula quebra em duas linhas quando o aparelho encolhe: o texto
+     tem espaço no meio ("Receitas R$ 12.700") e o flex deixa ele quebrar antes
+     de deixar a pílula transbordar. Aqui a linha é mais importante que a
+     largura — são duas etiquetas curtas, não um parágrafo. */
+  white-space: nowrap;
   padding: 0.35em 0.7em;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.22);
@@ -871,7 +905,7 @@ html:not(.js) .reveal-cascade > * {
   color: var(--pink);
 }
 .scr-action.is-ai svg {
-  color: var(--indigo-2);
+  color: var(--teal-2);
 }
 
 .scr-section-head {
@@ -955,7 +989,7 @@ html:not(.js) .reveal-cascade > * {
   padding: 0.15em 0.4em;
   border-radius: 0.35em;
   background: rgba(99, 102, 241, 0.22);
-  color: var(--indigo-2);
+  color: var(--teal-2);
 }
 
 .scr-search {
@@ -1047,7 +1081,7 @@ html:not(.js) .reveal-cascade > * {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--pink), var(--indigo));
+  background: linear-gradient(90deg, var(--pink), var(--teal));
 }
 .scr-cat {
   padding: 0.7em 0.85em;
@@ -1149,7 +1183,7 @@ html:not(.js) .reveal-cascade > * {
   border-radius: 22px;
   display: grid;
   place-items: center;
-  background: linear-gradient(140deg, var(--pink) 0%, var(--indigo) 100%);
+  background: linear-gradient(140deg, var(--pink) 0%, var(--teal) 100%);
   box-shadow:
     0 18px 40px -10px rgba(255, 143, 177, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
@@ -1171,7 +1205,7 @@ html:not(.js) .reveal-cascade > * {
   pointer-events: none;
 }
 .ai-card .feature-icon-3d {
-  background: linear-gradient(140deg, var(--indigo) 0%, var(--purple) 100%);
+  background: linear-gradient(140deg, var(--teal) 0%, var(--pink-3) 100%);
 }
 .feat-tag {
   position: absolute;
@@ -1183,7 +1217,7 @@ html:not(.js) .reveal-cascade > * {
   padding: 5px 10px;
   border-radius: 6px;
   background: rgba(99, 102, 241, 0.18);
-  color: var(--indigo-2);
+  color: var(--teal-2);
   border: 1px solid rgba(99, 102, 241, 0.35);
 }
 .feature-visual {
@@ -1221,7 +1255,7 @@ html:not(.js) .reveal-cascade > * {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--indigo-2);
+  color: var(--teal-2);
 }
 .fv-bar-label {
   display: flex;
@@ -1241,7 +1275,7 @@ html:not(.js) .reveal-cascade > * {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--pink), var(--indigo));
+  background: linear-gradient(90deg, var(--pink), var(--teal));
 }
 .fv-bar + .fv-bar-label {
   margin-top: 16px;
@@ -1339,7 +1373,7 @@ html:not(.js) .reveal-cascade > * {
   color: var(--ink-5);
 }
 .ba-after .icon-wrap {
-  background: linear-gradient(135deg, var(--pink), var(--indigo));
+  background: linear-gradient(135deg, var(--pink), var(--teal));
   color: #fff;
 }
 .ba-divider {
@@ -1348,7 +1382,7 @@ html:not(.js) .reveal-cascade > * {
   bottom: 0;
   left: 50%;
   width: 2px;
-  background: linear-gradient(180deg, transparent, var(--pink), var(--indigo), transparent);
+  background: linear-gradient(180deg, transparent, var(--pink), var(--teal), transparent);
   transform: scaleY(0);
   transform-origin: top;
   transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
@@ -1453,7 +1487,7 @@ html:not(.js) .reveal-cascade > * {
   font-variant-numeric: tabular-nums;
 }
 .fact-num .grad {
-  background: linear-gradient(120deg, var(--pink), var(--indigo));
+  background: linear-gradient(120deg, var(--pink), var(--teal));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1606,7 +1640,7 @@ html:not(.js) .reveal-cascade > * {
   flex-shrink: 0;
 }
 .plat-pill.web svg {
-  color: var(--indigo-2);
+  color: var(--teal-2);
 }
 /*
  * A ressalva de loja fica DENTRO do cartão, no mesmo peso visual do resto —
@@ -1850,7 +1884,7 @@ html:not(.js) .reveal-cascade > * {
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--pink), var(--indigo));
+  background: linear-gradient(135deg, var(--pink), var(--teal));
   flex-shrink: 0;
 }
 .currency-stack {
@@ -1918,7 +1952,7 @@ html:not(.js) .reveal-cascade > * {
   padding: 3px 8px;
   border-radius: 6px;
   background: rgba(99, 102, 241, 0.22);
-  color: var(--indigo-2);
+  color: var(--teal-2);
   font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -2025,8 +2059,8 @@ html:not(.js) .reveal-cascade > * {
   opacity: 0.85;
   background:
     radial-gradient(circle at 20% 30%, var(--pink) 0%, transparent 35%),
-    radial-gradient(circle at 80% 20%, var(--indigo) 0%, transparent 38%),
-    radial-gradient(circle at 60% 80%, var(--purple) 0%, transparent 35%),
+    radial-gradient(circle at 80% 20%, var(--teal) 0%, transparent 38%),
+    radial-gradient(circle at 60% 80%, var(--pink-3) 0%, transparent 35%),
     radial-gradient(circle at 30% 70%, var(--pink-2) 0%, transparent 30%);
   filter: blur(60px);
   animation: meshShift 18s ease-in-out infinite;
