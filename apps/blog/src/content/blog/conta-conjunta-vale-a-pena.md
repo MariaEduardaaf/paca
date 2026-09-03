@@ -115,7 +115,7 @@ Não existe modelo certo em abstrato; existe modelo certo para a fase em que voc
 
 ## Regras de convivência para a conta conjunta dar certo
 
-Dinheiro é o principal motivo de brigas para [53% dos casais brasileiros (Serasa, 2025)](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — e uma conta conjunta sem regras combinadas não diminui esse número, só muda o palco da briga. Antes de abrir (ou para consertar a que já existe), combinem por escrito:
+[53% dos brasileiros apontam o dinheiro como o principal motivo de briga no relacionamento (Serasa, 2025)](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — e uma conta conjunta sem regras combinadas não diminui esse número, só muda o palco da briga. Antes de abrir (ou para consertar a que já existe), combinem por escrito:
 
 1. **O que entra e o que não entra.** Lista explícita: aluguel, mercado, contas, farmácia da casa... e o que fica de fora (hobby, presente, gasto pessoal).
 2. **O aporte de cada um, com a conta na mesa.** Exemplo: renda de R$ 3.500 + R$ 6.500 = R$ 10.000; despesas comuns de R$ 4.000. Meio a meio, cada um põe R$ 2.000 — o que consome 57% da renda menor (2.000 ÷ 3.500) e só 31% da maior (2.000 ÷ 6.500). Proporcional, quem ganha R$ 3.500 contribui com 35% de R$ 4.000 = **R$ 1.400**, e quem ganha R$ 6.500 contribui com 65% = **R$ 2.600**. Escolham conscientemente, não por inércia.

@@ -115,7 +115,7 @@ Se depois de tudo vocês ainda quiserem a conta conjunta clássica, tudo bem —
 - Como funciona o encerramento? Em geral exige manifestação dos dois titulares — parar de usar não encerra nada, e conta esquecida continua gerando tarifa.
 - Namorados podem abrir, ou pedem comprovação de vínculo?
 
-E lembrem do que a conta conjunta não faz: ela não cria acordo. Se as [brigas por dinheiro](/blog/brigas-por-dinheiro-relacionamento) ainda são frequentes entre vocês, um saldo compartilhado só muda o palco da discussão. Dinheiro é o principal motivo de briga para [53% dos casais brasileiros, segundo pesquisa da Serasa](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — e nenhum banco resolve isso por vocês.
+E lembrem do que a conta conjunta não faz: ela não cria acordo. Se as [brigas por dinheiro](/blog/brigas-por-dinheiro-relacionamento) ainda são frequentes entre vocês, um saldo compartilhado só muda o palco da discussão. [53% dos brasileiros apontam o dinheiro como o principal motivo de briga no relacionamento, segundo pesquisa da Serasa](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — e nenhum banco resolve isso por vocês.
 
 ## Perguntas frequentes
 

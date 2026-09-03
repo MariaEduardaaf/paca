@@ -9,7 +9,7 @@ draft: false
 
 "Um dia a gente vai pro Nordeste." "Ano que vem a gente começa a guardar pro casamento." "Quando sobrar, entra pra entrada do apê." Se vocês já disseram alguma dessas frases — e o dinheiro nunca apareceu —, o problema quase nunca é falta de vontade. É falta de plano: sonho sem número, número sem prazo, prazo sem combinado de quem guarda quanto.
 
-E vale lembrar por que isso importa: dinheiro é o principal motivo de brigas para [53% dos casais, segundo pesquisa da Serasa (2025)](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/). Uma meta clara, combinada a dois, faz o caminho contrário: transforma o dinheiro de fonte de tensão em projeto conjunto.
+E vale lembrar por que isso importa: [53% dos brasileiros apontam o dinheiro como o principal motivo de briga no relacionamento, segundo pesquisa da Serasa (2025)](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/). Uma meta clara, combinada a dois, faz o caminho contrário: transforma o dinheiro de fonte de tensão em projeto conjunto.
 
 Neste guia, vocês vão sair com um plano completo em 6 passos: transformar o sonho em valor mensal, mapear a renda, dividir a contribuição de forma justa, escolher onde guardar, cortar gastos sem virar um casal sem vida social — e o ritual mensal que mantém tudo de pé.
 
@@ -96,7 +96,7 @@ Sobre onde deixar, pensando qualitativamente e sem prometer rentabilidade:
 
 - **Poupança**: a mais simples de todas, liquidez imediata, sem surpresa. O ponto fraco histórico é render pouco — pra metas curtas o efeito é pequeno, pra metas longas o custo de oportunidade cresce.
 - **CDB com liquidez diária**: produto de banco em que o resgate costuma cair na hora ou no mesmo dia. Vale checar se a instituição tem cobertura do FGC e como o rendimento é tributado.
-- **Tesouro Selic**: título público, considerado a aplicação mais conservadora do mercado brasileiro, com resgate em prazo curto. Bom candidato pra metas de médio prazo, tipo a entrada do imóvel.
+- **Tesouro Selic**: título público, considerado a aplicação mais conservadora do mercado brasileiro, com resgate em prazo curto. Bom candidato pra metas de médio prazo, tipo a entrada do imóvel. Se a meta for essa, vale saber de quanto ela precisa ser antes de escolher o prazo: a conta da entrada, do ITBI, do cartório e do que o FGTS de cada um cobre está em [comprar a casa juntos com financiamento em nome dos dois](/blog/comprar-casa-juntos-financiamento).
 
 Pra metas de até 1–2 anos, a diferença entre essas opções tende a pesar menos que a **disciplina do aporte mensal** — o que mais faz a meta andar é o Pix agendado cair todo mês, não a escolha fina do produto.
 

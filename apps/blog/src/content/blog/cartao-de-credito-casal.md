@@ -53,7 +53,7 @@ Esta é a parte que quase ninguém explica antes. O titular é o [responsável p
 
 É desconfortável dos dois lados. O titular assinou por compras que ele não vê acontecer; o adicional gasta sem que a consequência caia no nome dele — confortável demais para ficar sem combinado.
 
-E fatura não paga por inteiro vira buraco rápido. Desde janeiro de 2024 existe um freio: pela [Lei 14.690/2023](https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/L14690.htm), no crédito rotativo e no parcelamento do saldo devedor da fatura, "o total cobrado em cada caso a título de juros e encargos financeiros não poderá exceder o valor original da dívida". Ou seja: R$ 3.000 não viram mais de R$ 6.000. É teto, não conforto — dobrar a dívida ainda é péssimo, e quem paga é o titular.
+E fatura não paga por inteiro vira buraco rápido. Desde janeiro de 2024 existe um freio: pela [Lei 14.690/2023](https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/L14690.htm), no crédito rotativo e no parcelamento do saldo devedor da fatura, "o total cobrado em cada caso a título de juros e encargos financeiros não poderá exceder o valor original da dívida". Ou seja: R$ 3.000 não viram mais de R$ 6.000. É teto, não conforto — dobrar a dívida ainda é péssimo, e quem paga é o titular. Se a fatura de vocês já está nesse ponto, o arranjo do cartão vira o menor dos problemas: o [plano para o casal sair das dívidas juntos](/blog/casal-endividado-como-sair-das-dividas) mostra como parcelar o rotativo e em que ordem atacar o resto.
 
 ### O que aparece (e o que não aparece) na fatura
 
@@ -105,7 +105,7 @@ E teto de gasto não é controle, é previsibilidade. Se para um dos dois isso s
 
 Aqui o arranjo mostra o dente. O titular pode cancelar o adicional a qualquer momento, sozinho, pelo app — sem avisar, sem autorização de ninguém. Na prática, isso vira alguém descobrindo no caixa do mercado que ficou sem meio de pagamento.
 
-Na direção oposta, cancelar não apaga o que já foi gasto: as compras anteriores continuam na fatura do titular, com os parcelamentos pingando pelos próximos meses. Se a fatura entrar no rotativo, a dívida é dele. E isso não é hipótese distante — no levantamento da Serasa, [45% das pessoas ficaram com dívidas do parceiro depois do fim do relacionamento e 4 em cada 10 já ficaram com o nome sujo por causa de uma relação](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/).
+Na direção oposta, cancelar não apaga o que já foi gasto: as compras anteriores continuam na fatura do titular, com os parcelamentos pingando pelos próximos meses. Se a fatura entrar no rotativo, a dívida é dele. E isso não é hipótese distante — no levantamento da Serasa, [45% das pessoas ficaram com dívidas do parceiro depois do fim do relacionamento e 4 em cada 10 brasileiros já ficaram com o nome sujo por causa de um relacionamento](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/).
 
 Um encerramento civilizado tem quatro passos:
 

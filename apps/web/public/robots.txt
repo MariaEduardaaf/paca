@@ -1,0 +1,28 @@
+# app.pacafinance.com.br — o app do Paca Finance (SPA React atrás de login).
+#
+# Por que quase tudo fica bloqueado: o vercel.json reescreve /(.*) para
+# index.html, então QUALQUER caminho inexistente responde 200 com o app. Para o
+# Google isso é um espaço infinito de soft-404 — ele rastreia URL que não existe,
+# encontra sempre o mesmo conteúdo e gasta crawl budget num domínio que não tem o
+# que indexar. Sem este arquivo, nem /robots.txt escapava: o rewrite devolvia o
+# index.html no lugar dele.
+#
+# O que fica liberado são as únicas páginas públicas e com conteúdo real:
+#  - /signup: destino de todo CTA do blog e a página que deve responder por
+#    "Paca Finance" na busca (existe um projeto de cripto homônimo; esta é a
+#    página de produto que ancora a marca certa);
+#  - /privacy, /terms, /support: exigidas pelas lojas e pelo aviso de LGPD, e
+#    linkadas de fora — bloqueá-las passa a impressão de política inacessível.
+#
+# O resto é tela de senha (/login, /onboarding) ou rota protegida que só desenha
+# dado de usuário logado: nada disso tem valor em busca.
+#
+# Sem linha Sitemap: este host não publica sitemap próprio, e apontar para o do
+# blog seria referência cross-domain (o Google ignora, quando não desconfia).
+
+User-agent: *
+Disallow: /
+Allow: /signup
+Allow: /privacy
+Allow: /terms
+Allow: /support

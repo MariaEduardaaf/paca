@@ -7,7 +7,7 @@ tags: ["dividir contas", "finanças do casal", "orçamento a dois", "vida a dois
 draft: false
 ---
 
-A conta de luz chegou, o aluguel vence dia 5 e o mercado do mês passou de R$ 900. Quem paga o quê? Se vocês nunca sentaram para definir isso, cada boleto vira uma pequena negociação — e é nesse improviso que o desgaste se acumula. Não é exagero: segundo levantamento da Serasa (2025), [53% dos casais brasileiros apontam as finanças como o principal motivo de brigas](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) no relacionamento.
+A conta de luz chegou, o aluguel vence dia 5 e o mercado do mês passou de R$ 900. Quem paga o quê? Se vocês nunca sentaram para definir isso, cada boleto vira uma pequena negociação — e é nesse improviso que o desgaste se acumula. Não é exagero: segundo levantamento da Serasa (2025), [53% dos brasileiros apontam as finanças como o principal motivo de briga no relacionamento](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/).
 
 A boa notícia é que dividir as contas não tem uma única resposta "certa". Existem quatro métodos consolidados — 50/50, proporcional ao salário, conta conjunta e divisão por responsabilidades — e cada um tem pontos fortes e fracos bem claros. O erro de verdade é não escolher nenhum e deixar tudo no "depois a gente acerta".
 
@@ -15,7 +15,7 @@ Neste guia, vocês vão ver os quatro métodos com as contas feitas em reais, um
 
 ## Antes de dividir: a conversa que evita a maior parte das brigas
 
-Nenhum método funciona se vocês pularem esta etapa. E cuidado com a falsa sensação de que ela já está resolvida: no mesmo levantamento da Serasa, [65% dos casais dizem que falam abertamente sobre dinheiro, mas 49% já esconderam um problema financeiro do parceiro](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — e as finanças seguem sendo o principal motivo de briga. A conversa que a maioria tem é a da rotina ("quanto foi o mercado?"); a que muda a divisão é outra: dívida, medo, expectativa. E não dá para dividir de forma justa o que nunca foi colocado na mesa. Antes de escolher qualquer fórmula, alinhem três coisas:
+Nenhum método funciona se vocês pularem esta etapa. E cuidado com a falsa sensação de que ela já está resolvida: no mesmo levantamento da Serasa, [65% dos casais entrevistados dizem que falam abertamente sobre dinheiro, mas 49% dos entrevistados já esconderam um problema financeiro do parceiro](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — e as finanças seguem sendo o motivo de briga mais citado. A conversa que a maioria tem é a da rotina ("quanto foi o mercado?"); a que muda a divisão é outra: dívida, medo, expectativa. E não dá para dividir de forma justa o que nunca foi colocado na mesa. Antes de escolher qualquer fórmula, alinhem três coisas:
 
 - **O que é conta do casal e o que é gasto pessoal.** Aluguel, mercado do mês, luz, internet: do casal. Academia, presente para a sogra, hobby de um dos dois: geralmente pessoal. A fronteira é de vocês, mas precisa ser explícita.
 - **Quanto cada um ganha, de verdade.** Salário líquido, freelas, comissões. Sem esse número real, qualquer divisão "justa" é chute.
@@ -169,7 +169,7 @@ A exceção é temporária e combinada: desemprego, licença, transição de car
 
 Suspendam o método normal e tratem como fase, não como novo padrão. Quem está empregado assume as contas essenciais; quem está sem renda contribui com o que for possível — inclusive de formas não financeiras, como assumir mais da rotina da casa enquanto procura recolocação.
 
-Duas coisas evitam que essa fase corroa a relação: prazo de revisão (a cada 2–3 meses, conversem sobre como está) e transparência sobre qualquer renda que surgir, como freelas ou seguro-desemprego. O que machuca não é a assimetria — é ela virar permanente sem nunca ter sido conversada.
+Duas coisas evitam que essa fase corroa a relação: prazo de revisão (a cada 2–3 meses, conversem sobre como está) e transparência sobre qualquer renda que surgir, como freelas ou seguro-desemprego. Se o gatilho foi perda de emprego mesmo, o roteiro completo — o que cortar primeiro, em que ordem e como não transformar a fase em cobrança — está em [um dos dois ficou desempregado](/blog/um-dos-dois-desempregado-financas-casal). O que machuca não é a assimetria — é ela virar permanente sem nunca ter sido conversada.
 
 ### Estamos namorando e ainda não moramos juntos: precisamos dividir algo?
 

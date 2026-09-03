@@ -1,15 +1,15 @@
 ---
-title: "Planilha de gastos para casal: modelo grátis e como usar"
-description: "Monte uma planilha de gastos para casal em 10 minutos: estrutura pronta para copiar, rotina semanal e quando trocar a planilha por um app."
+title: "Planilha de gastos para casal: como montar a sua em 10 minutos"
+description: "A estrutura completa de uma planilha de gastos para casal: 3 abas, colunas, categorias e fórmulas para copiar no Google Sheets — e a rotina que a mantém viva."
 pubDate: 2026-08-24
 category: "ferramentas"
 tags: ["planilha", "orçamento", "casal", "google sheets", "controle de gastos"]
 draft: false
 ---
 
-A busca por uma planilha de gastos geralmente começa depois de um susto: a fatura do cartão veio maior do que os dois imaginavam, ninguém sabe dizer para onde foi o dinheiro do mercado, ou a conversa sobre quem pagou o quê virou discussão. Não é exagero — segundo pesquisa da Serasa divulgada em 2025, [53% dos casais apontam dinheiro como o principal motivo de brigas](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/). Uma planilha bem montada não resolve tudo, mas tira a discussão do campo do "eu acho" e coloca no campo dos números.
+A busca por uma planilha de gastos geralmente começa depois de um susto: a fatura do cartão veio maior do que os dois imaginavam, ninguém sabe dizer para onde foi o dinheiro do mercado, ou a conversa sobre quem pagou o quê virou discussão. Não é exagero — segundo pesquisa da Serasa divulgada em 2025, [53% dos brasileiros apontam o dinheiro como o principal motivo de briga no relacionamento](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/). Uma planilha bem montada não resolve tudo, mas tira a discussão do campo do "eu acho" e coloca no campo dos números.
 
-Antes de continuar, um aviso honesto sobre o "modelo grátis" do título: não existe arquivo para baixar aqui. O que vocês vão encontrar é a estrutura completa — abas, colunas, categorias e fórmulas escritas por extenso — apresentada em tabelas que vocês copiam para o Google Sheets em uns 10 minutos. Na prática, é melhor assim: montar a planilha do zero faz vocês entenderem cada célula, em vez de herdar um arquivo cheio de abas que ninguém usa.
+Uma palavra sobre o formato, antes de começar: aqui não tem arquivo para baixar — tem a estrutura completa, com abas, colunas, categorias e fórmulas escritas por extenso, em tabelas que vocês copiam para o Google Sheets em uns 10 minutos. É de propósito. Montar do zero faz vocês entenderem cada célula e ajustarem as categorias à vida de vocês, em vez de herdar um arquivo cheio de abas que ninguém abre — que é exatamente onde a maioria dos modelos prontos morre, no segundo mês.
 
 Ao final, vocês saem com: a estrutura de 3 abas pronta para copiar, as fórmulas de soma e divisão, uma rotina semanal de 10 minutos para a planilha não morrer, e os sinais de que chegou a hora de trocar a planilha por outra ferramenta.
 
@@ -42,7 +42,7 @@ Três abas. Não mais. Planilha com oito abas é planilha abandonada em dois mes
 | F — Forma | Pix, débito, crédito, boleto, dinheiro | Crédito |
 | G — Mês de referência | Competência do gasto | set/2026 |
 
-A coluna G existe por causa do cartão de crédito: uma compra feita dia 28 de setembro pode cair só na fatura de outubro. Decidam uma regra — a mais simples é lançar pelo **mês da compra**, não da fatura — e sigam sempre a mesma.
+A coluna G existe por causa do cartão de crédito: uma compra feita dia 28 de setembro pode cair só na fatura de outubro. Decidam uma regra — a mais simples é lançar pelo **mês da compra**, não da fatura — e sigam sempre a mesma. A coluna E, "quem pagou", também depende de uma decisão anterior à planilha: se vocês usam um adicional, tudo sai no nome do titular e a coluna some sozinha; se usam cartões separados, ela é o que sustenta o acerto do mês. Os três arranjos estão comparados em [cartão de crédito no casal](/blog/cartao-de-credito-casal).
 
 Dica prática: em C, usem validação de dados (Dados → Validação de dados → lista a partir de intervalo, apontando para a lista de categorias da aba 3). Isso impede que "Mercado", "mercado" e "Supermercado" virem três categorias diferentes e quebrem as somas.
 

@@ -17,7 +17,7 @@ Aqui está o plano inteiro: colocar tudo na mesa sem virar julgamento, escolher 
 
 Este passo trava a maioria dos casais e é o único que não dá para pular: enquanto a lista estiver incompleta, todo plano feito em cima dela está errado. Sentem juntos, cada um com o celular aberto, e listem **tudo** — fatura, rotativo, cheque especial, empréstimo, consignado, carnê da loja, boleto parcelado, dinheiro devido a parente, luz atrasada. Para cada dívida, cinco colunas: credor, saldo de hoje, juros ao mês, parcela mínima e **no nome de quem está**.
 
-A tentação de arredondar para baixo por vergonha é enorme, e é ela que faz o plano falhar. Entre os casais brasileiros, [49% já esconderam algum problema financeiro do parceiro, segundo pesquisa da Serasa](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/). Se essa for a noite em que uma dívida escondida aparece, combinem uma regra antes de começar: **nada do que for dito hoje será usado numa discussão depois.**
+A tentação de arredondar para baixo por vergonha é enorme, e é ela que faz o plano falhar. E é comum: [quase metade dos entrevistados (49%) já escondeu algum problema financeiro do parceiro, segundo pesquisa da Serasa](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/). Se essa for a noite em que uma dívida escondida aparece, combinem uma regra antes de começar: **nada do que for dito hoje será usado numa discussão depois.**
 
 Vamos acompanhar um casal de exemplo o artigo inteiro. A renda é de R$ 3.200 (Pessoa A) e R$ 4.800 (Pessoa B), o custo de vida do casal é R$ 6.500, e a lista ficou assim:
 
@@ -110,7 +110,7 @@ E a regra que evita recaída: **não aceitem parcela que não cabe no orçamento
 
 ## Quando a dívida é de um só e o aperto é dos dois
 
-O empréstimo está no CPF de B, mas o dinheiro sai do orçamento que sustenta os dois. É aqui que a dívida vira ressentimento — e o risco é comum: segundo a mesma pesquisa da Serasa, [45% das pessoas ficaram com dívidas do parceiro depois do fim do relacionamento](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) e 4 em cada 10 já ficaram com o nome sujo por causa de um relacionamento. Fingir que "é tudo nosso" não protege ninguém; combinar explicitamente, sim.
+O empréstimo está no CPF de B, mas o dinheiro sai do orçamento que sustenta os dois. É aqui que a dívida vira ressentimento — e o risco é comum: segundo a mesma pesquisa da Serasa, [45% das pessoas ficaram com dívidas do parceiro depois do fim do relacionamento](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) e 4 em cada 10 brasileiros já ficaram com o nome sujo por causa de um relacionamento. Fingir que "é tudo nosso" não protege ninguém; combinar explicitamente, sim.
 
 | Modelo | Como funciona | Quando faz sentido |
 |---|---|---|
@@ -124,7 +124,7 @@ Sobre nome sujo: a negativação não contamina o CPF de quem não deve, mas tra
 
 ## Como não transformar isso em cobrança dentro de casa
 
-Dinheiro é o assunto que mais gera briga entre casais brasileiros — [53% apontam finanças como principal motivo de discussão](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — e um plano de dívida mal conduzido é gasolina. Cinco combinados:
+Dinheiro é o assunto que mais gera briga nos relacionamentos no Brasil — [53% dos brasileiros apontam as finanças como o principal motivo de discussão](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — e um plano de dívida mal conduzido é gasolina. Cinco combinados:
 
 1. **Dinheiro pessoal continua existindo.** Um valor pequeno para cada um, sem prestação de contas — R$ 100, R$ 150. Plano sem nenhuma folga humana dura três meses e explode no quarto.
 2. **A conversa tem data.** Um check-in de 30 minutos por mês, sempre no mesmo dia. Fora dessa data, dívida não é assunto — assim nenhuma compra de R$ 40 vira audiência.
@@ -156,7 +156,7 @@ Por isso o que importa é combinar o modelo explicitamente: dívida individual, 
 
 ### Vale a pena pegar empréstimo para quitar o cartão?
 
-Vale quando o novo crédito é mais barato que o antigo, e só assim. Comparem o CET ao ano do empréstimo com a taxa que vocês pagam hoje: trocar um rotativo de 15% ao mês por um parcelamento de 1,99% derruba o juro de R$ 480 para R$ 64 sobre um saldo de R$ 3.200. O que não vale é aceitar parcela menor com prazo esticado sem olhar o total, nem pegar crédito novo mantendo o cartão em uso — aí vocês terminam com duas dívidas em vez de uma.
+Vale quando o novo crédito é mais barato que o antigo, e só assim. Comparem o CET ao ano do empréstimo com a taxa que vocês pagam hoje: trocar um rotativo de 15% ao mês por um parcelamento de 1,99% derruba o juro de R$ 480 para R$ 64 sobre um saldo de R$ 3.200. O que não vale é aceitar parcela menor com prazo esticado sem olhar o total, nem pegar crédito novo mantendo o cartão em uso — aí vocês terminam com duas dívidas em vez de uma. E vale conferir de quem é o cartão que ficou em uso: no adicional, a fatura inteira responde no CPF do titular, mesmo o que o outro gastou. Os três arranjos e quem responde por cada um estão em [cartão de crédito no casal](/blog/cartao-de-credito-casal).
 
 ### Como sair das dívidas sem brigar com o parceiro?
 

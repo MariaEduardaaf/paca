@@ -77,5 +77,36 @@ const total = posts.length;
         ))
       }
     </ul>
+
+    {/*
+      A calculadora não é uma sexta categoria: a página inteira está escrita em
+      torno de "cinco temas", e um cartão igual aos outros faria dela uma
+      categoria a mais. Por isso entra como nota tipográfica depois da régua —
+      não disputa com a lista, mas dá destino a quem chegou aqui e não se
+      reconheceu em nenhum dos cinco.
+    */}
+    <section
+      aria-labelledby="ferramenta"
+      class="mt-12 max-w-4xl border-t border-gray-200 pt-8 dark:border-gray-800"
+    >
+      <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-pink-800 dark:text-pink-200">
+        Ferramenta grátis
+      </p>
+      <h2
+        id="ferramenta"
+        class="mt-1.5 font-display text-xl font-bold leading-snug text-gray-800 dark:text-white"
+      >
+        <a
+          href="/calculadora-divisao-de-contas"
+          class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300"
+        >
+          Calculadora de divisão de contas do casal
+        </a>
+      </h2>
+      <p class="mt-2 max-w-2xl leading-relaxed text-gray-600 dark:text-gray-300">
+        As duas rendas e o total das contas do mês: ela mostra quanto cada um
+        paga na divisão proporcional ao salário, comparado com o meio a meio.
+      </p>
+    </section>
   </div>
 </BaseLayout>

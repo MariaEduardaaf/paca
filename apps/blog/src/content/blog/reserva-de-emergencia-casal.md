@@ -31,7 +31,7 @@ Quantos meses? Não existe número universal, e desconfiem de quem crava um. O q
 | Os dois na mesma empresa ou no mesmo setor | soma 3 meses ao múltiplo | — |
 | Com filhos, dependentes ou financiamento imobiliário | soma 3 meses ao múltiplo | — |
 
-O item que quase ninguém considera é a **correlação**: se os dois trabalham na mesma empresa, no mesmo setor ou para o mesmo cliente grande, a chance de as duas rendas caírem juntas é bem maior — e a vantagem de ter duas rendas some justamente quando ela seria mais útil. Nesse caso, o casal precisa de mais reserva que dois solteiros somados, não de menos. O múltiplo também não é fixo: sobe quando entra filho ou financiamento, desce quando a renda fica mais previsível. Revisem uma vez por ano.
+O item que quase ninguém considera é a **correlação**: se os dois trabalham na mesma empresa, no mesmo setor ou para o mesmo cliente grande, a chance de as duas rendas caírem juntas é bem maior — e a vantagem de ter duas rendas some justamente quando ela seria mais útil. Nesse caso, o casal precisa de mais reserva que dois solteiros somados, não de menos. O múltiplo também não é fixo: sobe quando entra filho ou financiamento, desce quando a renda fica mais previsível. Revisem uma vez por ano. E se o financiamento que está por vir é o do imóvel, montem a reserva **antes** da entrada, não depois: as contas de entrada, ITBI e cartório de [comprar a casa juntos com financiamento em nome dos dois](/blog/comprar-casa-juntos-financiamento) costumam consumir a poupança inteira, e assumir uma parcela de 30 anos sem colchão nenhum é como o casal perde a casa no primeiro imprevisto.
 
 ## Uma reserva ou duas?
 

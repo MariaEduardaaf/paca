@@ -9,7 +9,7 @@ draft: false
 
 Escolher um app de finanças para casal parece simples até vocês instalarem o terceiro aplicativo em uma semana e perceberem que nenhum resolve o problema de verdade: um é ótimo para gastos pessoais mas não compartilha nada, outro divide contas mas não tem orçamento, e o terceiro cobra em dólar. Enquanto isso, a fatura do cartão chega, o mercado do mês sai mais caro e ninguém lembra quem pagou o boleto do condomínio.
 
-O assunto importa mais do que parece: segundo pesquisa da Serasa divulgada em 2025, [53% dos casais apontam dinheiro como o principal motivo de brigas](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/). Boa parte dessas brigas não é sobre falta de dinheiro — é sobre falta de visibilidade. Um app certo resolve exatamente isso.
+O assunto importa mais do que parece: segundo pesquisa da Serasa divulgada em 2025, [53% dos brasileiros apontam o dinheiro como o principal motivo de briga no relacionamento](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — e a fricção mais citada é a decisão tomada por impulso, não a falta de dinheiro. Ou seja: boa parte dessas brigas é sobre falta de visibilidade. Um app certo resolve exatamente isso.
 
 Neste comparativo, analisamos 7 opções que casais brasileiros realmente usam — de apps feitos especificamente para dois a divisores de despesas e até uma conta conjunta de verdade. Vocês vão ver preços (só os que conseguimos verificar), recursos, para qual perfil de casal cada um serve — e quando nenhum app é a resposta.
 

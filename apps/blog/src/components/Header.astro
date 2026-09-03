@@ -1,15 +1,29 @@
 ---
 import { SIGNUP_URL } from "../consts";
 
-// Short nav labels for the category hubs (full labels live in lib/categories).
+/*
+ * Short nav labels for the category hubs (full labels live in lib/categories).
+ *
+ * A calculadora abre a lista, e "Contato" saiu daqui para abrir a vaga. O
+ * porquê das duas decisões:
+ *  - a calculadora é a única página que a mesma pessoa reabre, e estava fora do
+ *    menu e de todos os hubs — sem link fixo, ela só existia para quem lia um
+ *    artigo até o bloco de recirculação. Primeira posição porque o trabalho
+ *    deste menu é render a segunda página da visita;
+ *  - "Contato" é link de utilidade, não de leitura: continua em TODA página,
+ *    no rodapé, junto de Privacidade, Suporte e Descadastro. É lá que se
+ *    procura (e é lá que a análise do AdSense olha).
+ * Um oitavo item não cabia: em ~1024px a linha já estoura e a navegação quebra
+ * para baixo do CTA.
+ */
 const NAV = [
+  { href: "/calculadora-divisao-de-contas", label: "Calculadora" },
   { href: "/categorias/dividir-contas", label: "Dividir contas" },
   { href: "/categorias/organizacao", label: "Organização" },
   { href: "/categorias/conversas-sobre-dinheiro", label: "Conversas" },
   { href: "/categorias/metas-e-sonhos", label: "Metas" },
   { href: "/categorias/ferramentas", label: "Ferramentas" },
   { href: "/sobre", label: "Sobre" },
-  { href: "/contato", label: "Contato" },
 ];
 ---
 

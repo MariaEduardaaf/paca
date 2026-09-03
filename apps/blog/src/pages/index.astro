@@ -1,50 +1,184 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PostCard from "../components/PostCard.astro";
 import CTABox from "../components/CTABox.astro";
 import Cover from "../components/Cover.astro";
 import NewsletterForm from "../components/NewsletterForm.astro";
 import { SITE_DESCRIPTION } from "../consts";
-import { formatDate, readingTimeMinutes, sortByDateDesc } from "../lib/posts";
+import { sortByDateDesc, type BlogPost } from "../lib/posts";
 import { CATEGORIES } from "../lib/categories";
 
-const sorted = sortByDateDesc(await getCollection("blog", ({ data }) => !data.draft));
-// The welcome note never takes an editorial slot — it goes last.
-const posts = [
-  ...sorted.filter((p) => p.id !== "bem-vindos-ao-blog-do-paca"),
-  ...sorted.filter((p) => p.id === "bem-vindos-ao-blog-do-paca"),
+/**
+ * A HOME É A PORTA DA MARCA — não é a lista de artigos.
+ *
+ * Ela e /blog listavam os mesmos 18 textos com o mesmo cartão (título +
+ * descrição + data + tempo de leitura), e a sobreposição de n-gramas entre as
+ * duas passava de 79%. Duas páginas quase idênticas e ambas indexáveis fazem o
+ * Google escolher uma como porta de entrada da marca — e ele pode escolher a
+ * errada, além de partir o relatório do Search Console em duas linhas que
+ * competem entre si.
+ *
+ * A divisão passa a ser de PROPÓSITO, não de layout:
+ *  - aqui: o que é o Paca, para quem, a ferramenta e uma curadoria pequena
+ *    com texto próprio (nunca a descrição do artigo, que é o que /blog imprime);
+ *  - /blog: o arquivo completo, em ordem de publicação, com os filtros.
+ *
+ * Regra para quem mexer: se um trecho desta página puder ser copiado para
+ * /blog sem soar estranho, ele está no lugar errado.
+ */
+
+const posts = sortByDateDesc(
+  await getCollection("blog", ({ data }) => !data.draft),
+);
+const total = posts.length;
+const bySlug = new Map(posts.map((post) => [post.id, post]));
+
+/**
+ * A curadoria é por SLUG, escrita à mão. Slug renomeado ou artigo despublicado
+ * não pode derrubar a build (blog fora do ar = mídia parada): o item some do
+ * bloco e o aviso fica no log da build, que é onde alguém olha depois de
+ * renomear um arquivo.
+ */
+function pick(slug: string): BlogPost | undefined {
+  const post = bySlug.get(slug);
+  if (!post) console.warn(`[home] artigo curado não encontrado: ${slug}`);
+  return post;
+}
+
+// O artigo-pilar abre a página: quase toda outra decisão de dinheiro do casal
+// depende de ter resolvido a divisão das contas.
+const featured = pick("como-dividir-contas-casal") ?? posts[0];
+const featuredCategory = CATEGORIES[featured.data.category];
+
+/**
+ * Os caminhos de entrada. O título de cada bloco é a SITUAÇÃO de quem chega,
+ * não o título do artigo — é isso que separa uma curadoria de mais uma grade
+ * de cartões. O texto é escrito aqui, à mão: reaproveitar `data.description`
+ * traria de volta exatamente a duplicação que esta página deixou de ter.
+ */
+const ENTRY_POINTS = [
+  {
+    slug: "morar-junto-dividir-despesas",
+    situation: "Vocês vão morar juntos",
+    line: "O combinado feito antes da mudança é o mais barato de todos. Depois que a caixa entra no apartamento, cada boleto vira uma negociação.",
+  },
+  {
+    slug: "dividir-contas-proporcional-ao-salario",
+    situation: "Um ganha bem mais que o outro",
+    line: "Meio a meio deixa de ser justo quando os salários são diferentes: a saída é cada um entrar com o mesmo percentual da própria renda.",
+  },
+  {
+    slug: "brigas-por-dinheiro-relacionamento",
+    situation: "Toda conversa vira discussão",
+    line: "Quando o assunto já azedou, método de divisão nenhum resolve sozinho. A raiz da briga costuma vir antes do orçamento.",
+  },
+  {
+    slug: "casal-endividado-como-sair-das-dividas",
+    situation: "As dívidas passaram do controle",
+    line: "Primeiro todas na mesma folha, com juro, prazo e valor. Só depois dá para decidir qual atacar — e sem virar cobrança dentro de casa.",
+  },
+] as const;
+
+const entryPoints = ENTRY_POINTS.flatMap((entry) => {
+  const post = pick(entry.slug);
+  // `flatMap` em vez de map+filter porque só ele estreita o tipo: o `post`
+  // que sobra aqui é BlogPost, não BlogPost | undefined.
+  return post && post.id !== featured.id ? [{ ...entry, post }] : [];
+});
+
+const linked = new Set([featured.id, ...entryPoints.map((e) => e.post.id)]);
+
+// Segunda leva da curadoria: só título e categoria, sem resumo. É o que mantém
+// a home levando bem ao conteúdo (ela é a que recebe link de marca) sem voltar
+// a imprimir o mesmo texto que /blog imprime.
+const MORE_SLUGS = [
+  "melhor-app-financas-casal",
+  "conta-conjunta-vale-a-pena",
+  "planilha-gastos-casal",
+  "regra-50-30-20-casal",
+  "reserva-de-emergencia-casal",
+  "comprar-casa-juntos-financiamento",
 ];
 
-// The pillar article leads the page; everything else flows chronologically.
-const FEATURED_SLUG = "como-dividir-contas-casal";
-const featured = posts.find((p) => p.id === FEATURED_SLUG) ?? posts[0];
-const rest = posts.filter((p) => p.id !== featured.id);
-const picks = rest.slice(0, 3);
-const latest = rest.slice(3);
+const curatedMore = MORE_SLUGS.flatMap((slug) => {
+  const post = pick(slug);
+  return post && !linked.has(post.id) ? [post] : [];
+});
 
-const featuredCategory = CATEGORIES[featured.data.category];
-const featuredMinutes = readingTimeMinutes(featured.body);
+// Se a curadoria encolher (artigo renomeado), o buraco é preenchido pelos mais
+// recentes ainda não linkados: a porta da marca nunca pode ficar sem caminho
+// para o conteúdo.
+const curatedMoreIds = new Set(curatedMore.map((post) => post.id));
+const more = [
+  ...curatedMore,
+  ...posts.filter(
+    (post) => !linked.has(post.id) && !curatedMoreIds.has(post.id),
+  ),
+].slice(0, 6);
+
+const quickLinkClass =
+  "rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-4 transition-colors hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200";
 ---
 
 <BaseLayout description={SITE_DESCRIPTION}>
   <div class="mx-auto max-w-6xl px-4 sm:px-6">
-    <!-- Hub header: plain title + dek, content right below (no marketing hero) -->
-    <header class="border-b border-gray-100 py-8 sm:py-10 dark:border-gray-800">
-      <h1 class="font-display text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
-        Finanças para casais
-      </h1>
-      <p class="mt-2 max-w-2xl leading-relaxed text-gray-600 dark:text-gray-300">
-        Guias práticos para organizar o dinheiro a dois: dividir contas do jeito
-        justo, conversar sobre grana sem briga e realizar planos em dupla.
+    {/*
+      Abertura de MARCA: quem escreve, sobre o quê e para quem. Não é um hero
+      de campanha (sem promessa inflada, sem imagem de banco de imagens) — é o
+      cartão de visitas que /blog deliberadamente não tem.
+    */}
+    <header class="border-b border-gray-100 py-10 sm:py-14 dark:border-gray-800">
+      <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-pink-700 dark:text-pink-300">
+        O blog do Paca Finance
       </p>
+      <h1 class="mt-3 max-w-3xl font-display text-3xl font-bold leading-tight text-gray-800 sm:text-[2.75rem] sm:leading-[1.1] dark:text-white">
+        Finanças para casais, sem briga e sem planilha
+      </h1>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-gray-700 dark:text-gray-200">
+        A conta mais difícil de um relacionamento é a de duas pessoas que
+        dividem a mesma vida e nunca combinaram quem paga o quê. É sobre isso
+        que a gente escreve: dividir as despesas, orçamento a dois, sair das
+        dívidas, juntar dinheiro e as conversas que ninguém quer começar.
+      </p>
+      <p class="mt-4 max-w-2xl leading-relaxed text-gray-600 dark:text-gray-300">
+        Quem escreve é o time do <strong class="font-semibold text-gray-800 dark:text-white">Paca Finance</strong>,
+        o app em que os dois lançam os gastos no mesmo lugar, dividem as contas
+        pelo critério que combinaram e acompanham as metas juntos. Os guias
+        funcionam com ou sem ele — inclusive com a planilha que vocês já têm.
+      </p>
+
+      {/*
+        Três destinos, um de cada tipo: curadoria (aqui mesmo), ferramenta e
+        arquivo. É a única lista de navegação da home — os filtros por
+        categoria são da página de arquivo.
+      */}
+      <nav aria-label="Atalhos" class="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-[15px]">
+        <a href="#comece" class={quickLinkClass}>Por onde começar</a>
+        <a href="/calculadora-divisao-de-contas" class={quickLinkClass}>
+          Calculadora de divisão
+        </a>
+        <a href="/blog" class={quickLinkClass}>
+          Arquivo com os {total} guias
+        </a>
+      </nav>
     </header>
 
-    <!-- Featured article -->
-    <section aria-labelledby="destaque" class="py-10 sm:py-12">
-      <h2 id="destaque" class="sr-only">Em destaque</h2>
+    <section id="comece" aria-labelledby="comece-titulo" class="py-12 sm:py-14">
+      <h2
+        id="comece-titulo"
+        class="font-display text-2xl font-bold text-gray-800 sm:text-3xl dark:text-white"
+      >
+        Por onde começar
+      </h2>
+      <p class="mt-3 max-w-2xl leading-relaxed text-gray-600 dark:text-gray-300">
+        Não precisa ler tudo. Estes são os textos que destravam as situações
+        mais comuns — o resto fica guardado no arquivo, esperando o mês em que
+        virar problema de vocês.
+      </p>
+
+      {/* O pilar em tamanho grande; os quatro caminhos logo abaixo. */}
       <article
-        class="group relative grid items-center gap-6 lg:grid-cols-[7fr_5fr] lg:gap-10"
+        class="group relative mt-10 grid items-center gap-6 lg:grid-cols-[7fr_5fr] lg:gap-10"
         style={`--kc:${featuredCategory.accent};--kcd:${featuredCategory.accentDark}`}
       >
         <div class="overflow-hidden rounded-2xl">
@@ -68,49 +202,140 @@ const featuredMinutes = readingTimeMinutes(featured.body);
               {featured.data.title}
             </a>
           </h3>
+          {/*
+            Enquadramento escrito para a home. A descrição do artigo é o texto
+            que o cartão de /blog imprime — repeti-la aqui era metade da
+            duplicação entre as duas páginas.
+          */}
           <p class="mt-3 leading-relaxed text-gray-600 dark:text-gray-300">
-            {featured.data.description}
+            Quatro modelos de divisão comparados lado a lado, com a conta de
+            cada um feita em reais. É por aqui que a maioria dos casais começa,
+            porque quase toda outra decisão de dinheiro depende de ter resolvido
+            esta.
           </p>
           <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-            Equipe Paca Finance
-            <span aria-hidden="true"> · </span>
-            <time datetime={featured.data.pubDate.toISOString()}>{formatDate(featured.data.pubDate)}</time>
-            <span aria-hidden="true"> · </span>
-            {featuredMinutes} min de leitura
+            Escrito pela equipe Paca Finance
           </p>
         </div>
       </article>
+
+      <ul class="mt-12 grid gap-6 sm:grid-cols-2">
+        {
+          entryPoints.map((entry) => (
+            <li class="group relative flex h-full flex-col rounded-2xl border border-gray-200 p-6 transition-colors hover:border-pink-300 dark:border-gray-800 dark:hover:border-pink-600">
+              <h3 class="font-display text-lg font-bold leading-snug text-gray-800 dark:text-white">
+                {entry.situation}
+              </h3>
+              <p class="mt-2 flex-1 leading-relaxed text-gray-600 dark:text-gray-300">
+                {entry.line}
+              </p>
+              {/*
+                O texto do link é o TÍTULO do artigo, não um "leia mais": é o
+                que diz ao leitor (e ao buscador) para onde o clique leva.
+              */}
+              <p class="mt-4 text-[15px] font-semibold">
+                <a
+                  href={`/blog/${entry.post.id}`}
+                  class="rounded text-pink-700 transition-colors after:absolute after:inset-0 after:content-[''] hover:text-pink-800 group-hover:underline dark:text-pink-300 dark:hover:text-pink-200"
+                >
+                  {entry.post.data.title}
+                </a>
+              </p>
+            </li>
+          ))
+        }
+      </ul>
     </section>
 
-    <!-- Editor's picks -->
-    <section aria-label="Destaques recentes" class="border-t border-gray-100 py-10 dark:border-gray-800">
-      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {picks.map((post) => <PostCard post={post} headingLevel="h2" />)}
-      </div>
-    </section>
-
-    <!-- The one product block on the page -->
-    <CTABox />
-
-    <!-- Latest -->
-    <section aria-labelledby="mais-recentes" class="py-10">
-      <div class="flex flex-wrap items-baseline justify-between gap-4 border-b border-gray-100 pb-4 dark:border-gray-800">
-        <h2 id="mais-recentes" class="font-display text-xl font-bold text-gray-800 sm:text-2xl dark:text-white">
-          Mais recentes
-        </h2>
+    {/*
+      A ferramenta é conteúdo só da home (e da própria página dela): é o que a
+      marca tem além de texto, e o melhor destino para quem chega pela busca de
+      "dividir contas".
+    */}
+    <section
+      aria-labelledby="ferramenta-titulo"
+      class="border-t border-gray-100 py-12 dark:border-gray-800"
+    >
+      <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-pink-700 dark:text-pink-300">
+        Ferramenta grátis
+      </p>
+      <h2
+        id="ferramenta-titulo"
+        class="mt-3 font-display text-2xl font-bold text-gray-800 sm:text-3xl dark:text-white"
+      >
+        Descubra o número antes de ler o guia
+      </h2>
+      <p class="mt-3 max-w-2xl leading-relaxed text-gray-600 dark:text-gray-300">
+        Coloquem as duas rendas e o total das contas do mês: a calculadora mostra
+        quanto cabe a cada um na divisão proporcional e o quanto isso muda em
+        relação ao meio a meio. Roda no navegador, sem cadastro.
+      </p>
+      <p class="mt-5">
         <a
-          href="/blog"
-          class="rounded text-sm font-semibold text-pink-700 transition-colors hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+          href="/calculadora-divisao-de-contas"
+          class="inline-block rounded-xl border border-gray-300 px-5 py-2.5 text-sm font-semibold text-gray-800 transition-colors hover:border-pink-300 hover:text-pink-800 dark:border-gray-700 dark:text-gray-100 dark:hover:border-pink-600 dark:hover:text-pink-200"
         >
-          Ver todos os artigos →
+          Abrir a calculadora de divisão de contas
         </a>
-      </div>
-      <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {latest.map((post) => <PostCard post={post} headingLevel="h3" showExcerpt={false} />)}
-      </div>
+      </p>
     </section>
 
-    <!-- Uma única captura na home, longe do CTABox para não disputar com ele -->
+    {/*
+      O bloco de produto ganha texto próprio da home (o CTABox aceita as props):
+      o texto padrão dele fecha o /sobre, e a porta da marca é justamente onde
+      vale explicar o app com as palavras desta página.
+    */}
+    <CTABox
+      title="Ler é metade; a outra metade é os dois verem o mesmo número"
+      body="No Paca, o gasto que um lança aparece na hora para o outro, já com a divisão aplicada e o orçamento do mês descontado. Ele não escolhe o combinado por vocês — só tira da cabeça de uma pessoa só a tarefa de anotar, somar e cobrar."
+      buttonLabel="Criar a conta do casal (grátis)"
+    />
+
+    <section
+      aria-labelledby="tambem-titulo"
+      class="border-t border-gray-100 py-12 dark:border-gray-800"
+    >
+      <h2
+        id="tambem-titulo"
+        class="font-display text-2xl font-bold text-gray-800 sm:text-3xl dark:text-white"
+      >
+        Também vale a leitura
+      </h2>
+      <ul class="mt-8 grid gap-x-10 sm:grid-cols-2">
+        {
+          more.map((post) => {
+            const category = CATEGORIES[post.data.category];
+            return (
+              <li
+                class="border-b border-gray-100 py-4 dark:border-gray-800"
+                style={`--kc:${category.accent};--kcd:${category.accentDark}`}
+              >
+                <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-[color:var(--kc)] dark:text-[color:var(--kcd)]">
+                  {category.label}
+                </p>
+                <h3 class="mt-1 font-display text-lg font-bold leading-snug text-gray-800 dark:text-gray-50">
+                  <a
+                    href={`/blog/${post.id}`}
+                    class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300"
+                  >
+                    {post.data.title}
+                  </a>
+                </h3>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <p class="mt-8 max-w-2xl leading-relaxed text-gray-600 dark:text-gray-300">
+        Os {total} guias estão reunidos no
+        <a href="/blog" class={quickLinkClass}>arquivo, em ordem de publicação</a>, e
+        separados por assunto nas
+        <a href="/categorias" class={quickLinkClass}>cinco categorias do blog</a>.
+      </p>
+    </section>
+
+    {/* Uma única captura na home, longe do CTABox para não disputar com ele */}
     <NewsletterForm source="home" class="mb-14" />
   </div>
 </BaseLayout>

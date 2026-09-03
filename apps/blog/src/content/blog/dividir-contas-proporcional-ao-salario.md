@@ -137,7 +137,7 @@ Depois de separar o que é conta conjunta, sobra organizar o dinheiro individual
 
 ## Como propor a divisão proporcional sem virar briga
 
-Dinheiro é assunto sensível: [53% dos casais apontam as finanças como o principal motivo de brigas](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) (Serasa, 2025). Propor uma mudança na divisão mexe direto nesse nervo — então a forma de propor importa tanto quanto a proposta.
+Dinheiro é assunto sensível: [53% dos brasileiros apontam as finanças como o principal motivo de briga no relacionamento](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) (Serasa, 2025). Propor uma mudança na divisão mexe direto nesse nervo — então a forma de propor importa tanto quanto a proposta.
 
 Algumas táticas que reduzem o atrito:
 
@@ -181,4 +181,4 @@ Depende do que tem dentro dela. Fatura não é uma conta — é um pacote de com
 
 ### De quanto em quanto tempo devemos refazer o cálculo?
 
-Os **percentuais** só mudam quando a renda muda: aumento, troca de emprego, queda de renda — revisem na hora, e façam um check-up a cada 6 meses de qualquer forma. Já o **acerto** (quem transfere quanto) é mensal, porque o total de gastos varia todo mês. Se estiverem fazendo na mão, marquem um dia fixo — todo dia 5, por exemplo — para fechar o mês anterior juntos.
+Os **percentuais** só mudam quando a renda muda: aumento, troca de emprego, queda de renda — revisem na hora, e façam um check-up a cada 6 meses de qualquer forma. O caso extremo é uma das rendas ir a zero: aí a fórmula proporcional deixa de fechar sozinha, e o caminho é o do guia sobre [quando um dos dois fica desempregado](/blog/um-dos-dois-desempregado-financas-casal), que refaz o orçamento por prioridade antes de refazer a divisão. Já o **acerto** (quem transfere quanto) é mensal, porque o total de gastos varia todo mês. Se estiverem fazendo na mão, marquem um dia fixo — todo dia 5, por exemplo — para fechar o mês anterior juntos.

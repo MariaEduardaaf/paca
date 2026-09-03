@@ -3,13 +3,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { APP_URL } from "../consts";
 
 /**
- * Fallback humano do descadastro.
+ * Confirmação do descadastro E página de instrução.
  *
- * O link do rodapé de cada e-mail leva DIRETO para a função
- * `blog-unsubscribe?token=...`, que já remove a pessoa da lista e devolve a
- * página de confirmação. Esta página existe para quem não tem mais o e-mail em
- * mãos, para quem clicou no link do rodapé do blog, e para deixar por escrito
- * o que fazemos com o endereço (LGPD).
+ * O link do rodapé de cada e-mail leva para a função `blog-unsubscribe?token=…`,
+ * que faz a baixa no banco e REDIRECIONA para cá com `?estado=ok|invalido|erro`.
+ * A função já devolveu a própria página de confirmação, mas o gateway de Edge
+ * Functions do Supabase força `text/plain` na resposta — o leitor recebia o
+ * código HTML cru na tela. Por isso a confirmação mora aqui.
+ *
+ * O aviso é revelado por JS a partir do endereço, porque o site é estático e
+ * não enxerga query string no build. Sem JS a pessoa cai na página de instrução
+ * normal — e isso é aceitável: a baixa já aconteceu no servidor ANTES do
+ * redirecionamento, então nada depende deste aviso aparecer.
  */
 ---
 
@@ -18,6 +23,59 @@ import { APP_URL } from "../consts";
   description="Como sair da lista de e-mails do blog do Paca Finance: o link de descadastro, o que fazer se você não tem mais o e-mail e como falar com a gente."
 >
   <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    {/*
+      Um bloco por estado, todos escondidos na marcação. O script revela no
+      máximo um. `role="status"` e não `alert`: é confirmação de algo que a
+      pessoa pediu, não interrupção — leitor de tela anuncia sem cortar o que
+      estiver lendo.
+    */}
+    <div
+      id="estado-ok"
+      role="status"
+      hidden
+      class="mb-8 rounded-2xl border border-pink-200 bg-pink-50 p-5 dark:border-pink-900 dark:bg-pink-950/40"
+    >
+      <p class="font-display text-lg font-semibold text-gray-800 dark:text-white">
+        Pronto, sua inscrição foi cancelada.
+      </p>
+      <p class="mt-1 text-gray-700 dark:text-gray-300">
+        Você não vai mais receber os e-mails da newsletter. Se mudar de ideia, é
+        só assinar de novo em qualquer artigo.
+      </p>
+    </div>
+
+    <div
+      id="estado-invalido"
+      role="status"
+      hidden
+      class="mb-8 rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-900"
+    >
+      <p class="font-display text-lg font-semibold text-gray-800 dark:text-white">
+        Este link de cancelamento não é mais válido.
+      </p>
+      <p class="mt-1 text-gray-700 dark:text-gray-300">
+        Ele pode estar incompleto ou já ter sido usado. Abra o link direto do
+        e-mail que você recebeu, sem editar o endereço. Se não der certo, o
+        caminho abaixo resolve.
+      </p>
+    </div>
+
+    <div
+      id="estado-erro"
+      role="status"
+      hidden
+      class="mb-8 rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-900"
+    >
+      <p class="font-display text-lg font-semibold text-gray-800 dark:text-white">
+        Não deu para concluir agora.
+      </p>
+      <p class="mt-1 text-gray-700 dark:text-gray-300">
+        Tivemos um problema temporário ao registrar o cancelamento. Abra o mesmo
+        link do e-mail de novo em alguns minutos — ou fale com a gente, que a
+        gente resolve na mão.
+      </p>
+    </div>
+
     <h1 class="font-display text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
       Sair da lista de e-mails
     </h1>
@@ -78,4 +136,31 @@ import { APP_URL } from "../consts";
       </a>
     </p>
   </div>
+
+  <script is:inline>
+    (function () {
+      // Lista fechada de estados: o valor vem do endereço, então nunca pode
+      // virar seletor nem texto na página. Qualquer coisa fora desta lista é
+      // ignorada e a página fica como está.
+      var permitidos = { ok: 1, invalido: 1, erro: 1 };
+      var estado;
+      try {
+        estado = new URLSearchParams(location.search).get("estado");
+      } catch (_) {
+        return;
+      }
+      if (!estado || !permitidos[estado]) return;
+
+      var bloco = document.getElementById("estado-" + estado);
+      if (bloco) bloco.hidden = false;
+
+      // Tira o parâmetro do endereço depois de mostrar: se a pessoa recarregar
+      // ou compartilhar o link, não reaparece um aviso que já foi lido.
+      try {
+        history.replaceState(null, "", location.pathname);
+      } catch (_) {
+        /* sem history: o aviso continua correto, só permanece no endereço */
+      }
+    })();
+  </script>
 </BaseLayout>

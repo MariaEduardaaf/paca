@@ -108,7 +108,7 @@ O cenário mais comum de decepção é o terceiro item. Suponha que A tenha **R$
 
 ## O combinado difícil: e se a gente terminar?
 
-Ninguém quer ter essa conversa. Vale ter mesmo assim, e ela é bem mais fácil agora, com os dois animados. Dinheiro é o principal motivo de brigas para [53% dos casais, segundo pesquisa da Serasa](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — combinar antes não é desconfiar, é tirar da mesa o assunto que mais briga causa depois.
+Ninguém quer ter essa conversa. Vale ter mesmo assim, e ela é bem mais fácil agora, com os dois animados. [53% dos brasileiros apontam o dinheiro como o principal motivo de briga no relacionamento, segundo pesquisa da Serasa](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) — combinar antes não é desconfiar, é tirar da mesa o assunto que mais briga causa depois.
 
 ### O que a lei já decidiu por vocês
 

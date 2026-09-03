@@ -1,13 +1,13 @@
 ---
 title: "Como falar de dinheiro com seu parceiro sem brigar"
-description: "65% dos casais dizem que falam de dinheiro — e 49% já esconderam um problema financeiro. Quando ter a conversa, 20 perguntas e como virar rotina."
+description: "65% dos casais dizem que falam de dinheiro — e 49% dos entrevistados já esconderam um problema financeiro. Quando ter a conversa, 20 perguntas e a rotina."
 pubDate: 2026-08-17
 category: "conversas-sobre-dinheiro"
 tags: ["conversa sobre dinheiro", "transparência financeira", "relacionamento", "finanças do casal"]
 draft: false
 ---
 
-Vocês provavelmente já falam de dinheiro — e brigam por ele mesmo assim. É o que aparece na pesquisa da Serasa (2025): [65% dos casais dizem que falam abertamente sobre dinheiro](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/), mas 49% já esconderam um problema financeiro do parceiro, e para 53% dos brasileiros dinheiro é o principal motivo de briga no relacionamento. A conversa que existe é a da rotina: quanto foi o mercado, quem paga a luz. A que importa — dívida, medo, expectativa — é justamente a que fica de fora.
+Vocês provavelmente já falam de dinheiro — e brigam por ele mesmo assim. É o que aparece na pesquisa da Serasa (2025): [65% dos casais entrevistados dizem que falam abertamente sobre dinheiro](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/), mas 49% dos entrevistados já esconderam um problema financeiro do parceiro, e 53% dos brasileiros apontam o dinheiro como o principal motivo de briga nos relacionamentos amorosos. A conversa que existe é a da rotina: quanto foi o mercado, quem paga a luz. A que importa — dívida, medo, expectativa — é justamente a que fica de fora.
 
 A boa notícia: falar de dinheiro de verdade é habilidade, não dom. Dá para aprender, treinar e transformar em rotina — e a conversa que vocês vêm adiando costuma ser bem menos dramática do que a imaginação pinta. O difícil quase nunca é a matemática; é começar.
 
@@ -115,7 +115,7 @@ Não precisa (nem deve) responder as 20 numa sentada só. Escolham um bloco por 
 
 ## Como reagir a dívidas e segredos revelados
 
-Se a conversa for honesta, é bem possível que apareça algo desconfortável: uma dívida antiga, um limite estourado, uma compra escondida. Não é exceção — segundo a mesma pesquisa da Serasa (2025), **49% das pessoas já esconderam um problema financeiro do parceiro**. A forma como vocês reagem nesse momento define se a transparência continua ou se o outro aprende que esconder era mais seguro.
+Se a conversa for honesta, é bem possível que apareça algo desconfortável: uma dívida antiga, um limite estourado, uma compra escondida. Não é exceção — segundo a mesma pesquisa da Serasa (2025), **quase metade dos entrevistados (49%) já escondeu um problema financeiro do parceiro**. A forma como vocês reagem nesse momento define se a transparência continua ou se o outro aprende que esconder era mais seguro.
 
 O roteiro que funciona:
 
@@ -176,4 +176,4 @@ Uma reunião mensal estruturada de 30-40 minutos resolve a gestão (fechamento, 
 
 ### Esconder uma compra do parceiro é grave?
 
-Depende do combinado. Se vocês nunca definiram o que precisa ser conversado antes, esconder uma compra é sintoma de falta de acordo, não de traição — e a solução é a pergunta 12 da lista: definir juntos o valor-limite. Agora, se havia acordo claro e a ocultação é repetida, isso corrói confiança como qualquer outro segredo. O dado da Serasa (2025) de que 49% já esconderam problema financeiro mostra que é comum — comum, porém tratável: quase sempre a pessoa esconde porque não existe espaço seguro para contar. Criem o espaço antes de julgar o segredo.
+Depende do combinado. Se vocês nunca definiram o que precisa ser conversado antes, esconder uma compra é sintoma de falta de acordo, não de traição — e a solução é a pergunta 12 da lista: definir juntos o valor-limite. Agora, se havia acordo claro e a ocultação é repetida, isso corrói confiança como qualquer outro segredo. O dado da Serasa (2025) de que 49% dos entrevistados já esconderam algum problema financeiro mostra que é comum — comum, porém tratável: quase sempre a pessoa esconde porque não existe espaço seguro para contar. Criem o espaço antes de julgar o segredo.

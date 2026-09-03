@@ -9,11 +9,18 @@
  */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CalculadoraProporcional from "../components/CalculadoraProporcional.astro";
+import AdSlot from "../components/AdSlot.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
 import { SITE_URL, APP_URL, SITE_TITLE } from "../consts";
 
 const title = "Calculadora de divisão de contas do casal";
+// Máximo ~155 caracteres: esta é a porta de entrada de maior intenção do blog
+// (e o destino natural de um anúncio), e o Google corta o que passar disso no
+// meio da frase. A versão anterior tinha 189 e perdia o fim na busca — os
+// termos que puxam o clique ("calculadora", "divisão de contas", "casal",
+// "proporcional ao salário") ficam todos antes do corte.
 const description =
-  "Calculadora grátis de divisão de contas para casal: coloque as duas rendas e o total das contas do mês e veja quanto cada um paga na divisão proporcional ao salário — comparado com o 50/50.";
+  "Calculadora grátis de divisão de contas para casal: com as duas rendas e o total do mês, veja quanto cada um paga na divisão proporcional ao salário.";
 
 const breadcrumbJsonLd = {
   "@context": "https://schema.org",
@@ -70,6 +77,21 @@ const breadcrumbJsonLd = {
     <div class="mt-8">
       <CalculadoraProporcional />
     </div>
+
+    {/*
+      O anúncio entra DEPOIS da ferramenta, e não junto do título como nos
+      artigos: quem chega aqui veio calcular, e um bloco antes da calculadora
+      empurraria os campos para fora da primeira dobra no celular — a pessoa
+      pagaria com um scroll pelo que veio fazer. Aqui é o primeiro respiro da
+      página (o resultado já está na tela), com o cartão da calculadora inteiro
+      separando o anúncio de qualquer campo clicável.
+
+      Usa a unidade `first-fold` porque só existem duas hoje
+      (lib/monetization.ts) e esta é a de maior valor; a medição vai chamar de
+      "primeira dobra" um bloco que não está nela. Uma unidade própria de
+      página-ferramenta resolveria isso — exige um `placement` novo no AdSlot.
+    */}
+    <AdSlot placement="first-fold" />
 
     <!-- Contexto curto: a ferramenta é a estrela, o texto só ajuda a escolher. -->
     <section aria-labelledby="metodos" class="mt-14 max-w-3xl">
@@ -134,6 +156,29 @@ const breadcrumbJsonLd = {
         </p>
       </div>
     </section>
+
+    {/*
+      Fim da página na mesma ordem do fim do artigo (BlogPostLayout): conteúdo,
+      anúncio, captura de e-mail e só então o convite ao app. Os dois pedidos
+      (e-mail e produto) ficam separados de propósito — colados, viram um muro.
+    */}
+    <AdSlot placement="in-content" />
+
+    {/*
+      A única captura de e-mail da página, e ela vem depois do texto dos
+      métodos: o pedido só faz sentido para quem já tem o número na mão. O
+      parágrafo acima do bloco é o que amarra o pedido ao que a pessoa acabou de
+      fazer — o componente é genérico ("Receba os guias por e-mail") e sozinho
+      soaria como newsletter de rodapé numa página em que ninguém veio ler.
+    */}
+    <p class="mt-14 max-w-3xl leading-relaxed text-gray-700 dark:text-gray-200">
+      Vocês já têm o número. A parte difícil vem depois dele: combinar o que
+      entra e o que fica de fora da divisão, propor a mudança sem virar briga e
+      refazer a conta quando a renda de um dos dois mudar.
+    </p>
+
+    {/* `source` = a página, para separar o lead da calculadora do lead de artigo (ESTRATEGIA §6). */}
+    <NewsletterForm source="calculadora-divisao-de-contas" class="mt-6" />
 
     <!-- Convite discreto ao app — uma vez só, sem promessa inflada. -->
     <aside
