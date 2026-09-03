@@ -1,0 +1,5 @@
+# Landing do produto (apex). Uma página só, e ela é para ser indexada.
+User-agent: *
+Allow: /
+
+Sitemap: https://pacafinance.com.br/sitemap-index.xml

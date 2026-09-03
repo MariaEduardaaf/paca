@@ -1,0 +1,81 @@
+---
+import Icon from "../Icon.astro";
+
+/*
+ * Tela de Transações. Rótulos e filtros reais: o título, "Buscar transação...",
+ * "Todas", "Receitas" e "Despesas" saem de pt.ts (transactions.*), e os filtros
+ * por pessoa e por mês existem em apps/web/src/pages/TransactionsPage.tsx.
+ * Dados de exemplo, como nas outras telas.
+ */
+---
+
+<div class="scr-head">
+  <div>
+    <div class="scr-kicker">Maio · o mês inteiro</div>
+    <div class="scr-title">Transações</div>
+  </div>
+  <div class="scr-avatars">
+    <span class="av-pink">L</span>
+    <span class="av-indigo">M</span>
+  </div>
+</div>
+
+<div class="scr-search">
+  <Icon name="search" size="1.1em" />Buscar transação...
+</div>
+
+<div class="scr-chips">
+  <span class="scr-chip is-on">Todas</span>
+  <span class="scr-chip">Receitas</span>
+  <span class="scr-chip">Despesas</span>
+  <span class="scr-chip">Lucas</span>
+  <span class="scr-chip">Marina</span>
+</div>
+
+<div class="scr-day">Hoje · 15 mai</div>
+<div class="scr-list">
+  <div class="scr-row">
+    <div class="scr-row-icon" style="color:var(--green)"><Icon name="arrow-up" size="1.1em" /></div>
+    <div class="scr-row-body">
+      <div class="scr-row-name">Salário</div>
+      <div class="scr-row-sub">Recebido por Lucas</div>
+    </div>
+    <div class="scr-row-amount amount-pos">+ R$ 6.500,00</div>
+  </div>
+  <div class="scr-row">
+    <div class="scr-row-icon"><Icon name="cart" size="1.1em" /></div>
+    <div class="scr-row-body">
+      <div class="scr-row-name">Mercado Extra <span class="scr-tag">IA</span></div>
+      <div class="scr-row-sub">Marina · foto do recibo</div>
+    </div>
+    <div class="scr-row-amount amount-neg">− R$ 287,50</div>
+  </div>
+  <div class="scr-row">
+    <div class="scr-row-icon"><Icon name="receipt" size="1.1em" /></div>
+    <div class="scr-row-body">
+      <div class="scr-row-name">Delivery</div>
+      <div class="scr-row-sub">Marina · Alimentação</div>
+    </div>
+    <div class="scr-row-amount amount-neg">− R$ 68,90</div>
+  </div>
+</div>
+
+<div class="scr-day">Ontem · 14 mai</div>
+<div class="scr-list">
+  <div class="scr-row">
+    <div class="scr-row-icon"><Icon name="car" size="1.1em" /></div>
+    <div class="scr-row-body">
+      <div class="scr-row-name">Corrida</div>
+      <div class="scr-row-sub">Lucas · Transporte</div>
+    </div>
+    <div class="scr-row-amount amount-neg">− R$ 24,00</div>
+  </div>
+  <div class="scr-row">
+    <div class="scr-row-icon"><Icon name="home" size="1.1em" /></div>
+    <div class="scr-row-body">
+      <div class="scr-row-name">Aluguel</div>
+      <div class="scr-row-sub">Lucas · Moradia</div>
+    </div>
+    <div class="scr-row-amount amount-neg">− R$ 2.400,00</div>
+  </div>
+</div>

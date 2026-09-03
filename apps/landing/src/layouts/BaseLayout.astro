@@ -1,0 +1,267 @@
+---
+import "../styles/global.css";
+import {
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  SITE_URL,
+  APP_URL,
+  BLOG_URL,
+  APP_LOCALES,
+} from "../consts";
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  /** Perguntas da página, para o FAQPage. Só entra se a pergunta e a resposta
+   *  estiverem visíveis na página — dado estruturado que não existe na tela é
+   *  marcação falsa, e o Google trata como spam. */
+  faq?: { q: string; a: string }[];
+}
+
+const {
+  title,
+  description = SITE_DESCRIPTION,
+  ogImage = "/og-default.png",
+  faq = [],
+} = Astro.props;
+
+const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const canonical = new URL(pathname, SITE_URL).href;
+const ogImageUrl = new URL(ogImage, SITE_URL).href;
+
+const organizationId = new URL("/#organization", SITE_URL).href;
+
+/*
+ * DADOS ESTRUTURADOS
+ *
+ * `sameAs` amarra apex + app + blog como propriedades da MESMA marca. Isso pesa
+ * mais aqui do que num projeto normal: existe um "Paca Finance" de cripto em
+ * outro domínio, e sem entidade declarada o Google mistura os dois.
+ *
+ * SoftwareApplication com `operatingSystem: "Web"` e nada além — é o que existe.
+ * Declarar iOS/Android aqui seria a mesma mentira dos botões "Baixar para iOS"
+ * que saíram da página, só que numa camada que o leitor não vê.
+ *
+ * SEM `aggregateRating`: não há nota de loja nem avaliação de ninguém.
+ * SEM `offers`: o app é grátis HOJE porque a cobrança ainda não foi ligada
+ *   (RevenueCat é item #7/#8 do TODO.md, aberto). Declarar preço 0 em dado
+ *   estruturado é verdade que envelhece sozinha — no dia em que a assinatura
+ *   entrar, o Google continuaria anunciando "grátis" e ninguém lembraria deste
+ *   arquivo. O "grátis para começar" está no texto visível, onde quem mexer na
+ *   página o vê.
+ * SEM `SearchAction`: esta página não tem busca.
+ */
+const jsonLd: Record<string, unknown> = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": organizationId,
+      name: SITE_TITLE,
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: new URL("/logo-icon-large.png", SITE_URL).href,
+        width: 480,
+        height: 480,
+      },
+      sameAs: [APP_URL, BLOG_URL],
+    },
+    {
+      "@type": "WebSite",
+      "@id": new URL("/#website", SITE_URL).href,
+      name: SITE_TITLE,
+      url: SITE_URL,
+      description: SITE_DESCRIPTION,
+      inLanguage: "pt-BR",
+      publisher: { "@id": organizationId },
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": new URL("/#app", SITE_URL).href,
+      name: SITE_TITLE,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "Web",
+      browserRequirements: "Requer JavaScript e um navegador moderno",
+      url: APP_URL,
+      description: SITE_DESCRIPTION,
+      inLanguage: ["pt-BR", "en", "ru", "uk"],
+      availableLanguage: [...APP_LOCALES],
+      publisher: { "@id": organizationId },
+    },
+  ],
+};
+
+if (faq.length > 0) {
+  (jsonLd["@graph"] as unknown[]).push({
+    "@type": "FAQPage",
+    "@id": new URL("/#faq", SITE_URL).href,
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  });
+}
+
+const APP_HOST = new URL(APP_URL).hostname;
+---
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content="max-image-preview:large" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content={SITE_TITLE} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <meta name="theme-color" content="#0A0A0F" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/logo-icon-96.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <meta name="generator" content={Astro.generator} />
+
+    {/*
+      Marca o <html> como "tem JS" ANTES da primeira pintura. O revelar ao rolar
+      começa invisível; sem esta marca, quem navega com JS bloqueado receberia
+      uma página em branco. Ver a regra `html:not(.js) .reveal` em global.css.
+    */}
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/*
+      Manrope é a fonte do desenho. Só os quatro pesos que a página usa
+      (500/600/700/800) — cada peso a mais é um arquivo a mais no caminho
+      crítico. `display=swap` para o texto aparecer na fonte de sistema
+      enquanto a Manrope baixa, em vez de ficar invisível.
+    */}
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <slot />
+
+    {/*
+      REVELAR AO ROLAR — 20 linhas no lugar do runtime da ferramenta de desenho.
+      Quem pediu menos movimento não recebe nenhum: o elemento entra já visível
+      e o observador nem é criado.
+    */}
+    <script is:inline>
+      (function () {
+        var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var targets = document.querySelectorAll(".reveal, .reveal-cascade");
+        if (reduced || !("IntersectionObserver" in window)) {
+          for (var i = 0; i < targets.length; i++) targets[i].classList.add("in");
+          return;
+        }
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("in");
+              io.unobserve(entry.target);
+            });
+          },
+          // 12% de folga embaixo: o elemento começa a aparecer um pouco antes
+          // de encostar na borda, senão a animação sempre chega atrasada.
+          { rootMargin: "0px 0px -12% 0px", threshold: 0.08 }
+        );
+        for (var j = 0; j < targets.length; j++) io.observe(targets[j]);
+      })();
+    </script>
+
+    {/*
+      INCLINAÇÃO 3D DO TELEFONE seguindo o mouse. Só em ponteiro fino (mouse):
+      no toque não existe hover, e ligar isso no celular só gastaria bateria.
+      A rotação é pequena de propósito — o desenho já nasce inclinado, isto só
+      dá vida ao passar o mouse.
+    */}
+    <script is:inline>
+      (function () {
+        var tilt = document.querySelector(".hero-phone-tilt");
+        if (!tilt) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (!window.matchMedia("(pointer: fine)").matches) return;
+
+        var host = tilt.parentElement;
+        var base = "rotateY(-6deg) rotateX(4deg)";
+        host.addEventListener("pointermove", function (event) {
+          var box = host.getBoundingClientRect();
+          var x = (event.clientX - box.left) / box.width - 0.5;
+          var y = (event.clientY - box.top) / box.height - 0.5;
+          tilt.style.transform =
+            "rotateY(" + (-6 + x * 10).toFixed(2) + "deg) rotateX(" + (4 - y * 10).toFixed(2) + "deg)";
+        });
+        host.addEventListener("pointerleave", function () {
+          tilt.style.transform = base;
+        });
+      })();
+    </script>
+
+    {/*
+      MARCAÇÃO UTM DE TODO LINK QUE SAI PARA O APP.
+
+      Mesmo desenho do apps/blog e pelo mesmo motivo: marcar link a link é
+      frágil sem dar alarme — o próximo botão nasce sem UTM, ninguém percebe, e
+      o relatório fica errado sem nunca quebrar. Aqui todo link para o app já
+      nasce marcado.
+
+      utm_source=site       veio do apex (separa do blog, que manda "blog")
+      utm_medium=<posição>  nav | footer | page_body — onde a pessoa clicou
+      utm_campaign=landing  a página
+
+      Acontece no navegador, depois da entrega: no HTML estático que o robô lê,
+      os links continuam limpos e nenhuma variante com query entra no índice.
+    */}
+    <script is:inline define:vars={{ appHost: APP_HOST }}>
+      (function () {
+        function placementOf(link) {
+          if (link.closest("nav")) return "nav";
+          if (link.closest("footer")) return "footer";
+          return "page_body";
+        }
+        var links = document.querySelectorAll("a[href]");
+        for (var i = 0; i < links.length; i++) {
+          var link = links[i];
+          if (link.hostname !== appHost) continue;
+          var url = new URL(link.href);
+          // Só preenche o que falta: rodar duas vezes não muda nada, e um link
+          // marcado à mão no futuro continua valendo.
+          if (!url.searchParams.has("utm_source")) url.searchParams.set("utm_source", "site");
+          if (!url.searchParams.has("utm_medium"))
+            url.searchParams.set("utm_medium", placementOf(link));
+          if (!url.searchParams.has("utm_campaign")) url.searchParams.set("utm_campaign", "landing");
+          link.href = url.href;
+        }
+      })();
+    </script>
+  </body>
+</html>
