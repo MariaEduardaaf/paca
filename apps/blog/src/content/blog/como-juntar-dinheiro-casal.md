@@ -23,7 +23,7 @@ Neste guia, vocês vão sair com um plano completo em 6 passos: transformar o so
 | Casamento | R$ 40.000 | 30 meses | R$ 40.000 ÷ 30 = **R$ 1.334** |
 | Entrada do apê (20% de R$ 300 mil) | R$ 60.000 | 48 meses | R$ 60.000 ÷ 48 = **R$ 1.250** |
 
-Esse número mensal é o teste de realidade. Se R$ 1.334 por mês não cabe na renda de vocês hoje, não é motivo pra desistir — é motivo pra ajustar uma das três variáveis: esticar o prazo, reduzir o valor do sonho (casamento mais enxuto, viagem na baixa temporada) ou aumentar a renda. O que não funciona é manter o sonho grande, o prazo curto e a contribuição impossível: esse é o plano que morre no segundo mês.
+Esse número mensal é o teste de realidade. Se R$ 1.334 por mês não cabe na renda de vocês hoje, não é motivo pra desistir — é motivo pra ajustar uma das três variáveis: esticar o prazo, reduzir o valor do sonho (casamento mais enxuto, viagem na baixa temporada) ou aumentar a renda. Se o sonho for o casamento, vale começar pelo número real em vez do chute: [quanto custa casar no Brasil](/blog/quanto-custa-casar). O que não funciona é manter o sonho grande, o prazo curto e a contribuição impossível: esse é o plano que morre no segundo mês.
 
 E se a meta de vocês for morar junto, cuidado com o valor total: além do primeiro aluguel entram caução, frete da mudança e o "montar a casa" inteiro. A [lista completa de despesas de quem vai morar junto](/blog/morar-junto-dividir-despesas) ajuda a chegar num número honesto antes de dividir pelo prazo.
 

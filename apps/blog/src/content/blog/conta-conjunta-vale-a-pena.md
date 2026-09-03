@@ -22,7 +22,7 @@ Existem dois formatos:
 - **Conta conjunta solidária**: qualquer titular movimenta sozinho — faz Pix, paga boleto, saca, contrata limite — sem precisar da autorização do outro. É o formato padrão na maioria dos bancos, especialmente nos digitais.
 - **Conta conjunta simples (não solidária)**: as movimentações exigem a autorização de todos os titulares. Mais rara, mais burocrática, e por isso quase ninguém usa para o dia a dia.
 
-Na prática, quando alguém fala "conta conjunta de casal", está falando da solidária. E é justamente a facilidade dela — qualquer um movimenta tudo — que gera tanto as vantagens quanto os riscos deste artigo.
+Na prática, quando alguém fala "conta conjunta de casal", está falando da solidária. E é justamente a facilidade dela — qualquer um movimenta tudo — que gera tanto as vantagens quanto os riscos deste artigo. Vale um aviso antes de vocês irem procurar: nem todo banco digital oferece conta conjunta, e a pergunta mais comum tem uma pegadinha — [o Nubank tem conta conjunta?](/blog/conta-conjunta-nubank)
 
 Cada banco tem regras próprias: quem pode ser cotitular, quantos titulares, tarifas, se namorados podem abrir ou se pedem comprovação de vínculo. **Antes de abrir, confirmem as condições no banco de vocês** — este artigo descreve o funcionamento geral, não as regras de uma instituição específica.
 
