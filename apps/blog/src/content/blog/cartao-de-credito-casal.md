@@ -1,5 +1,5 @@
 ---
-title: "Cartão de crédito no casal: adicional, fatura dividida ou separados?"
+title: "Cartão de crédito no casal: adicional ou cartões separados?"
 description: "Adicional, fatura conjunta ou cartões separados com acerto por Pix? Como cada arranjo funciona, quem responde pela dívida e o que combinar antes."
 pubDate: 2026-08-31
 category: "organizacao"

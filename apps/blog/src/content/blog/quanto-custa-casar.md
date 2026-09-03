@@ -1,5 +1,5 @@
 ---
-title: "Quanto custa casar: os números reais e como caber no orçamento"
+title: "Quanto custa casar no Brasil: os números reais"
 description: "Quanto custa casar no Brasil, item por item, como montar o teto antes de falar com fornecedor e por que financiar a festa é das piores dívidas."
 pubDate: 2026-09-03
 category: "metas-e-sonhos"

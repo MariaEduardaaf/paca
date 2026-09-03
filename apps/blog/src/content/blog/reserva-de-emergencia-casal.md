@@ -1,5 +1,5 @@
 ---
-title: "Reserva de emergência para casal: quanto, onde e como construir"
+title: "Reserva de emergência para casal: quanto e onde guardar"
 description: "Quanto o casal precisa de reserva, se vale uma ou duas, o que olhar na hora de guardar e como construir com duas rendas — com as contas em R$."
 pubDate: 2026-08-30
 category: "metas-e-sonhos"
