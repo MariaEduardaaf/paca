@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "typecheck": "astro check",
     "og": "node scripts/og.mjs",
+    "capas": "node scripts/capas.mjs",
     "lint": "echo 'no linter configured yet'",
     "clean": "rm -rf dist .astro"
   },

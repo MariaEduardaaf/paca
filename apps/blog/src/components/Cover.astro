@@ -1,19 +1,32 @@
 ---
 /**
- * Capa do artigo no SITE.
+ * Capa do artigo no SITE — agora um <img> de verdade.
  *
- * A palavra gigante aqui é a CATEGORIA, não o título: no site o título já está
- * escrito logo abaixo do card (e no topo do artigo, logo acima), então repetir
- * seria redundante. O título só entra na palavra gigante do card de
+ * POR QUE DEIXOU DE SER HTML/CSS
+ * A arte é a mesma de sempre; o que mudou é o INVÓLUCRO. Enquanto a capa era
+ * caixa e texto desenhados na página, o Google Imagens não tinha arquivo para
+ * indexar (zero por construção, não por falta de audiência) e o card grande do
+ * Discover — o formato de maior volume barato em finanças pessoais — não tinha
+ * imagem para exibir, com o `max-image-preview:large` já no ar esperando por
+ * ela. Agora cada artigo e cada categoria tem public/capas/<slug>.png, gerado
+ * por `npm run capas` a partir da MESMA marcação (src/lib/cover-art.mjs) e da
+ * MESMA folha (src/styles/cover.css) que o card de compartilhamento usa. Nenhum
+ * pixel do desenho mudou.
+ *
+ * A palavra gigante continua sendo a CATEGORIA, não o título: no site o título
+ * já está escrito logo abaixo do card (e no topo do artigo, logo acima), então
+ * repetir seria redundante. O título só entra na palavra gigante do card de
  * compartilhamento (scripts/og.mjs), onde a imagem viaja sozinha.
  *
- * O desenho inteiro vive em src/lib/cover-art.mjs + src/styles/cover.css — este
- * componente só resolve o rótulo da categoria e monta o elemento. Nenhuma regra
- * de estilo de capa aqui dentro.
+ * A ASSINATURA NÃO MUDOU (`category`, `slug`, `class`) — de propósito: são
+ * cinco pontos de uso (topo do artigo, PostCard, destaque da home, destaque da
+ * página de categoria, índice de categorias) e nenhum precisou ser tocado.
  */
 import "../styles/cover.css";
 import { CATEGORIES, type CategoryId } from "../lib/categories";
-import { coverArt } from "../lib/cover-art.mjs";
+import { coverAlt, coverArt, themeFor } from "../lib/cover-art.mjs";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 
 interface Props {
   category: CategoryId;
@@ -25,17 +38,123 @@ interface Props {
 
 const { category, slug, class: className = "" } = Astro.props;
 
-const { html, style } = coverArt({
-  slug,
-  category,
-  categoryLabel: CATEGORIES[category]?.label ?? category,
-  mode: "category",
-});
+const categoryLabel = CATEGORIES[category]?.label ?? category;
+const theme = themeFor(slug);
+
+/*
+ * O `alt` é o que o Google Imagens lê — e é a razão de a capa ter deixado de
+ * ser `aria-hidden`. Enquanto ela era desenho na página, era DECORATIVA: tudo
+ * que dizia estava em texto de verdade ao lado, e repetir só faria o leitor de
+ * tela ouvir duas vezes. Virando arquivo indexável a conta muda de lado —
+ * imagem sem `alt` não entra em busca de imagem nem no card do Discover. A
+ * frase de cada capa mora em src/lib/cover-art.mjs (`ALT_SUBJECT_BY_SLUG`), e o
+ * cabeçalho dela explica como escrever uma nova sem cair em palavra-chave
+ * empilhada nem em cópia do título.
+ */
+const alt = coverAlt({ slug, category, categoryLabel });
+
+/*
+ * LCP SEM MUDAR A ASSINATURA DO COMPONENTE
+ * A capa do topo do artigo é a candidata a maior elemento da tela; as outras
+ * (cards da grade, "leia também", índice de categorias) estão todas abaixo da
+ * dobra e devem ser preguiçosas. Como é o MESMO componente nos dois casos,
+ * quem separa é a própria URL da página: em /blog/<slug> a capa cujo slug é o
+ * da página É o topo do artigo. Nas listagens (/, /blog, /categorias,
+ * /categorias/<id>) nenhum slug de capa bate com o último segmento da URL, e
+ * todas caem em `lazy` — que é exatamente o que se quer.
+ * Um `hero` como prop resolveria também, mas obrigaria a tocar os cinco pontos
+ * de uso, e o objetivo desta mudança era não ter que tocar nenhum.
+ */
+const pageSlug = Astro.url.pathname.replace(/\/+$/, "").split("/").pop();
+const isHero = pageSlug === slug;
+
+/*
+ * Rede de segurança: artigo publicado antes de alguém rodar `npm run capas`.
+ * Sem isto o site mostraria imagem quebrada — pior do que o desenho antigo. Com
+ * isto ele cai no HTML/CSS de sempre (que é o mesmo desenho, só não indexável)
+ * e o build avisa. Vale a mesma lógica do og.mjs: nunca quebrar por falta de
+ * artefato gerado. `process.cwd()` e não `import.meta.url` porque no build o
+ * Astro empacota este componente num chunk, e ali `import.meta.url` aponta para
+ * o bundle, não para src/components.
+ */
+const file = `${slug}.png`;
+const hasPng = existsSync(join(process.cwd(), "public", "capas", file));
+if (!hasPng) {
+  console.warn(
+    `[cover] public/capas/${file} não existe — a capa de "${slug}" saiu em ` +
+      `HTML/CSS e NÃO será indexada pelo Google Imagens. Rode: npm run capas`,
+  );
+}
+
+const fallback = hasPng
+  ? null
+  : coverArt({ slug, category, categoryLabel, mode: "category" });
+
+/*
+ * Os atributos do <img>, montados aqui e não no elemento: dentro da lista de
+ * atributos do template o Astro NÃO reconhece comentário de bloco — ele cospe o
+ * texto como se fossem atributos (o `astro check` reprova, e o HTML sai com
+ * lixo). Comentário de atributo mora no frontmatter.
+ *
+ *  - width/height: a arte tem 1200x630. Declarados, o navegador reserva a caixa
+ *    antes de baixar o arquivo e nada pula quando o anúncio da primeira dobra
+ *    chega (CLS);
+ *  - loading/fetchpriority: só a capa do topo do artigo é candidata a LCP —
+ *    ver a nota sobre `isHero` acima;
+ *  - decoding: no topo, o padrão "auto" deixa a decisão com o navegador, que é
+ *    o melhor para o LCP; nos cards, decodificar fora da thread principal.
+ */
+const imgAttrs = {
+  width: 1200,
+  height: 630,
+  loading: isHero ? "eager" : "lazy",
+  fetchpriority: isHero ? "high" : "auto",
+  decoding: isHero ? undefined : "async",
+} as const;
 ---
 
-{/*
-  A capa é DECORATIVA: tudo que ela diz (categoria, título) está em texto de
-  verdade ao lado. `aria-hidden` é o que descreve isso corretamente — `role="img"`
-  sem nome acessível é justamente o que os validadores apontam.
-*/}
-<div class:list={["paca-cover", className]} style={style} aria-hidden="true" set:html={html} />
+{
+  hasPng ? (
+    <img
+      class:list={["paca-cover-img", className]}
+      src={`/capas/${file}`}
+      alt={alt}
+      style={`--bg:${theme.bg}`}
+      {...imgAttrs}
+    />
+  ) : (
+    <div
+      class:list={["paca-cover", className]}
+      style={fallback!.style}
+      aria-hidden="true"
+      set:html={fallback!.html}
+    />
+  )
+}
+
+<style>
+  /*
+   * Classe PRÓPRIA, e não `.paca-cover`: aquela folha (src/styles/cover.css)
+   * descreve o PALCO do desenho — `container-type`, posições absolutas, o
+   * `--u` — e é ela que os dois geradores injetam no Chrome. Aplicar aquilo a
+   * um <img> seria pedir problema (`container-type` num elemento substituído) e
+   * uma regra de <img> lá dentro seria peso morto no screenshot. Aqui ficam as
+   * três linhas que só o <img> precisa; o desenho continua com um dono só.
+   *
+   * `contain` e não `cover`: os chamadores enquadram a capa em `aspect-video`
+   * (16:9) e a arte é 1200:630, então sobram duas faixas. Pintadas com a cor de
+   * fundo do próprio tema, a emenda some e NADA é cortado — com `cover` a
+   * pílula da categoria e o mascote perderiam a margem de segurança da spec. É
+   * exatamente o enquadramento que o palco absoluto fazia antes.
+   *
+   * Sem `aspect-ratio` aqui de propósito: os atributos width/height do <img>
+   * já dão a proporção nativa 1200:630 quando ninguém enquadra, e o
+   * `aspect-video` do chamador continua vencendo quando alguém enquadra.
+   */
+  .paca-cover-img {
+    display: block;
+    width: 100%;
+    object-fit: contain;
+    background: var(--bg);
+  }
+</style>

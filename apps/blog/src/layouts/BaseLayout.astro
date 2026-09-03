@@ -51,6 +51,81 @@ const canonical = new URL(pathname, SITE_URL).href;
 const ogImageUrl = new URL(ogImage, SITE_URL).href;
 
 /*
+ * MEDIÇÃO DA SAÍDA PARA O APP — o que a dona lê no relatório é uma frase:
+ *
+ *   utm_source=blog         quem mandou  → o blog (separa do tráfego que chega
+ *                                          ao app por qualquer outro caminho)
+ *   utm_medium=<posição>    onde clicou  → header, footer, article_body,
+ *                                          cta_box, sidebar, page_body
+ *   utm_campaign=<página>   de que página → "blog-como-dividir-contas-casal"
+ *
+ * É medium + campaign que responde à pergunta que decide investimento: ARTIGO
+ * POR ARTIGO, empurrar o app rende mais do que segurar a pessoa no blog (onde
+ * ela vê anúncio)? Sem o medium, um artigo cujo clique veio do RODAPÉ — que é
+ * igual em todas as páginas — parecia um artigo que converte pelo texto.
+ *
+ * Os valores são chave de relatório, não texto de interface: ficam em inglês
+ * como o resto do código, minúsculos e sem acento, que é o que a ferramenta de
+ * analytics espera (valor de UTM diferencia maiúscula e vira duas linhas).
+ */
+const APP_HOST = new URL(APP_URL).hostname;
+
+/*
+ * O caminho da página vira o nome da campanha: "/" → "home",
+ * "/blog/x" → "blog-x", "/categorias/y" → "categorias-y". Sem inventar prefixo:
+ * dá para voltar do relatório para a URL de origem só lendo o valor.
+ */
+const utmCampaign = (pathname === "/" ? "home" : pathname.slice(1).replace(/\//g, "-"))
+  .toLowerCase()
+  .replace(/[^a-z0-9-]+/g, "-");
+
+/*
+ * META PIXEL — estrutura montada, desligada até existir o ID.
+ *
+ * MESMO PADRÃO DO ADSENSE (src/lib/monetization.ts): quem manda é a variável de
+ * ambiente e, com ela vazia, NADA sai no HTML — nem script, nem <noscript>.
+ * Ligar é preencher PUBLIC_META_PIXEL_ID na Vercel e publicar de novo; não se
+ * mexe em código.
+ *
+ * UMA CHAVE SÓ — e aqui isso é o certo, não o descuido de novo. A lição do
+ * monetization.ts é que uma chave não pode governar duas coisas que NASCEM EM
+ * MOMENTOS DIFERENTES (lá, o `pub-` da verificação ligou junto os blocos de
+ * anúncio, que só existem depois da aprovação, e o site ficou com faixas em
+ * branco na frente do revisor). As duas coisas que esta chave liga — o script e
+ * o <noscript> — nascem no mesmo instante: as duas precisam só do ID do pixel,
+ * que o Meta entrega de uma vez. Se um dia entrar a CAPI, aí sim é OUTRA chave:
+ * o token dela é emitido depois, por outro caminho, e ligar os dois juntos
+ * repetiria o erro.
+ *
+ * ONDE ISTO DEVERIA MORAR: em src/lib/monetization.ts, junto das outras chaves
+ * de terceiro. Está aqui porque só este arquivo entrou no escopo da mudança —
+ * mover depois é recortar as duas constantes abaixo.
+ */
+const META_PIXEL_ID: string = import.meta.env.PUBLIC_META_PIXEL_ID || "";
+const META_PIXEL_ENABLED = META_PIXEL_ID.length > 0;
+
+/*
+ * Snippet padrão do Meta. Duas decisões que não se veem:
+ * 1. O ID entra por JSON.stringify porque vem de variável de ambiente e cai
+ *    DENTRO de JavaScript — uma aspa colada por engano no painel da Vercel
+ *    quebraria o <head> inteiro, em todas as páginas.
+ * 2. Vai por set:html, e não escrito como JS no template: dentro de uma
+ *    expressão `{...}` o Astro leria as chaves do próprio snippet como
+ *    expressão dele.
+ */
+const metaPixelSnippet = `!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', ${JSON.stringify(META_PIXEL_ID)});
+fbq('track', 'PageView');`;
+const metaPixelNoscriptSrc = `https://www.facebook.com/tr?id=${encodeURIComponent(META_PIXEL_ID)}&ev=PageView&noscript=1`;
+
+/*
  * Entidade do site, em TODA página. Até aqui só os artigos tinham dados
  * estruturados: /, /blog, /categorias e /sobre não diziam ao Google de quem é
  * o site. Isso pesa mais neste projeto do que no normal — existe um projeto de
@@ -187,8 +262,23 @@ const siteJsonLd = {
       )
     }
 
-    {/* Fase 1 (docs/arbitragem/PLANO-DE-ACAO.md): a tag de medição "Caju" e o
-        Meta Pixel entram AQUI quando a dona passar os snippets/IDs. */}
+    {/* Fase 1 (docs/arbitragem/PLANO-DE-ACAO.md): a tag de medição "Caju" entra
+        AQUI quando a dona passar o snippet. */}
+
+    {/* Meta Pixel — só existe quando PUBLIC_META_PIXEL_ID estiver preenchida.
+        Vazia (hoje), o HTML sai exatamente como saía antes: nada de Meta. */}
+    {META_PIXEL_ENABLED && <script is:inline set:html={metaPixelSnippet} />}
+    {
+      /* O <noscript> é o padrão do Meta e não é enfeite: ele conta a visita de
+         quem navega com JS bloqueado. Sem ele, esse público some do relatório e
+         o custo por lead do Meta sai inflado — a compra de mídia pagou por uma
+         visita que a medição não viu. */
+      META_PIXEL_ENABLED && (
+        <noscript>
+          <img height="1" width="1" style="display:none" alt="" src={metaPixelNoscriptSrc} />
+        </noscript>
+      )
+    }
 
     <slot name="head" />
   </head>
@@ -205,5 +295,74 @@ const siteJsonLd = {
       <slot />
     </main>
     <Footer />
+
+    {/*
+      MARCAÇÃO UTM DE TODO LINK QUE SAI PARA O APP (esquema explicado no topo
+      deste arquivo).
+
+      POR QUE AQUI, E NÃO NOS ~10 CALL SITES. Marcar link a link é frágil do
+      pior jeito: não dá alarme. O próximo link nasce sem UTM, ninguém percebe,
+      e o relatório fica errado sem nunca quebrar. Deste jeito, todo link para o
+      app já nasce marcado — inclusive os que vierem de artigo novo.
+
+      O ROBÔ DO GOOGLE NÃO VÊ ESTA MARCAÇÃO, E ISSO É BOM. Ela acontece no
+      navegador, depois que o HTML já foi entregue; no HTML estático (o que o
+      crawler lê, e o que o revisor do AdSense está lendo agora) os links
+      continuam limpos. Se fosse feita no build, cada link viraria uma URL com
+      query no índice do Google — variante duplicada da mesma página do app, sem
+      ganho nenhum. O preço é quem navega sem JS sair sem marcação: público
+      irrisório, e a marcação existe para medir compra de mídia, que é tráfego
+      de navegador real.
+
+      No fim do <body> de propósito: script inline no <head> roda antes do
+      próprio corpo da página existir, e não acharia link nenhum.
+    */}
+    <script is:inline define:vars={{ appHost: APP_HOST, utmCampaign }}>
+      (function () {
+        /*
+         * De ONDE o clique saiu, deduzido da posição do link no documento —
+         * do container mais específico para o mais genérico.
+         *
+         * A lateral e a caixa de produto são as duas <aside> da página, então
+         * o que as separa é a estrutura: a lateral fica AO LADO do artigo (é
+         * irmã dele), a caixa de produto fica DENTRO do conteúdo. Nada de
+         * olhar aria-label — mudar o texto de um rótulo não pode, em silêncio,
+         * trocar a coluna de um relatório.
+         */
+        function placementOf(link) {
+          if (link.closest("header")) return "header";
+          if (link.closest("footer")) return "footer";
+          var box = link.closest("aside");
+          if (box) {
+            var besideArticle =
+              box.parentElement && box.parentElement.querySelector(":scope > article");
+            return besideArticle && !box.closest("article") ? "sidebar" : "cta_box";
+          }
+          if (link.closest("article")) return "article_body";
+          return "page_body";
+        }
+
+        var links = document.querySelectorAll("a[href]");
+        for (var i = 0; i < links.length; i++) {
+          var link = links[i];
+          // `hostname` já vem do href resolvido pelo navegador: link interno do
+          // blog, âncora, mailto e link externo caem fora sem regex nenhuma.
+          if (link.hostname !== appHost) continue;
+
+          var url = new URL(link.href);
+          // Só preenche o que falta. É isso que torna a passagem idempotente
+          // (rodar duas vezes não muda nada) e o que preserva um link marcado
+          // à mão no futuro — quem escreveu o parâmetro tinha um motivo.
+          // A classe URL cuida do resto: query que já existia é mantida e a
+          // âncora (#) continua no fim, onde precisa estar.
+          if (!url.searchParams.has("utm_source")) url.searchParams.set("utm_source", "blog");
+          if (!url.searchParams.has("utm_medium"))
+            url.searchParams.set("utm_medium", placementOf(link));
+          if (!url.searchParams.has("utm_campaign"))
+            url.searchParams.set("utm_campaign", utmCampaign);
+          link.href = url.href;
+        }
+      })();
+    </script>
   </body>
 </html>

@@ -2,10 +2,17 @@
  * CAPAS DO BLOG — MARCAÇÃO E REGRAS, FONTE ÚNICA DE VERDADE
  *
  * Este arquivo desenha a capa; src/styles/cover.css a estiliza. Juntos são o
- * sistema inteiro, e os dois renderizadores apenas consomem:
- *   - src/components/Cover.astro  → capa do site (palavra gigante = CATEGORIA);
- *   - scripts/og.mjs              → card de compartilhamento (palavra gigante = TÍTULO).
- * É `.mjs` (JS puro, sem tipos) porque o og.mjs roda em Node cru, sem build.
+ * sistema inteiro, e os renderizadores apenas consomem:
+ *   - scripts/capas.mjs → PNG da capa do site (palavra gigante = CATEGORIA),
+ *     em public/capas/<slug>.png;
+ *   - scripts/og.mjs    → PNG do card de compartilhamento (palavra gigante = TÍTULO),
+ *     em public/og/<slug>.png.
+ * É `.mjs` (JS puro, sem tipos) porque os dois scripts rodam em Node cru, sem build.
+ *
+ * src/components/Cover.astro NÃO desenha mais nada: ele só aponta um <img> para
+ * o PNG de public/capas/ (e usa `coverAlt()` daqui). O desenho em HTML/CSS
+ * sobrou lá apenas como rede para o PNG que ainda não foi gerado — ver o
+ * cabeçalho do componente para o porquê da troca.
  *
  * POR QUE HTML/CSS E NÃO SVG (o sistema anterior era SVG)
  * O desenho é caixa, texto e uma foto: tudo que HTML faz melhor. Em SVG o texto
@@ -26,7 +33,16 @@
 /** Endereço no rodapé da capa. Espelha SITE_URL de src/consts.ts (que é TS). */
 export const COVER_ADDRESS = "blog.pacafinance.com.br";
 
-/** Caminho público dos dois recortes do mascote (claro p/ fundo escuro/rosa). */
+/**
+ * Caminho público dos dois recortes do mascote (claro p/ fundo escuro/rosa).
+ *
+ * NÃO APAGUE ESSES DOIS PNGs numa limpeza de asset "não usado". Desde que a
+ * capa virou <img>, NENHUMA página do site pede /paca-mascote*.png: o mascote
+ * está assado dentro de cada PNG de public/capas/ e public/og/. Uma busca por
+ * referência no HTML buildado devolve zero — e mesmo assim os dois arquivos são
+ * a MATÉRIA-PRIMA dos dois geradores (`npm run capas` e `npm run og` os leem
+ * daqui e os embutem como data URI). Sem eles, os dois scripts quebram.
+ */
 export const MASCOT_SRC = {
   light: "/paca-mascote.png",
   dark: "/paca-mascote-dark.png",
@@ -349,6 +365,140 @@ export function titleSize(title) {
   if (n <= 60) return { size: 66, leading: 0.97 };
   if (n <= 74) return { size: 58, leading: 0.99 };
   return { size: 50, leading: 1.02 };
+}
+
+// ---------------------------------------------------------------------------
+// TEXTO ALTERNATIVO — o que o Google Imagens lê
+// ---------------------------------------------------------------------------
+
+/**
+ * O ASSUNTO DE CADA CAPA EM UMA FRASE — e por que isto passou a existir.
+ *
+ * Enquanto a capa era desenhada em HTML/CSS ela era DECORATIVA e ia com
+ * `aria-hidden`: tudo que ela dizia (a categoria, o título) já estava escrito
+ * em texto de verdade ao lado, e repetir só faria o leitor de tela ouvir duas
+ * vezes a mesma coisa. Virando <img> a conta muda de lado — o `alt` passa a
+ * ser o ÚNICO texto que o Google Imagens tem sobre o arquivo, e imagem sem
+ * `alt` não entra em busca de imagem nem no card grande do Discover.
+ *
+ * A tensão se resolve escrevendo um `alt` que descreve A IMAGEM (uma capa
+ * tipográfica: fundo colorido, a categoria em corpo enorme, o mascote) E o
+ * assunto do texto. Continua honesto para quem ouve, porque descreve o que
+ * está na tela em vez de repetir o título que vem na linha seguinte, e passa a
+ * ser útil para quem indexa.
+ *
+ * REGRAS DESTAS FRASES — não quebre ao publicar artigo novo:
+ *  - não repetir o título palavra por palavra: ele já está no <h1>/<h2> ao
+ *    lado, e `alt` igual ao título é a marca de página gerada em série;
+ *  - nada de lista de palavra-chave: descreva o assunto como se estivesse
+ *    explicando a imagem para alguém no telefone;
+ *  - uma frase curta, ~45 a 60 caracteres — o `alt` montado fica em ~150;
+ *  - a frase entra depois de "sobre ", então comece por verbo ou substantivo
+ *    (escreva "quitar as dívidas…", não "como quitar as dívidas…").
+ * @type {Record<string, string>}
+ */
+export const ALT_SUBJECT_BY_SLUG = {
+  // dividir-contas
+  "como-dividir-contas-casal":
+    "as formas de repartir as despesas da casa entre duas pessoas",
+  "dividir-contas-proporcional-ao-salario":
+    "dividir as despesas na proporção do que cada um ganha",
+  "morar-junto-dividir-despesas":
+    "combinar quem paga o quê antes de ir morar junto",
+  "um-dos-dois-desempregado-financas-casal":
+    "reorganizar o orçamento do casal quando uma renda acaba",
+  // organizacao
+  "regra-50-30-20-casal":
+    "repartir o salário em três fatias quando as rendas são duas",
+  "conta-conjunta-vale-a-pena":
+    "quando abrir uma conta em nome dos dois compensa",
+  "conta-conjunta-nubank":
+    "o que o Nubank oferece a quem procura conta a dois",
+  "cartao-de-credito-casal":
+    "usar cartão adicional, fatura junta ou cartões separados",
+  "casal-endividado-como-sair-das-dividas":
+    "quitar as dívidas a dois sem virar cobrança dentro de casa",
+  "bem-vindos-ao-blog-do-paca":
+    "o que este blog publica para quem cuida do dinheiro a dois",
+  // metas-e-sonhos
+  "reserva-de-emergencia-casal":
+    "quanto guardar para imprevistos quando são duas rendas",
+  "comprar-casa-juntos-financiamento":
+    "financiar o imóvel em nome dos dois, do FGTS ao cartório",
+  "como-juntar-dinheiro-casal":
+    "transformar um objetivo do casal em valor guardado por mês",
+  "quanto-custa-casar":
+    "os custos de uma festa de casamento e o teto do orçamento",
+  // ferramentas
+  "melhor-app-financas-casal":
+    "comparar aplicativos que o casal usa para acompanhar gastos",
+  "planilha-gastos-casal":
+    "montar uma planilha de despesas compartilhada entre os dois",
+  // conversas-sobre-dinheiro
+  "como-falar-de-dinheiro-relacionamento":
+    "trazer o assunto dinheiro para a mesa sem virar discussão",
+  "brigas-por-dinheiro-relacionamento":
+    "por que dinheiro vira briga e como sair desse ciclo",
+};
+
+/**
+ * Rede de segurança: artigo novo ainda sem frase acima cai no assunto da
+ * categoria — nunca fica sem `alt`, que é o pior dos mundos (imagem invisível
+ * para a busca E para quem ouve). É também o assunto das capas das PÁGINAS de
+ * categoria, que chamam o Cover com slug = id da categoria.
+ * @type {Record<string, string>}
+ */
+export const ALT_SUBJECT_BY_CATEGORY = {
+  "dividir-contas": "as formas de repartir as despesas do casal",
+  organizacao: "a rotina financeira do casal no dia a dia",
+  "conversas-sobre-dinheiro": "falar de dinheiro com quem você ama",
+  "metas-e-sonhos": "planejar os objetivos do casal com prazo e valor",
+  ferramentas: "apps e planilhas para o casal cuidar do dinheiro",
+};
+
+export const DEFAULT_ALT_SUBJECT = "as finanças do casal no dia a dia";
+
+export function altSubjectFor(slug, category) {
+  return (
+    ALT_SUBJECT_BY_SLUG[slug] ||
+    ALT_SUBJECT_BY_CATEGORY[category] ||
+    DEFAULT_ALT_SUBJECT
+  );
+}
+
+/**
+ * O `alt` da capa, montado.
+ *
+ * O nome do fundo sai do próprio id do tema — "rosa", "preto" e "creme" já são
+ * as palavras em pt-BR, então não existe segunda tabela de cor para
+ * dessincronizar.
+ *
+ * @param {{slug: string, category: string, categoryLabel?: string}} opts
+ * @returns {string}
+ */
+export function coverAlt({ slug, category, categoryLabel }) {
+  const label = categoryLabel || category;
+  const paint = themeIdFor(slug);
+  const subject = altSubjectFor(slug, category);
+
+  // A página de categoria chama o Cover com slug = id da própria categoria (é
+  // a convenção do componente). Ali a capa não é de nenhum artigo, e dizer
+  // "capa do artigo" seria mentira para quem só ouve o alt.
+  // Travessão e não "sobre": um dos rótulos JÁ é "Conversas sobre dinheiro", e
+  // com "sobre" o alt saía "Capa da seção Conversas sobre dinheiro, sobre
+  // falar de dinheiro…". Alt é texto que alguém ouve — tem de ler bem em voz
+  // alta, não só passar no validador.
+  if (slug === category) {
+    return (
+      `Capa da seção ${label} — ${subject}: fundo ${paint} com o nome ` +
+      `da seção em letra grande e o mascote do Paca.`
+    );
+  }
+
+  return (
+    `Capa do artigo sobre ${subject}: fundo ${paint}, a palavra ${label} ` +
+    `em letra grande e o mascote do Paca.`
+  );
 }
 
 // ---------------------------------------------------------------------------

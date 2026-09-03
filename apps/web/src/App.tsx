@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useI18n } from "@paca/api";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { GuestRoute } from "@/components/auth/GuestRoute";
@@ -21,6 +21,7 @@ import { PrivacyPage } from "@/pages/PrivacyPage";
 import { TermsPage } from "@/pages/TermsPage";
 import { SupportPage } from "@/pages/SupportPage";
 import { RecommendationsPage } from "@/pages/RecommendationsPage";
+import { NotFoundPage } from "@/pages/NotFoundPage";
 
 export function App() {
   const { dateLocale } = useI18n();
@@ -92,8 +93,15 @@ export function App() {
         <Route path="admin/usage" element={<AdminUsagePage />} />
       </Route>
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Fallback — caminho que não é rota nenhuma.
+          Antes redirecionava para "/", o que transformava todo endereço errado
+          numa cópia do app: o visitante perdia a pista do erro e o Google via
+          soft-404 em URL infinita. A página abaixo assume o erro e carrega o
+          noindex.
+          Fica FORA do ProtectedRoute de propósito: crawler chega deslogado, e
+          dentro da rota protegida ele seria mandado para /login e nunca
+          renderizaria o noindex. */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
