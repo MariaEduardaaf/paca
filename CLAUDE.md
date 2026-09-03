@@ -135,3 +135,9 @@ python3 ~/.claude/scripts/inventario_urls.py apps/blog/src/content/blog --gsc <e
 - **Não partir a escrita em vários agentes.** Coleta se separa (pesquisa, checagem, imagem);
   composição não — voz, argumento e ritmo têm de fechar como peça só.
 - **Não rodar `/blog write` de dentro de `apps/blog/`** — perde `BRAND.md` e `VOICE.md`.
+- ⚠️ **Não deixar `DISCOURSE.md` no repositório depois de escrever o artigo.** Diferente de
+  `BRAND.md` e `VOICE.md`, que são permanentes, o `DISCOURSE.md` é **de um tema só** — e carrega
+  automaticamente em **toda** escrita seguinte. Um brief velho sobre outro assunto entra calado no
+  próximo artigo. Gere, use, **apague**.
+  ⚠️ **E para conteúdo em português ele quase não serve:** medido em 2026-09-03, as buscas em
+  Reddit devolveram **zero**, e o brief gerado era a própria entrada reescrita.
