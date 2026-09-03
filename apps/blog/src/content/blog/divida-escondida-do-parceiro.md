@@ -4,7 +4,7 @@ description: "O que a dívida escondida do seu parceiro muda para você — segu
 pubDate: 2026-09-03
 category: "conversas-sobre-dinheiro"
 tags: ["dívida escondida", "infidelidade financeira", "regime de bens", "conversa sobre dinheiro", "finanças do casal"]
-draft: true
+draft: false
 ---
 
 Quase nunca é uma confissão. É uma carta de cobrança no nome dele que chega no seu endereço. É o financiamento negado com um "consta uma restrição" que ninguém explica. É o celular virado para baixo rápido demais quando o banco liga.
