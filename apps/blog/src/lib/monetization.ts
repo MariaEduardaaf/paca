@@ -46,3 +46,40 @@ export const AD_SLOT_IDS: Record<string, string> = {
 export function adSlotId(placement: string): string {
   return AD_SLOT_IDS[placement] || "";
 }
+
+/**
+ * META PIXEL — a medição do tráfego pago.
+ *
+ * POR QUE ESTE ESTÁ NO CÓDIGO E O ADSENSE ESTÁ EM VARIÁVEL DE AMBIENTE.
+ * O ID do pixel é público por natureza: ele aparece no código-fonte de toda
+ * página que o carrega, e qualquer visitante lê. Não há segredo a proteger,
+ * então a variável de ambiente só acrescentaria um passo manual — e foi
+ * exatamente esse passo que já falhou uma vez aqui: o `pub-` do AdSense foi
+ * preenchido na Vercel e ninguém republicou, então o site ficou dias com o
+ * comportamento antigo enquanto parecia configurado. Com o valor no código,
+ * publicar é ligar.
+ *
+ * O QUE NUNCA PODE SER ENVIADO. O Paca é app de finanças, e as Ferramentas
+ * Comerciais da Meta proíbem receber "informações financeiras" — o aviso está
+ * no próprio diálogo de criação do pixel. Então: nada de valor de transação,
+ * saldo, renda ou orçamento, nem como evento, nem como parâmetro. O que se
+ * envia é visita de página e criação de conta, sem número junto. Enviar o
+ * volume movimentado seria a métrica óbvia de um app financeiro e é justamente
+ * a que derruba o conjunto de dados.
+ */
+export const META_PIXEL_ID = "1762784665056623";
+
+/**
+ * Domínios onde o pixel pode disparar.
+ *
+ * Sem esta lista o pixel dispararia também em `localhost` e nos deploys de
+ * pré-visualização da Vercel (que são build de produção como qualquer outro),
+ * sujando a medição com a nossa própria navegação — e é essa medição que vai
+ * decidir quanto gastar no Meta.
+ */
+export const TRACKED_HOSTS = [
+  "blog.pacafinance.com.br",
+  "pacafinance.com.br",
+  "www.pacafinance.com.br",
+  "app.pacafinance.com.br",
+];

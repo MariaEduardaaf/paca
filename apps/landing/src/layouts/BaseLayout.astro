@@ -7,6 +7,8 @@ import {
   APP_URL,
   BLOG_URL,
   APP_LOCALES,
+  META_PIXEL_ID,
+  TRACKED_HOSTS,
 } from "../consts";
 
 interface Props {
@@ -106,6 +108,33 @@ if (faq.length > 0) {
 }
 
 const APP_HOST = new URL(APP_URL).hostname;
+
+/*
+ * Meta Pixel — mesmo conjunto de dados do blog (o porquê está em consts.ts).
+ *
+ * A GUARDA DE DOMÍNIO existe porque `astro build` é o mesmo comando para o
+ * deploy real e para a pré-visualização da Vercel: sem checar o hostname, cada
+ * link de preview que a gente abrisse entraria na medição que vai decidir
+ * quanto gastar em mídia. O <noscript> não tem como ser guardado (é imagem,
+ * sem JS) e fica — só dispara para quem navega sem JavaScript.
+ *
+ * O ID vai por JSON.stringify porque cai dentro de JavaScript, e o snippet vai
+ * por set:html porque dentro de `{...}` o Astro leria as chaves dele como
+ * expressão.
+ */
+const metaPixelSnippet = `if (${JSON.stringify(TRACKED_HOSTS)}.indexOf(location.hostname) !== -1) {
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', ${JSON.stringify(META_PIXEL_ID)});
+fbq('track', 'PageView');
+}`;
+const metaPixelNoscriptSrc = `https://www.facebook.com/tr?id=${encodeURIComponent(META_PIXEL_ID)}&ev=PageView&noscript=1`;
 ---
 
 <html lang="pt-BR">
@@ -164,8 +193,19 @@ const APP_HOST = new URL(APP_URL).hostname;
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
+
+    <script is:inline set:html={metaPixelSnippet} />
   </head>
   <body>
+    <noscript>
+      <img
+        height="1"
+        width="1"
+        style="display:none"
+        src={metaPixelNoscriptSrc}
+        alt=""
+      />
+    </noscript>
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <slot />
 
