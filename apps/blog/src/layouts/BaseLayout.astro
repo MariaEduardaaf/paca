@@ -312,6 +312,38 @@ const siteJsonLd = {
     <script is:inline define:vars={{ appHost: APP_HOST, utmCampaign }}>
       (function () {
         /*
+         * O UTM DE ENTRADA sobrevive à navegação. O parâmetro do anúncio (ou do
+         * e-mail) só existe na URL da PRIMEIRA página; ao clicar num artigo ele
+         * some, e o app receberia todo mundo como "utm_source=blog" — sem dar
+         * para separar quem veio da campanha paga de quem veio do orgânico, que
+         * é a régua da operação. Então a primeira página guarda a origem na
+         * sessão e os links para o app saem com ELA; a posição do clique, que é
+         * o dado interno, desce para utm_content.
+         *
+         * PRIMEIRO TOQUE VENCE (a chave não é sobrescrita): se a pessoa chega
+         * pelo anúncio e depois navega para uma página com outro utm interno,
+         * a origem verdadeira não pode ser trocada no meio do caminho.
+         * sessionStorage e não localStorage de propósito: atribuição é da
+         * VISITA — voltar amanhã pelo Google é outra origem, não a campanha.
+         */
+        var ENTRY_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid"];
+        var entry = null;
+        try {
+          var here = new URLSearchParams(location.search);
+          if (here.has("utm_source") && !sessionStorage.getItem("paca_entry")) {
+            var found = {};
+            for (var k = 0; k < ENTRY_KEYS.length; k++) {
+              var v = here.get(ENTRY_KEYS[k]);
+              if (v) found[ENTRY_KEYS[k]] = v;
+            }
+            sessionStorage.setItem("paca_entry", JSON.stringify(found));
+          }
+          entry = JSON.parse(sessionStorage.getItem("paca_entry") || "null");
+        } catch (_) {
+          /* sessão indisponível: cai no esquema interno, que já funcionava */
+        }
+
+        /*
          * De ONDE o clique saiu, deduzido da posição do link no documento —
          * do container mais específico para o mais genérico.
          *
@@ -347,11 +379,22 @@ const siteJsonLd = {
           // à mão no futuro — quem escreveu o parâmetro tinha um motivo.
           // A classe URL cuida do resto: query que já existia é mantida e a
           // âncora (#) continua no fim, onde precisa estar.
-          if (!url.searchParams.has("utm_source")) url.searchParams.set("utm_source", "blog");
-          if (!url.searchParams.has("utm_medium"))
-            url.searchParams.set("utm_medium", placementOf(link));
-          if (!url.searchParams.has("utm_campaign"))
-            url.searchParams.set("utm_campaign", utmCampaign);
+          if (entry && entry.utm_source) {
+            // Veio de campanha: a ORIGEM dela viaja até o app, e a posição do
+            // clique (o dado que era o utm_medium interno) desce para content.
+            for (var e = 0; e < ENTRY_KEYS.length; e++) {
+              var key = ENTRY_KEYS[e];
+              if (entry[key] && !url.searchParams.has(key)) url.searchParams.set(key, entry[key]);
+            }
+            if (!url.searchParams.has("utm_content"))
+              url.searchParams.set("utm_content", "blog-" + placementOf(link) + "-" + utmCampaign);
+          } else {
+            if (!url.searchParams.has("utm_source")) url.searchParams.set("utm_source", "blog");
+            if (!url.searchParams.has("utm_medium"))
+              url.searchParams.set("utm_medium", placementOf(link));
+            if (!url.searchParams.has("utm_campaign"))
+              url.searchParams.set("utm_campaign", utmCampaign);
+          }
           link.href = url.href;
         }
       })();

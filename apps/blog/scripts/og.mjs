@@ -55,6 +55,7 @@ import {
   CHROME,
   coverPageHtml,
   mascotDataUris,
+  optimizePng,
   readPosts,
   shoot,
 } from "./lib/render.mjs";
@@ -138,6 +139,15 @@ async function main() {
         outPath,
         profileDir: join(work, `profile-${post.slug}`),
       });
+
+      /*
+       * Mesmo pngquant das capas. Ficou de fora na primeira leva de propósito
+       * (o AdSense estava em análise e a regra era não tocar no que o revisor
+       * vê) — mas os cards já foram refeitos inteiros desde então, o argumento
+       * morreu. ~70% de corte num arquivo que o WhatsApp baixa a cada
+       * compartilhamento.
+       */
+      optimizePng(outPath);
 
       ok++;
       console.log(`[og] ✓ ${post.slug}.png  (${post.category})`);

@@ -264,6 +264,27 @@ const metaPixelNoscriptSrc = `https://www.facebook.com/tr?id=${encodeURIComponen
           if (link.closest("footer")) return "footer";
           return "page_body";
         }
+        /*
+         * O UTM DE ENTRADA sobrevive até o app (mesmo padrão do blog): quem
+         * chega do anúncio leva a origem DELE até o cadastro, e a posição do
+         * clique desce para utm_content. Primeiro toque vence; sessionStorage
+         * porque atribuição é da visita, não da pessoa para sempre.
+         */
+        var ENTRY_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid"];
+        var entry = null;
+        try {
+          var here = new URLSearchParams(location.search);
+          if (here.has("utm_source") && !sessionStorage.getItem("paca_entry")) {
+            var found = {};
+            for (var k = 0; k < ENTRY_KEYS.length; k++) {
+              var v = here.get(ENTRY_KEYS[k]);
+              if (v) found[ENTRY_KEYS[k]] = v;
+            }
+            sessionStorage.setItem("paca_entry", JSON.stringify(found));
+          }
+          entry = JSON.parse(sessionStorage.getItem("paca_entry") || "null");
+        } catch (_) {}
+
         var links = document.querySelectorAll("a[href]");
         for (var i = 0; i < links.length; i++) {
           var link = links[i];
@@ -271,10 +292,19 @@ const metaPixelNoscriptSrc = `https://www.facebook.com/tr?id=${encodeURIComponen
           var url = new URL(link.href);
           // Só preenche o que falta: rodar duas vezes não muda nada, e um link
           // marcado à mão no futuro continua valendo.
-          if (!url.searchParams.has("utm_source")) url.searchParams.set("utm_source", "site");
-          if (!url.searchParams.has("utm_medium"))
-            url.searchParams.set("utm_medium", placementOf(link));
-          if (!url.searchParams.has("utm_campaign")) url.searchParams.set("utm_campaign", "landing");
+          if (entry && entry.utm_source) {
+            for (var e = 0; e < ENTRY_KEYS.length; e++) {
+              var key = ENTRY_KEYS[e];
+              if (entry[key] && !url.searchParams.has(key)) url.searchParams.set(key, entry[key]);
+            }
+            if (!url.searchParams.has("utm_content"))
+              url.searchParams.set("utm_content", "landing-" + placementOf(link));
+          } else {
+            if (!url.searchParams.has("utm_source")) url.searchParams.set("utm_source", "site");
+            if (!url.searchParams.has("utm_medium"))
+              url.searchParams.set("utm_medium", placementOf(link));
+            if (!url.searchParams.has("utm_campaign")) url.searchParams.set("utm_campaign", "landing");
+          }
           link.href = url.href;
         }
       })();
