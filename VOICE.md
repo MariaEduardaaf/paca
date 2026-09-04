@@ -29,6 +29,52 @@ português é humana, ou precisa de uma lista própria.**
 
 ---
 
+## ⚠️ COMO PRESERVAR A VARIAÇÃO — a regra que faltava, medida em duas rodadas
+
+O bloco acima diz que preservar o desvio de 20,5 é a prioridade nº 1. **Não dizia como**, e as duas
+primeiras peças escritas pela esteira falharam no mesmo ponto, do mesmo jeito.
+
+### O que aconteceu, nas duas vezes
+
+| | 1ª peça | 2ª peça |
+|---|---|---|
+| desvio no primeiro rascunho | **10,96 — reprovou** (piso 12,28) | 12,95 — passou a 5% da linha |
+| depois do conserto | **14,83** | **14,58** |
+| o conserto foi | alongar 5 passagens | alongar 4 passagens |
+
+### ⚠️ O diagnóstico, e ele é contraintuitivo
+
+Medindo a distribuição de um artigo real dela contra o primeiro rascunho:
+
+| | artigo dela | rascunho reprovado |
+|---|---|---|
+| frases **longas** (>35 palavras) | **19** | 8 |
+| frases **curtas** (<8 palavras) | 9 | **19** |
+
+**O rascunho tinha o padrão dela invertido.** Não era falta de frase curta — era excesso delas. O
+texto saiu **picotado, não variado**, e picotado mede desvio BAIXO porque tudo fica no mesmo
+tamanho pequeno.
+
+### A regra
+
+> **Escreva com frases longas encadeadas. As curtas são pontuação, não o padrão.**
+>
+> Vírgula, travessão e ponto-e-vírgula sustentam uma frase que respira; o ponto final curto entra
+> para dar o golpe, e só funciona porque veio depois de fôlego.
+
+### ⚠️ E o erro que parece conserto e piora
+
+**Se a cadência vier baixa, NÃO adicione frases curtas.** É o reflexo natural — "variar" soa como
+"quebrar" —, e ele **derruba o número ainda mais**, porque empurra a distribuição inteira para
+baixo. O remédio é o oposto: **junte duas ou três frases médias numa longa** que encadeie o
+raciocínio, e deixe as curtas que já existem fazerem o contraste.
+
+**A pergunta que conserta, antes de mexer:** *"quantas frases acima de 35 palavras este texto
+tem?"* Se forem menos de uma dúzia num artigo de 2.000 palavras, o problema está aí — e não na
+falta de frases curtas.
+
+---
+
 ## Learned Voice Profile
 
 Sample: 18 post(s).
