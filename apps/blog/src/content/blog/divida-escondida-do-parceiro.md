@@ -4,6 +4,7 @@ description: "O que a dívida escondida do seu parceiro muda para você — segu
 pubDate: 2026-09-03
 category: "conversas-sobre-dinheiro"
 tags: ["dívida escondida", "infidelidade financeira", "regime de bens", "conversa sobre dinheiro", "finanças do casal"]
+author: "mary"
 draft: false
 ---
 

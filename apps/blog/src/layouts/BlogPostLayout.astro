@@ -12,6 +12,7 @@ import RecirculationPanel from "../components/RecirculationPanel.astro";
 import ShareBox from "../components/ShareBox.astro";
 import { SITE_TITLE, SITE_URL, APP_URL } from "../consts";
 import { CATEGORIES } from "../lib/categories";
+import { autoraDe } from "../lib/autores";
 import { ctaFor } from "../lib/ctas";
 import type { BlogPost } from "../lib/posts";
 import {
@@ -29,6 +30,7 @@ const { post } = Astro.props;
 const { Content, headings } = await render(post);
 
 const { title, description, pubDate, updatedDate, category } = post.data;
+const autora = autoraDe(post.data.author);
 const categoryInfo = CATEGORIES[category];
 const minutes = readingTimeMinutes(post.body);
 
@@ -301,7 +303,15 @@ const blogPostingJsonLd = {
   dateModified: (updatedDate ?? pubDate).toISOString(),
   inLanguage: "pt-BR",
   mainEntityOfPage: { "@type": "WebPage", "@id": postUrl },
-  author: { "@type": "Organization", name: SITE_TITLE, url: APP_URL },
+  /*
+   * ⚠️ Person quando há pessoa, Organization quando é a equipe. A diretriz de
+   * qualidade pede byline COM link para o histórico de quem escreve — o `url`
+   * abaixo é essa metade, e sem ele o nome é só texto decorativo.
+   */
+  author:
+    autora.url && autora.url !== "/sobre"
+      ? { "@type": "Person", name: autora.nome, url: new URL(autora.url, SITE_URL).href }
+      : { "@type": "Organization", name: SITE_TITLE, url: APP_URL },
   publisher: {
     "@type": "Organization",
     name: SITE_TITLE,
@@ -422,8 +432,11 @@ const faqJsonLd =
             height="36"
           />
           <p class="text-sm text-gray-600 dark:text-gray-300">
-            <a href="/sobre" class="rounded font-semibold text-gray-800 hover:text-pink-700 dark:text-gray-100 dark:hover:text-pink-300">
-              Equipe Paca Finance
+            <a
+              href={autora.url ?? "/sobre"}
+              class="rounded font-semibold text-gray-800 hover:text-pink-700 dark:text-gray-100 dark:hover:text-pink-300"
+            >
+              {autora.nome}
             </a>
             <span class="block text-gray-600 sm:inline dark:text-gray-400">
               <span class="hidden sm:inline" aria-hidden="true"> · </span>
