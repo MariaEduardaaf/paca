@@ -112,6 +112,8 @@ Se vocês não têm reserva nenhuma, a hora de montar uma é depois que essa fas
 
 ## Dependência financeira não pode virar desequilíbrio de poder
 
+Se, no meio disso, vocês perceberem que o arranjo deixou de ser emergência e virou combinado — alguém parou por escolha, e a volta não tem data —, o assunto muda de guia: está em [quando um sustenta a casa](/blog/quando-um-sustenta-o-outro), que trata do arranjo longo e do que a lei diz sobre de quem é o patrimônio.
+
 Essa é a parte que mais quebra relação. Quando uma pessoa passa a depender da renda da outra, o risco não é o dinheiro acabar — é a conversa mudar de tom. Aprovação de compras, pedido de explicação por um lanche de R$ 18, o "eu que estou pagando" dito uma vez e nunca esquecido.
 
 Cinco regras práticas que protegem os dois:

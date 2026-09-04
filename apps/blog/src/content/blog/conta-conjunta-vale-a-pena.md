@@ -111,6 +111,7 @@ Não existe modelo certo em abstrato; existe modelo certo para a fase em que voc
 - **Começando a morar juntos**: híbrido. É o momento clássico de abrir a conta (ou o "pote") comum para as despesas da casa — e de combinar as regras antes do primeiro aluguel, como detalha o guia de [divisão de despesas para quem vai morar junto](/blog/morar-junto-dividir-despesas).
 - **União longa, finanças já entrelaçadas**: conjunta total pode fazer sentido — se os estilos são parecidos, a confiança já foi testada em crise e os dois se sentem donos do dinheiro por igual.
 - **Renda muito desigual entre os dois**: híbrido com aporte proporcional, para a conta comum não virar fonte de ressentimento.
+- **Um sem renda própria**: híbrido com um valor fixo entrando na conta pessoal de quem parou — o porquê está em [quando um sustenta a casa](/blog/quando-um-sustenta-o-outro).
 - **Renda variável (autônomos, freelancers)**: híbrido com aporte em percentual do que entrou no mês, em vez de valor fixo.
 
 ## Regras de convivência para a conta conjunta dar certo
