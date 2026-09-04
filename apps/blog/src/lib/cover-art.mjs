@@ -281,6 +281,14 @@ export const MOTIF_BY_SLUG = {
   // conversas-sobre-dinheiro
   "como-falar-de-dinheiro-relacionamento": "bubbles-pair",
   "brigas-por-dinheiro-relacionamento": "circles-overlap",
+  // conversas-sobre-dinheiro (novos de setembro; escolhidos pelo sentido e sem
+  // repetir vizinho: bars-duo = duas rendas desiguais; circles-pair = o casal e
+  // os pais; bubble-dots = a conversa que ainda nao aconteceu)
+  "quando-um-sustenta-o-outro": "bars-duo",
+  "ajudar-os-pais-financeiramente-casal": "circles-pair",
+  "divida-escondida-do-parceiro": "bubble-dots",
+  // dividir-contas
+  "renda-extra-no-casal": "bars-rising",
 };
 
 /**
@@ -554,6 +562,13 @@ export function hashSlug(slug) {
  * @type {Record<string, keyof typeof THEMES>}
  */
 export const THEME_BY_SLUG = {
+  // novos de setembro — resolvidos por busca de MINIMA mudanca: os 18 antigos
+  // ficam como estao e so estes quatro entram (a busca gulosa cascateava 15
+  // trocas; a de custo minimo achou atribuicao valida com zero)
+  "renda-extra-no-casal": "preto", // dividir-contas
+  "quando-um-sustenta-o-outro": "rosa", // conversas-sobre-dinheiro
+  "ajudar-os-pais-financeiramente-casal": "preto", // conversas-sobre-dinheiro
+  "divida-escondida-do-parceiro": "creme", // conversas-sobre-dinheiro
   // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
   // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
   // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e
