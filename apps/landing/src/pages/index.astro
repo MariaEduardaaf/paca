@@ -16,6 +16,10 @@ import { SIGNUP_URL, APP_URL, BLOG_URL, APP_LOCALES, CURRENCY_COUNT } from "../c
  * EXATAMENTE a mesma coisa — dado estruturado diferente do que está na tela é
  * marcação falsa.
  *
+ * VERBATIM POR CONTRATO: estas perguntas e respostas alimentam o JSON-LD e
+ * foram verificadas frase a frase contra o código. Redesenhos mexem no CSS
+ * delas, nunca no texto.
+ *
  * Cada resposta aponta para um arquivo do repositório:
  *   lojas     → APP_STORE_URL/PLAY_STORE_URL vazios (apps/blog/src/consts.ts),
  *               submissão é o item #21 do TODO.md, aberto
@@ -63,6 +67,17 @@ const faq = [
   },
 ];
 
+/*
+ * O CÓDIGO GIGANTE — a assinatura da página. É o MESMO código de exemplo da
+ * resposta do FAQ (PACA-K7RMX3PBQ4), célula a célula, para a faixa tipográfica
+ * da seção "Como funciona". aria-hidden: o passo 2 logo abaixo já diz o código
+ * em texto; um leitor de tela soletrando 15 células seria ruído duplicado.
+ */
+const codeCells = [
+  { ch: "PACA-", cls: "prefix" },
+  ...["K", "7", "R", "M", "X", "3", "P", "B", "Q", "4"].map((ch) => ({ ch, cls: "" })),
+];
+
 const title = "Paca Finance — finanças do casal, sempre sincronizadas";
 ---
 
@@ -70,7 +85,7 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
   <nav class="nav" aria-label="Principal">
     <div class="container nav-inner">
       <a class="logo" href="/">
-        <img src="/logo-icon-96.png" alt="" width="32" height="32" />
+        <img src="/logo-icon-96.png" alt="" width="30" height="30" />
         <span>paca<span class="brand-2">finance</span></span>
         <span class="sr-only">— página inicial</span>
       </a>
@@ -86,24 +101,21 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
 
   <main id="conteudo">
     <!-- ─────────────────────────── hero ─────────────────────────── -->
-    <section class="hero sec-cream">
-
+    <section class="hero">
       <div class="container">
         <div class="hero-grid">
-          <div class="hero-content">
-            {/*
-              Esta pílula substitui o selo "LIVE — 2.300+ casais sincronizados
-              agora". Sai o verde pulsante (que dá a entender contagem ao vivo)
-              e entra o que é verificável: o app web responde no endereço
-              próprio, e não há cobrança ligada.
-            */}
-            <p class="eyebrow eyebrow-sentence" style="margin:0">
-              <span class="dot" aria-hidden="true"></span>
+          <div class="hero-content hero-intro">
+            {/* O selo verificável de sempre: o app web responde no endereço
+                próprio e não há cobrança ligada. Nada de contagem ao vivo. */}
+            <p class="hero-eyebrow">
+              <span class="pair" aria-hidden="true"><i></i><i></i></span>
               O app web já está no ar — grátis para começar
             </p>
 
+            {/* Derivado da frase já verificada "tudo o que importa quando o
+                dinheiro é dos dois": mesma substância, forma de manchete. */}
             <h1 class="display">
-              Finanças do casal,<br /><span class="accent-word">sempre sincronizadas.</span>
+              O dinheiro é dos dois. <span class="accent-word">Os números também.</span>
             </h1>
 
             <p class="lead">
@@ -120,137 +132,348 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
             </div>
 
             <ul class="hero-meta">
-              <li class="meta-pill">
-                <Icon name="globe" size="16" />Abre no navegador, nada para instalar
-              </li>
-              <li class="meta-pill"><Icon name="check" size="16" />Sem cartão no cadastro</li>
+              <li><Icon name="globe" size="16" />Abre no navegador, nada para instalar</li>
+              <li><Icon name="check" size="16" />Sem cartão no cadastro</li>
             </ul>
           </div>
 
-          <div class="hero-phone">
-            <div class="hero-phone-tilt">
-              <div class="float-chip float-chip-1" aria-hidden="true">
-                <span class="chip-avatar" style="background:var(--teal)">M</span>
-                <span>
-                  <span class="chip-title">Marina lançou agora</span>
-                  <span class="chip-value">Alimentação · R$ 68,90</span>
-                </span>
+          {/*
+            A PROVA: o produto é um app web, então aparece num NAVEGADOR — não
+            num iPhone de vitrine (a página já teve botão de loja falso; a
+            imagem não repete o erro). O mesmo saldo no computador e no celular:
+            duas pessoas, dois aparelhos, um número. Dados de exemplo, como o
+            rótulo da vitrine diz.
+          */}
+          <div class="hero-proof" aria-hidden="true">
+            <div class="browser">
+              <div class="browser-bar">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url">app.pacafinance.com.br</div>
               </div>
+              <div class="browser-body">
+                <div class="browser-greet">
+                  <div>
+                    <div class="g1">Boa tarde</div>
+                    <div class="g2">Lucas &amp; Marina</div>
+                  </div>
+                  <div class="avatars">
+                    <span class="av-l">L</span>
+                    <span class="av-m">M</span>
+                  </div>
+                </div>
 
-              <div class="float-chip float-chip-2" aria-hidden="true">
-                <span style="color:var(--teal-2);display:flex"
-                  ><Icon name="sparkles" size="18" /></span
-                >
-                <span>
-                  <span class="chip-title" style="color:var(--teal-2);font-weight:700"
-                    >IA leu o recibo</span
-                  >
-                  <span class="chip-value">Estabelecimento, categoria e valor</span>
-                </span>
+                <div class="balance-card">
+                  <div class="balance-label">Saldo do Casal · maio</div>
+                  <div class="balance-value">R$ 8.420,50</div>
+                  <div class="balance-foot">
+                    <span>Receitas R$ 12.700</span>
+                    <span>Despesas R$ 4.279</span>
+                  </div>
+                </div>
+
+                <div class="browser-rows">
+                  <div class="browser-row">
+                    <span class="who av-l">L</span>
+                    <span class="name">Salário</span>
+                    <span class="cat">Hoje</span>
+                    <span class="amt pos">+ R$ 6.500,00</span>
+                  </div>
+                  <div class="browser-row">
+                    <span class="who av-m">M</span>
+                    <span class="name">Mercado Extra <span class="tag-ia">IA</span></span>
+                    <span class="cat">Alimentação</span>
+                    <span class="amt neg">− R$ 287,50</span>
+                  </div>
+                  {/* Duas linhas bastam: uma terceira ficava meio coberta pelo
+                      celularzinho e o resto parecia bug de render, não
+                      sobreposição intencional. */}
+                </div>
               </div>
-
-              <div class="float-chip float-chip-3" aria-hidden="true">
-                <span class="chip-avatar av-green"><Icon name="arrow-up" size="14" /></span>
-                <span>
-                  <span class="chip-title">Salário recebido</span>
-                  <span class="chip-value">+ R$ 6.500,00</span>
-                </span>
-              </div>
-
-              <PhoneFrame label="Tela de início do Paca Finance, com o saldo do casal e as últimas transações">
-                <Dashboard />
-              </PhoneFrame>
             </div>
+
+            <div class="mini-phone">
+              <div class="mini-phone-screen">
+                <div class="mini-url">app.pacafinance.com.br</div>
+                <div class="mini-body">
+                  <div class="mini-label">Saldo do Casal</div>
+                  <div class="mini-value">R$ 8.420,50</div>
+                  <div class="mini-row">
+                    <span>Mercado Extra</span>
+                    <span class="amt">− R$ 287,50</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p class="proof-caption">
+              o mesmo saldo, no navegador do computador e no do celular · dados de exemplo
+            </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ─────────────────────────── recursos ─────────────────────────── -->
-    <section class="features sec-black" id="recursos">
+    <!-- ────────────── recursos: linhas de livro-caixa ────────────── -->
+    <section id="recursos" style="padding-top:0">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Recursos</span>
-          <h2 class="h2">
-            Tudo o que importa quando o dinheiro <span class="accent-word">é dos dois.</span>
-          </h2>
+          <span class="mono-label"
+            ><span class="pair" aria-hidden="true"><i></i><i></i></span>Recursos</span
+          >
+          <h2 class="h2">Tudo o que importa quando o dinheiro <span class="accent-word">é dos dois.</span></h2>
           <p class="lead">
             Feito para casais que querem clareza, não confusão. Cada centavo, em comum acordo.
           </p>
         </div>
 
-        <div class="feature-grid reveal-cascade">
-          <article class="feature-card">
-            <div class="feature-icon-3d" aria-hidden="true"><Icon name="refresh" size="30" /></div>
-            <h3>Sincronia em tempo real</h3>
-            <p>
-              Quando uma pessoa lança uma despesa, a outra vê sem recarregar a página. O saldo e o
-              orçamento do mês se atualizam junto, nos dois aparelhos.
-            </p>
-            <div class="feature-visual">
-              <div class="fv-card">
-                <div class="fv-row">
-                  <span class="chip-avatar" style="background:var(--teal)">M</span>
-                  <span>
-                    <span class="fv-name">Marina · agora</span>
-                    <span class="fv-value" style="display:block">R$ 287,50</span>
-                  </span>
-                </div>
+        <div class="ledger">
+          <div class="ledger-row reveal">
+            <span class="mono-label">Sincronia</span>
+            <div>
+              <h3>Sincronia em tempo real</h3>
+              <p>
+                Quando uma pessoa lança uma despesa, a outra vê sem recarregar a página. O saldo e
+                o orçamento do mês se atualizam junto, nos dois aparelhos.
+              </p>
+            </div>
+            <div class="sync-pair" aria-hidden="true">
+              <div class="sync-card">
+                <span class="who av-m">M</span>
+                <span>
+                  <span class="t1">Marina lançou</span>
+                  <span class="t2" style="display:block">Mercado Extra</span>
+                </span>
+                <span class="amt">− R$ 287,50</span>
+              </div>
+              <div class="sync-link">apareceu para os dois na hora</div>
+              <div class="sync-card">
+                <span class="who av-l">L</span>
+                <span>
+                  <span class="t1">Na tela do Lucas</span>
+                  <span class="t2" style="display:block">Mercado Extra</span>
+                </span>
+                <span class="amt">− R$ 287,50</span>
               </div>
             </div>
-          </article>
+          </div>
 
-          <article class="feature-card ai-card">
-            <span class="feat-tag">IA</span>
-            <div class="feature-icon-3d" aria-hidden="true"><Icon name="camera" size="30" /></div>
-            <h3>Leitor de recibo com IA</h3>
-            <p>
-              Tire foto do recibo ou mande o print do extrato. A IA devolve estabelecimento,
-              categoria, valor e data preenchidos — vocês só conferem e salvam.
-            </p>
-            <div class="feature-visual">
-              <div class="fv-card">
-                <span class="fv-badge"><Icon name="sparkles" size="13" />Campos preenchidos</span>
-                <span class="fv-value" style="display:block;margin-top:8px"
-                  >Mercado · Alimentação · R$ 287,50</span
-                >
+          <div class="ledger-row reveal">
+            <span class="mono-label">Recibo por IA</span>
+            <div>
+              <h3>Leitor de recibo com IA</h3>
+              <p>
+                Tire foto do recibo ou mande o print do extrato. A IA devolve estabelecimento,
+                categoria, valor e data preenchidos — vocês só conferem e salvam.
+              </p>
+            </div>
+            <div aria-hidden="true">
+              <div class="receipt-scrap">
+                <div class="rr"><span>MERCADO EXTRA</span><span>15 MAI</span></div>
+                <div class="rr total"><span>TOTAL</span><span>R$ 287,50</span></div>
+              </div>
+              <div class="receipt-result">
+                <Icon name="sparkles" size="16" />
+                <span class="mono">Alimentação · R$ 287,50</span>
               </div>
             </div>
-          </article>
+          </div>
 
-          <article class="feature-card">
-            <div class="feature-icon-3d" aria-hidden="true"><Icon name="pie" size="30" /></div>
-            <h3>Orçamento do casal</h3>
-            <p>
-              Definam juntos o limite de cada categoria. Os dois veem quanto já foi usado no mês,
-              categoria por categoria, no mesmo número.
-            </p>
-            <div class="feature-visual">
-              <div class="fv-card">
-                <div class="fv-bar-label"><span>Alimentação</span><span>79%</span></div>
-                <div class="fv-bar"><i style="width:79%"></i></div>
-                <div class="fv-bar-label"><span>Moradia</span><span>90%</span></div>
-                <div class="fv-bar"><i style="width:90%"></i></div>
-              </div>
+          <div class="ledger-row reveal">
+            <span class="mono-label">Orçamento</span>
+            <div>
+              <h3>Orçamento do casal</h3>
+              <p>
+                Definam juntos o limite de cada categoria. Os dois veem quanto já foi usado no
+                mês, categoria por categoria, no mesmo número.
+              </p>
             </div>
-          </article>
+            <div class="budget-mini" aria-hidden="true">
+              <div class="bm-label"><span>Alimentação</span><span class="pct">79%</span></div>
+              <div class="bm-bar"><i style="width:79%"></i></div>
+              <div class="bm-label"><span>Moradia</span><span class="pct">90%</span></div>
+              <div class="bm-bar"><i style="width:90%"></i></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ─────────────────────── antes e depois ─────────────────────── -->
-    <section class="ba sec-cream">
+    <!-- ────────── A ASSINATURA: o ritual do código do casal ────────── -->
+    <section id="como-funciona" class="sec-tinta">
       <div class="container">
         <div class="section-head">
-          <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Antes e depois</span>
+          <span class="mono-label"
+            ><span class="pair" aria-hidden="true"><i></i><i></i></span>Como funciona</span
+          >
+          <h2 class="h2">Três passos, <span style="color:var(--rosa)">e um código.</span></h2>
+          <p class="lead">
+            Não tem convite por e-mail nem espera de aprovação: quem cria o casal recebe um código
+            e manda para a outra pessoa do jeito que quiser.
+          </p>
+        </div>
+
+        {/* O objeto mais próprio deste produto, em tipografia gigante. É o
+            mesmo código de exemplo do FAQ; as células digitam ao entrar na
+            tela (e ficam estáticas sem JS ou com movimento reduzido). */}
+        <div class="code-strip reveal" aria-hidden="true">
+          {codeCells.map((cell, index) => (
+            <span class={`code-cell ${cell.cls}`} style={`--i:${index}`}>{cell.ch}</span>
+          ))}
+        </div>
+        <p class="code-note">
+          um código, duas pessoas — é ele que liga as duas contas
+        </p>
+
+        <div class="steps">
+          <article class="step">
+            <span class="step-num" aria-hidden="true">1</span>
+            <h3>Crie sua conta</h3>
+            <p>
+              E-mail, senha e o nome que vai aparecer para a outra pessoa. Não pede cartão nem
+              dado de banco.
+            </p>
+          </article>
+
+          <article class="step">
+            <span class="step-num" aria-hidden="true">2</span>
+            <h3>Gere o código do casal</h3>
+            <p>
+              O app cria um código no formato <code>PACA-K7RMX3PBQ4</code>. Mande por mensagem,
+              leia em voz alta, escreva num papel — tanto faz.
+            </p>
+          </article>
+
+          <article class="step">
+            <span class="step-num" aria-hidden="true">3</span>
+            <h3>A outra pessoa entra com ele</h3>
+            <p>
+              A partir daí vocês veem as mesmas transações, o mesmo orçamento e as mesmas contas
+              do mês. Um casal tem no máximo duas pessoas.
+            </p>
+          </article>
+        </div>
+
+        <div class="ritual-cta">
+          <a class="btn btn-primary" href={SIGNUP_URL}>
+            Criar conta grátis
+            <Icon name="arrow-right" size="18" stroke={2.5} />
+          </a>
+          <span class="aside">Sem cartão. O código sai na hora.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────── o que dá para conferir ─────────────────── -->
+    <section>
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="mono-label"
+            ><span class="pair" aria-hidden="true"><i></i><i></i></span>Hoje</span
+          >
+          <h2 class="h2">Produto novo, <span class="accent-word">conta aberta.</span></h2>
+          {/*
+            Substitui o bloco de contadores animados ("2.300+ casais ativos",
+            "4.9 na App Store"). Nenhum daqueles números existia. Em vez de
+            trocar por outros inventados, a página diz que não tem contagem — e
+            mostra o que dá para conferir abrindo o app.
+          */}
+          <p class="lead">
+            O Paca é novo: o app web acabou de entrar no ar no endereço próprio. Não temos
+            contagem de usuários para mostrar, então mostramos o que dá para conferir.
+          </p>
+        </div>
+
+        <div class="facts reveal">
+          <div class="fact">
+            <div class="fact-num">4</div>
+            <div class="fact-label">idiomas</div>
+            <p class="fact-sub">{APP_LOCALES.join(" · ")}</p>
+          </div>
+          <div class="fact">
+            <div class="fact-num">{CURRENCY_COUNT}</div>
+            <div class="fact-label">moedas</div>
+            <p class="fact-sub">Convertidas para a moeda principal do casal pela cotação do dia</p>
+          </div>
+          <div class="fact">
+            <div class="fact-num">1</div>
+            <div class="fact-label">código</div>
+            <p class="fact-sub">É o que liga as duas contas. Sem convite por e-mail, sem espera</p>
+          </div>
+          <div class="fact">
+            <div class="fact-num">R$ 0</div>
+            <div class="fact-label">para começar</div>
+            <p class="fact-sub">A cobrança ainda não foi ligada e o cadastro não pede cartão</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────── vitrine do app ─────────────────────── -->
+    <section id="o-app" style="padding-top:0;overflow:hidden">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="mono-label"
+            ><span class="pair" aria-hidden="true"><i></i><i></i></span>O app</span
+          >
+          <h2 class="h2">Bonito de usar, <span class="accent-word">todos os dias.</span></h2>
+          <p class="lead">Pensado para o seu bolso e o do seu par. Sem ruído, sem números soltos.</p>
+        </div>
+
+        <div class="showcase-track reveal">
+          <div class="showcase-item">
+            <PhoneFrame
+              label="Tela de transações do Paca Finance: busca, filtros por pessoa e a lista do mês agrupada por dia"
+            >
+              <Transactions />
+            </PhoneFrame>
+            <p class="showcase-caption">Transações</p>
+          </div>
+
+          <div class="showcase-item" data-featured>
+            <PhoneFrame label="Tela de início do Paca Finance: saldo do casal, atalhos e as últimas transações">
+              <Dashboard />
+            </PhoneFrame>
+            <p class="showcase-caption">Início</p>
+          </div>
+
+          <div class="showcase-item">
+            <PhoneFrame
+              label="Tela de orçamento do Paca Finance: anel com a porcentagem usada no mês e o gasto de cada categoria"
+            >
+              <Budget />
+            </PhoneFrame>
+            <p class="showcase-caption">Orçamento</p>
+          </div>
+        </div>
+
+        {/* Rótulo explícito: as telas são desenho fiel da interface, mas nomes
+            e valores são figurantes. */}
+        <p class="showcase-note">Telas do app web, com dados de exemplo.</p>
+
+        {/* A ressalva de loja no corpo da seção, não em letra miúda — é a
+            informação que mais muda a expectativa de quem chega. */}
+        <p class="store-caveat">
+          Os aplicativos de iPhone e Android ainda não foram publicados nas lojas. Por enquanto o
+          Paca é o app web, e ele abre normalmente no navegador do celular — no computador para
+          revisar o mês com calma, no celular para lançar o gasto na hora. É a mesma conta e os
+          mesmos dados nos dois.
+        </p>
+      </div>
+    </section>
+
+    <!-- ─────────────────────── antes e depois ─────────────────────── -->
+    <section style="padding-top:0">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="mono-label"
+            ><span class="pair" aria-hidden="true"><i></i><i></i></span>Antes e depois</span
+          >
           <h2 class="h2">A mesma vida, <span class="accent-word">muito mais leve.</span></h2>
         </div>
 
-        <div class="ba-split reveal">
-          <div class="ba-divider" aria-hidden="true"></div>
-
-          <div class="ba-side ba-before">
-            <span class="ba-label">Antes do Paca</span>
+        <div class="ba-grid reveal">
+          <div class="ba-col before">
+            <span class="ba-tag">Antes do Paca</span>
             <h3>Planilhas, prints e discussão no fim do mês.</h3>
             <ul class="ba-list">
               {
@@ -272,15 +495,12 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
             </ul>
           </div>
 
-          <div class="ba-side ba-after">
-            <span class="ba-label">Com o Paca</span>
+          <div class="ba-col after">
+            <span class="ba-tag">Com o Paca</span>
             <h3>Tudo no mesmo lugar, para as duas pessoas.</h3>
-            {/*
-              Cada linha desta coluna é uma função que existe no código. Saiu
-              "Notificações para os dois, sempre": o disparo de aviso depende de
-              um agendador que ainda não está configurado, e no celular o push
-              nem foi instalado (itens #9/#10 do TODO.md).
-            */}
+            {/* Cada linha desta coluna é uma função que existe no código.
+                "Notificações para os dois" segue fora: o agendador de avisos
+                ainda não está configurado (itens #9/#10 do TODO.md). */}
             <ul class="ba-list">
               {
                 [
@@ -304,223 +524,17 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
       </div>
     </section>
 
-    <!-- ─────────────────────── como funciona ─────────────────────── -->
-    <section id="como-funciona" class="sec-pink">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Como funciona</span>
-          <h2 class="h2">Três passos, <span class="accent-word">e um código.</span></h2>
-          <p class="lead">
-            Não tem convite por e-mail nem espera de aprovação: quem cria o casal recebe um código e
-            manda para a outra pessoa do jeito que quiser.
-          </p>
-        </div>
-
-        <div class="steps reveal-cascade">
-          <article class="step">
-            <span class="step-num" aria-hidden="true">1</span>
-            <h3>Crie sua conta</h3>
-            <p>
-              E-mail, senha e o nome que vai aparecer para a outra pessoa. Não pede cartão nem dado
-              de banco.
-            </p>
-          </article>
-
-          <article class="step">
-            <span class="step-num" aria-hidden="true">2</span>
-            <h3>Gere o código do casal</h3>
-            <p>
-              O app cria um código no formato <code>PACA-K7RMX3PBQ4</code>. Mande por mensagem, leia em
-              voz alta, escreva num papel — tanto faz.
-            </p>
-          </article>
-
-          <article class="step">
-            <span class="step-num" aria-hidden="true">3</span>
-            <h3>A outra pessoa entra com ele</h3>
-            <p>
-              A partir daí vocês veem as mesmas transações, o mesmo orçamento e as mesmas contas do
-              mês. Um casal tem no máximo duas pessoas.
-            </p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─────────────────────── o que dá para conferir ─────────────────────── -->
-    <section class="sec-pink" style="padding-top:0">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Hoje</span>
-          <h2 class="h2">Produto novo, <span class="accent-word">conta aberta.</span></h2>
-          {/*
-            Substitui o bloco de contadores animados ("2.300+ casais ativos",
-            "4.9 na App Store", "R$ X movimentado/mês"). Nenhum daqueles números
-            existia. Em vez de trocar por outros inventados, a página diz que
-            não tem contagem — e mostra o que dá para conferir abrindo o app.
-          */}
-          <p class="lead">
-            O Paca é novo: o app web acabou de entrar no ar no endereço próprio. Não temos contagem
-            de usuários para mostrar, então mostramos o que dá para conferir.
-          </p>
-        </div>
-
-        <div class="facts reveal-cascade">
-          <div class="fact">
-            <div class="fact-num"><span class="grad">4</span></div>
-            <div class="fact-label">idiomas</div>
-            <p class="fact-sub">{APP_LOCALES.join(" · ")}</p>
-          </div>
-          <div class="fact">
-            <div class="fact-num"><span class="grad">{CURRENCY_COUNT}</span></div>
-            <div class="fact-label">moedas</div>
-            <p class="fact-sub">Convertidas para a moeda principal do casal pela cotação do dia</p>
-          </div>
-          <div class="fact">
-            <div class="fact-num">1</div>
-            <div class="fact-label">código</div>
-            <p class="fact-sub">É o que liga as duas contas. Sem convite por e-mail, sem espera</p>
-          </div>
-          <div class="fact">
-            <div class="fact-num">R$ 0</div>
-            <div class="fact-label">para começar</div>
-            <p class="fact-sub">A cobrança ainda não foi ligada e o cadastro não pede cartão</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─────────────────────── vitrine do app ─────────────────────── -->
-    <section id="o-app" class="sec-cream" style="overflow:hidden">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow"><span class="dot" aria-hidden="true"></span>O app</span>
-          <h2 class="h2">Bonito de usar, <span class="accent-word">todos os dias.</span></h2>
-          <p class="lead">
-            Pensado para o seu bolso e o do seu par. Sem ruído, sem números soltos.
-          </p>
-        </div>
-
-        <div class="showcase-track reveal">
-          <div class="showcase-item">
-            <PhoneFrame label="Tela de transações do Paca Finance: busca, filtros por pessoa e a lista do mês agrupada por dia">
-              <Transactions />
-            </PhoneFrame>
-            <p class="showcase-caption">Transações</p>
-          </div>
-
-          <div class="showcase-item" data-featured>
-            <PhoneFrame label="Tela de início do Paca Finance: saldo do casal, atalhos e as últimas transações">
-              <Dashboard />
-            </PhoneFrame>
-            <p class="showcase-caption">Início</p>
-          </div>
-
-          <div class="showcase-item">
-            <PhoneFrame label="Tela de orçamento do Paca Finance: anel com a porcentagem usada no mês e o gasto de cada categoria">
-              <Budget />
-            </PhoneFrame>
-            <p class="showcase-caption">Orçamento</p>
-          </div>
-        </div>
-
-        {/*
-          Rótulo explícito. As telas são desenho fiel da interface, mas os nomes
-          e os valores são figurantes — dizer isso custa uma linha e evita que a
-          ilustração seja lida como print de uma conta real.
-        */}
-        <p class="showcase-note">Telas do app web, com dados de exemplo.</p>
-      </div>
-    </section>
-
-    <!-- ─────────────────────── onde funciona ─────────────────────── -->
-    <section class="sec-cream" style="padding-top:0">
-      <div class="container">
-        <div class="plat-card reveal">
-          <div class="plat-text">
-            <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Onde funciona</span>
-            <h2 style="margin-top:16px">
-              Funciona onde vocês já estão: <span class="accent-word">no navegador.</span>
-            </h2>
-            <p>
-              No computador para revisar o mês com calma. No navegador do celular para lançar o
-              gasto na hora, ainda no caixa. É a mesma conta e os mesmos dados nos dois.
-            </p>
-
-            <ul class="plat-pills">
-              <li class="plat-pill"><Icon name="laptop" size="16" />Navegador do computador</li>
-              <li class="plat-pill"><Icon name="phone" size="16" />Navegador do celular</li>
-              <li class="plat-pill web"><Icon name="users" size="16" />Uma conta para os dois</li>
-            </ul>
-
-            {/*
-              A ressalva de loja fica aqui, no corpo do cartão, e não em letra
-              miúda. É a informação que mais muda a expectativa de quem chega —
-              esconder seria o mesmo erro do "Baixar para iOS" que saiu daqui.
-            */}
-            <p class="plat-caveat">
-              Os aplicativos de iPhone e Android ainda não foram publicados nas lojas. Por enquanto
-              o Paca é o app web, e ele abre normalmente no navegador do celular.
-            </p>
-          </div>
-
-          <div class="plat-devices" aria-hidden="true">
-            <div class="plat-browser">
-              <div class="plat-browser-bar">
-                <div class="plat-browser-dots"><span></span><span></span><span></span></div>
-                <div class="plat-browser-url">app.pacafinance.com.br</div>
-              </div>
-              <div class="plat-browser-body">
-                <div class="plat-browser-label">Saldo do casal</div>
-                <div class="plat-browser-value">R$ 8.420,50</div>
-                <div style="margin-top:12px">
-                  <div class="plat-row">
-                    <span class="l">Salário</span><span class="v pos">+ R$ 6.500</span>
-                  </div>
-                  <div class="plat-row">
-                    <span class="l">Mercado Extra</span><span class="v neg">− R$ 287,50</span>
-                  </div>
-                  <div class="plat-row">
-                    <span class="l">Delivery</span><span class="v neg">− R$ 68,90</span>
-                  </div>
-                  <div class="plat-row">
-                    <span class="l">Corrida</span><span class="v neg">− R$ 24,00</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="plat-phone-mini">
-              <div class="plat-phone-mini-screen">
-                <h4>Boa tarde, Marina</h4>
-                <div class="pm-balance">R$ 8.420</div>
-                <div class="pm-sub">Saldo do casal</div>
-                <div class="pm-card">
-                  <div class="l1">NOVA TRANSAÇÃO</div>
-                  <div class="l2">Tirar foto do recibo</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─────────────────────── idiomas e moedas ─────────────────────── -->
-    <section class="sec-cream" style="padding-top:0">
+    <!-- ─────────────────── idiomas e moedas ─────────────────── -->
+    <section style="padding-top:0">
       <div class="container">
         <div class="intl-grid reveal">
-          <article class="intl-card">
-            <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Idiomas</span>
-            <h3>
-              Para casais que <span class="accent-word">não moram no mesmo idioma.</span>
-            </h3>
-            {/*
-              O desenho dizia "o Paca fala 8 idiomas" e listava nove bandeiras
-              (espanhol, francês, alemão, italiano, japonês…). Os idiomas que
-              existem são quatro — packages/shared/src/i18n tem en.ts, pt.ts,
-              ru.ts e uk.ts, e mais nada.
-            */}
+          <div class="intl-col">
+            <span class="mono-label"
+              ><span class="pair" aria-hidden="true"><i></i><i></i></span>Idiomas</span
+            >
+            <h3>Para casais que <span class="accent-word">não moram no mesmo idioma.</span></h3>
+            {/* São quatro — packages/shared/src/i18n tem en, pt, ru e uk, e
+                mais nada. A versão com "8 idiomas" era inventada e já saiu. */}
             <p>
               São quatro, e cada pessoa escolhe o seu: o idioma fica no perfil, não na conta do
               casal. Um pode usar o app em português e a outra em ucraniano, vendo os mesmos
@@ -536,32 +550,26 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
                 ))
               }
             </ul>
-          </article>
+          </div>
 
-          <article class="intl-card">
-            <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Multimoeda</span>
+          <div class="intl-col">
+            <span class="mono-label"
+              ><span class="pair" aria-hidden="true"><i></i><i></i></span>Multimoeda</span
+            >
             {/*
-              ATENÇÃO AO VERBO. A versão anterior dizia "vocês lançam cada gasto na moeda em que
-              ele aconteceu". Não é verdade: ao digitar uma transação à mão não há seletor de
-              moeda — apps/web/src/pages/NewTransactionPage.tsx:84 grava sempre
-              `couple.primary_currency`. Quem lê a moeda estrangeira é a IA, a partir do recibo
-              (supabase/functions/scan-receipt). Manter a transação NA moeda original, em vez de
-              converter, é recurso pago (o comentário está no mesmo arquivo) e a cobrança ainda
-              nem foi ligada. Então a frase descreve o que a tela faz hoje, e não o roadmap.
+              ATENÇÃO AO VERBO: quem lê a moeda estrangeira é a IA, a partir do
+              recibo (supabase/functions/scan-receipt). Digitar à mão grava
+              sempre a moeda principal (NewTransactionPage.tsx:84). A frase
+              descreve o que a tela faz hoje, não o roadmap.
             */}
-            <h3>
-              Recibo em outra moeda, <span class="accent-word">conta na sua.</span>
-            </h3>
+            <h3>Recibo em outra moeda, <span class="accent-word">conta na sua.</span></h3>
             <p>
               Vocês escolhem a moeda principal do casal entre {CURRENCY_COUNT}. Fotografou um
               recibo em euro ou em iene? A IA lê o valor na moeda do papel e converte para a de
               vocês, pela cotação do dia — a conta do mês fecha num número só.
             </p>
-            {/*
-              As três linhas ilustram a conversão, não pessoas: saíram os nomes,
-              as cidades e o valor convertido — mostrar "€ 4.200 = R$ 23.940"
-              seria inventar uma cotação para enfeitar a imagem.
-            */}
+            {/* As três linhas ilustram a conversão, não pessoas — sem valor
+                convertido, que seria inventar cotação. */}
             <div class="currency-stack" aria-hidden="true">
               <div class="currency-row">
                 <div class="who">
@@ -573,7 +581,7 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
                   <span class="fx-chip">EUR → BRL</span>
                 </div>
               </div>
-              <div class="currency-row featured">
+              <div class="currency-row">
                 <div class="who">
                   <div class="name">Freelance</div>
                   <div class="sub">Cliente fora do país</div>
@@ -594,19 +602,19 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
                 </div>
               </div>
             </div>
-          </article>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ─────────────────────── perguntas ─────────────────────── -->
-    <section id="perguntas" class="sec-black">
+    <section id="perguntas" style="padding-top:0">
       <div class="container">
         <div class="section-head reveal">
-          <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Antes de começar</span>
-          <h2 class="h2">
-            As perguntas que <span class="accent-word">todo casal faz.</span>
-          </h2>
+          <span class="mono-label"
+            ><span class="pair" aria-hidden="true"><i></i><i></i></span>Antes de começar</span
+          >
+          <h2 class="h2">As perguntas que <span class="accent-word">todo casal faz.</span></h2>
           <p class="lead">
             Respostas curtas e sem letra miúda — inclusive as que não são a resposta que a gente
             gostaria de dar ainda.
@@ -629,50 +637,34 @@ const title = "Paca Finance — finanças do casal, sempre sincronizadas";
     </section>
 
     <!-- ─────────────────────── chamada final ─────────────────────── -->
-    <section class="final sec-pink">
+    <section class="final">
       <div class="container">
-        <div class="final-card reveal">
-          <div class="final-mesh" aria-hidden="true"></div>
-          <div class="particles" aria-hidden="true">
-            {
-              Array.from({ length: 12 }).map((_, index) => (
-                <span
-                  class="particle"
-                  style={`left:${6 + index * 8}%;bottom:-10px;animation-duration:${9 + (index % 5) * 2}s;animation-delay:${index * 0.7}s;--drift:${(index % 2 === 0 ? 1 : -1) * (18 + index * 3)}px`}
-                />
-              ))
-            }
-          </div>
+        <span class="mono-label"
+          ><span class="pair" aria-hidden="true"><i></i><i></i></span>Paca Finance</span
+        >
+        <h2>Prontos para organizar as finanças juntos?</h2>
+        {/* Produto novo não tem multidão para mostrar — tem o convite de ser
+            dos primeiros, que é verdade e vende igual. */}
+        <p class="lead">
+          Criar a conta leva um minuto e não pede cartão. O convite para a outra pessoa é um
+          código — vocês podem estar vendo os mesmos números hoje.
+        </p>
 
-          <div class="final-avatars" aria-hidden="true">
-            <span class="av-pink">L</span>
-            <span class="av-teal">M</span>
-          </div>
-
-          <h2 class="h2">
-            Prontos para organizar as finanças <span class="accent-word">juntos?</span>
-          </h2>
-          {/*
-            Substitui "Junte-se a 2.300+ casais que já transformaram a rotina
-            financeira a dois". Produto novo não tem multidão para mostrar — tem
-            o convite de ser dos primeiros, que é verdade e vende igual.
-          */}
-          <p class="lead">
-            Criar a conta leva um minuto e não pede cartão. O convite para a outra pessoa é um
-            código — vocês podem estar vendo os mesmos números hoje.
-          </p>
-
-          <div class="final-cta-row">
-            <a class="btn btn-primary btn-lg btn-shimmer" href={SIGNUP_URL}>
-              Criar conta grátis
-              <Icon name="arrow-right" size="18" stroke={2.5} />
-            </a>
-            <a class="btn btn-ghost btn-lg" href={APP_URL}>Já tenho conta</a>
-          </div>
-
-          <p class="final-meta">Abre no navegador, no computador e no celular.</p>
+        <div class="final-cta-row">
+          <a class="btn btn-primary btn-lg" href={SIGNUP_URL}>
+            Criar conta grátis
+            <Icon name="arrow-right" size="18" stroke={2.5} />
+          </a>
+          <a class="btn btn-ghost btn-lg" href={APP_URL}>Já tenho conta</a>
         </div>
+
+        <p class="final-meta">Abre no navegador, no computador e no celular.</p>
       </div>
+
+      {/* O mascote como carimbo de canto — o mesmo papel que ele tem nas
+          capas do blog. Fora do .container de propósito: o canto é o da
+          SEÇÃO rosa, não o da coluna de texto. Decorativo: alt vazio. */}
+      <img class="final-mascot" src="/paca-mascote.png" alt="" width="210" height="210" loading="lazy" />
     </section>
   </main>
 

@@ -49,23 +49,21 @@ const brl = (value: number) => `R$ ${value.toLocaleString("pt-BR")}`;
 
 <div class="scr-ring">
   <svg viewBox="0 0 120 120">
-    <circle cx="60" cy="60" r={RADIUS} fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="10"
+    {/* Trilho escuro sutil (a tela do mock agora é clara, como o app web) e
+        arco chapado no vinho da marca — sem degradê decorativo, e não no rosa
+        puro: rosa sobre o trilho claro fica abaixo de 3:1 e o arco some para
+        quem tem baixa visão. */}
+    <circle cx="60" cy="60" r={RADIUS} fill="none" stroke="rgba(28,25,23,0.08)" stroke-width="10"
     ></circle>
     <circle
       cx="60"
       cy="60"
       r={RADIUS}
       fill="none"
-      stroke="url(#ringGrad)"
+      stroke="#A62D4A"
       stroke-width="10"
       stroke-linecap="round"
       stroke-dasharray={`${dash} ${CIRCUMFERENCE}`}></circle>
-    <defs>
-      <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#FF8FB1"></stop>
-        <stop offset="100%" stop-color="#4ecdc4"></stop>
-      </linearGradient>
-    </defs>
   </svg>
   <div style="text-align:center">
     <div class="scr-ring-num">{percent}%</div>

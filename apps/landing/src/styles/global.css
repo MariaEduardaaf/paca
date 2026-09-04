@@ -1,122 +1,62 @@
 /*
- * Folha única da landing. O desenho veio de uma ferramenta como CSS escrito à
- * mão sobre classes semânticas; foi preservado, limpo e corrigido onde reprovava
- * em contraste. As correções estão comentadas uma a uma — elas mudam o desenho
- * original de propósito, e sem o porquê alguém "conserta" de volta.
+ * Folha única da landing — terceira direção de arte.
+ *
+ * CONCEITO: um livro-caixa a dois. A página é papel (creme) do começo ao fim,
+ * com DOIS momentos que quebram o papel: a seção preta do código do casal (a
+ * assinatura da página) e o rosa do convite final. Não é alternância de fundos
+ * (a v2 fazia isso e ficou previsível) — é ritmo por raridade.
+ *
+ * SISTEMA DE DUALIDADE, quieto: rosa = uma pessoa (L), turquesa = a outra (M).
+ * Os dois pontinhos lado a lado nos rótulos de seção são o casal — é o carimbo
+ * que se repete. A ousadia foi gasta num lugar só: o código PACA gigante.
+ *
+ * CONTRASTE: todo par cor-sobre-fundo daqui foi medido por script (WCAG 2.x).
+ * Os valores estão comentados nos tokens. Não "conserte" um tom no olho —
+ * meça de novo.
  */
 
 /* ─────────────────────────── tokens ─────────────────────────── */
 :root {
-  /*
-   * PALETA DO PRODUTO — os valores vêm de apps/web/tailwind.config.ts, não de
-   * escolha nova. O desenho original trazia índigo (#6366F1) e roxo (#A855F7),
-   * que não existem em nenhum lugar do Paca: a landing parecia outro produto.
-   * O rosa já batia; o resto foi mapeado para o que o app de fato usa.
-   */
-  --pink: #ff8fb1; /* pink.primary */
-  --pink-2: #ff4778; /* pink.500 */
-  --pink-3: #cc3a5c; /* pink.700 — fecha o degradê sem sair da família */
-  --teal: #4ecdc4; /* green.primary do app: o acento não-rosa da marca */
-  --teal-2: #7fdbd4;
+  /* A paleta vem do produto (apps/web/tailwind.config.ts + capas do blog).
+     Nenhuma cor nova de família — só tons da própria escala para passar em AA. */
+  --papel: #f3ede6; /* o fundo líder — papel de livro-caixa */
+  --tinta: #1c1917; /* quase-preto do app */
+  --rosa: #ff8fb1; /* pink.primary — 8,17:1 sobre tinta (texto ok só no escuro) */
+  --vinho: #a62d4a; /* pink.800 — a voz do rosa sobre papel: 5,84:1 */
+  --vinho-2: #4a0a1f; /* pink.900-ish — tinta sobre campos rosa: 7,25:1 */
+  --turquesa: #4ecdc4; /* green.primary — 9,04:1 sobre tinta */
+  --turquesa-tinta: #146b65; /* turquesa que PASSA sobre papel: 5,44:1 */
+  --turquesa-tinta-2: #0e4a46; /* tom mais fundo da mesma família: 4,70:1 sobre rosa */
+  --verm: #b33636; /* vermelho de despesa legível sobre claro: 5,17:1 */
 
-  /*
-   * OS TRÊS FUNDOS DA MARCA — os mesmos das capas do blog
-   * (apps/blog/src/lib/cover-art.mjs, THEMES). Chapados, nunca em degradê.
-   */
-  --cream: #f3ede6;
-  --black: #1c1917;
+  /* Tintas de texto sobre papel */
+  --ink: #1c1917; /* 15,05:1 */
+  --ink-2: #3d3733; /* 10,08:1 */
+  --ink-3: #6b625c; /* 5,12:1 — o mínimo aceito para texto secundário */
 
-  /*
-   * TEMA DE SEÇÃO. Cada bloco da página pousa num dos três fundos e alternam
-   * entre si, exatamente como os cards do blog fazem na grade — é a assinatura
-   * da marca, e é o "um único elemento repetido" que evita a página virar mais
-   * uma landing genérica. Os componentes NÃO conhecem cor: leem daqui.
-   * Os valores abaixo são o tema creme (o padrão da página).
-   */
-  --bg: var(--cream);
-  --ink: #1c1917;
-  --ink-2: #3d3733;
-  --ink-3: #6b625c;
-  --accent: #a62d4a; /* pink.800 — 5,84:1 sobre creme */ /* pink.700 — o rosa que PASSA em AA sobre claro */
-  --accent-solid: var(--pink); /* o rosa da marca, para preenchimento */
-  --on-accent: #4a0a1f;
+  /* Tintas sobre a seção preta */
+  --luz: #fffaf6; /* 16,87:1 sobre tinta */
+  --luz-2: #b0a8a1; /* 7,46:1 sobre tinta */
 
-  /* Compatibilidade: o CSS antigo referencia estes. Apontam para o tema. */
-  --bg-2: var(--bg);
-  --bg-3: var(--bg);
+  /* Superfícies de cartão sobre papel */
+  --branco: #fffdfb;
+  --line: rgba(28, 25, 23, 0.16);
+  --line-2: rgba(28, 25, 23, 0.09);
 
-  /*
-   * CORREÇÃO DE CONTRASTE (1/3). No desenho original --ink-4 era #6B7280, que
-   * dá 4,09:1 sobre o fundo #0A0A0F — reprova em AA para texto normal, e ele
-   * carrega justamente as legendas pequenas (11–13px: rótulo de moeda, URL do
-   * navegador falso, rodapé). #8E96A5 dá ~6,3:1 e mantém a cara de secundário.
-   */
-  --ink-4: var(--ink-3);
-
-  /*
-   * CORREÇÃO DE CONTRASTE (2/3). --ink-5 era #4B5563 e pintava os ícones da
-   * coluna "Antes" — 2,55:1, abaixo do mínimo de 3:1 que ícone informativo
-   * precisa. #7A828F dá ~5:1 e continua mais apagado que a coluna "Com Paca",
-   * que é o contraste narrativo que o desenho quer.
-   */
-  --ink-5: var(--ink-3);
-
-  /* Borda em vez de sombra e de vidro fosco: é como o blog separa bloco de
-     bloco. `currentColor` faz a linha herdar o tema da seção sozinha. */
-  --line: color-mix(in srgb, currentColor 16%, transparent);
-  --line-2: color-mix(in srgb, currentColor 9%, transparent);
-  --glass: color-mix(in srgb, currentColor 4%, transparent);
-
-  --green: #4ecdc4; /* green.primary */
-  --red: #ff6b6b; /* red.primary */
-
-  /* As mesmas do app e do blog: quem vem de um artigo tem de reconhecer que
-     chegou no lugar certo. Manrope não é usada em nenhuma outra propriedade. */
+  /* Fontes: as do app e do blog + Martian Mono como a voz do dinheiro
+     (código do casal, valores, rótulos de extrato). É a única família nova,
+     carregada via <link> no BaseLayout. */
   --font: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Bricolage Grotesque", var(--font);
+  --font-mono: "Martian Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Uma escala de canto só, pequena — a do blog. Canto de pílula em tudo é uma
-     das marcas de página gerada; aqui só o botão é redondo. */
-  --r: 4px;
-  --r-card: 16px;
-  --r-pill: 999px;
-}
+  /* Cantos: retângulos suaves. Pílula em tudo é marca de página gerada;
+     aqui nada é 999px além dos avatares (que são pessoas, círculos). */
+  --r-s: 8px;
+  --r-m: 14px;
+  --r-l: 24px;
 
-/* ───────────────── os três temas de seção ───────────────── */
-.sec-cream {
-  --bg: var(--cream);
-  --ink: #1c1917;
-  --ink-2: #3d3733;
-  --ink-3: #6b625c;
-  --accent: #a62d4a; /* pink.800 — 5,84:1 sobre creme */
-  --accent-solid: var(--pink);
-  --on-accent: #4a0a1f;
-}
-.sec-black {
-  --bg: var(--black);
-  --ink: #fffaf6;
-  --ink-2: #d8d2cd;
-  --ink-3: #a39c96;
-  /* Sobre preto o rosa da marca passa com folga (7,4:1), então aqui o acento
-     é o rosa de verdade — não precisa do tom escurecido. */
-  --accent: var(--pink);
-  --accent-solid: var(--pink);
-  --on-accent: #1c1917;
-}
-.sec-pink {
-  --bg: var(--pink);
-  --ink: #4a0a1f;
-  --ink-2: #63142c;
-  --ink-3: #6b1f33; /* 5,25:1 sobre o rosa */
-  --accent: #4a0a1f;
-  --accent-solid: #4a0a1f;
-  --on-accent: var(--pink);
-}
-.sec-cream,
-.sec-black,
-.sec-pink {
-  background: var(--bg);
-  color: var(--ink-2);
+  --focus: var(--vinho);
 }
 
 * {
@@ -133,7 +73,7 @@ html {
 body {
   font-family: var(--font);
   color: var(--ink-2);
-  background: var(--bg);
+  background: var(--papel);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
@@ -143,20 +83,16 @@ img {
   height: auto;
 }
 ::selection {
-  background: var(--pink);
-  color: #4a0a1f;
+  background: var(--rosa);
+  color: var(--vinho-2);
 }
 
-/*
- * Foco visível — o desenho original não tinha nenhum, e o `outline: none` de
- * fábrica dos botões deixava quem navega por teclado sem saber onde está. Anel
- * duplo (rosa sobre escuro) para funcionar tanto em cima do fundo quanto em
- * cima de um cartão claro/gradiente.
- */
-:where(a, button, input, [tabindex]):focus-visible {
-  outline: 3px solid var(--pink);
+/* Foco visível em tudo que recebe teclado. A cor troca por seção via --focus
+   (vinho sobre papel, rosa sobre preto) para nunca sumir no fundo. */
+:where(a, button, input, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: var(--r-s);
 }
 
 .skip-link {
@@ -164,11 +100,11 @@ img {
   left: 12px;
   top: -60px;
   z-index: 200;
-  background: #fff;
-  color: var(--bg);
+  background: var(--tinta);
+  color: var(--luz);
   font-weight: 700;
   padding: 12px 18px;
-  border-radius: 12px;
+  border-radius: var(--r-m);
   text-decoration: none;
   transition: top 0.15s ease;
 }
@@ -188,23 +124,9 @@ img {
   border: 0;
 }
 
-/* ─────────────────────────── grão ─────────────────────────── */
-/* Ruído em SVG inline (data URI, ~500 bytes) — o desenho original já fazia
-   assim; nenhuma imagem é baixada por causa disto. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 100;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/></svg>");
-  mix-blend-mode: overlay;
-  opacity: 0.18;
-}
-
 /* ─────────────────────────── casca ─────────────────────────── */
 .container {
-  max-width: 1240px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 32px;
   position: relative;
@@ -216,86 +138,66 @@ body::before {
 }
 
 section {
-  padding: 120px 0;
+  padding: 104px 0;
   position: relative;
 }
 @media (max-width: 768px) {
   section {
-    padding: 80px 0;
+    padding: 72px 0;
   }
 }
 
-/* ─────────────────────────── nav ─────────────────────────── */
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: var(--bg);
-  border-bottom: 1px solid var(--line-2);
+/* ─────────────────── o carimbo do casal (par de pontos) ─────────────────── */
+/* Dois pontos, sempre juntos: rosa (L) e turquesa (M). É a marca menor da
+   página — aparece em todo rótulo de seção e no rodapé. */
+.pair {
+  display: inline-flex;
+  gap: 4px;
+  flex-shrink: 0;
 }
-.nav-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  height: 72px;
+/* Sobre papel os tons vivos (rosa/turquesa) ficam abaixo de 3:1 — quem tem
+   baixa visão perde o carimbo. Nos fundos claros os pontos usam os tons
+   -tinta das mesmas famílias; nos escuros (.sec-tinta) voltam vivos. */
+.pair i {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--vinho);
 }
-.logo {
+.pair i + i {
+  background: var(--turquesa-tinta);
+}
+.sec-tinta .pair i {
+  background: var(--rosa);
+}
+.sec-tinta .pair i + i {
+  background: var(--turquesa);
+}
+
+/* Rótulo mono de seção — sempre à esquerda, sentado sobre um fio. */
+.mono-label {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-weight: 800;
-  font-size: 19px;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vinho);
 }
-.logo img {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  display: block;
-}
-.logo .brand-2 {
-  color: var(--pink);
-}
-.nav-links {
+
+.section-head {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
   display: flex;
-  gap: 30px;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 56px;
 }
-.nav-links a {
-  color: var(--ink-3);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 15px;
-  transition: color 0.2s;
-}
-.nav-links a:hover {
-  color: var(--ink);
-}
-.nav-cta {
-  background: var(--ink);
-  color: var(--bg) !important;
-  padding: 10px 18px;
-  border-radius: 999px;
-  font-weight: 700 !important;
-  white-space: nowrap;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.2s;
-}
-.nav-cta:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px -8px var(--line);
-}
-/* Abaixo de 900px o menu sai e sobra logo + CTA: um menu sanduíche para cinco
-   âncoras da MESMA página custa JS e um estado a mais para nada — a rolagem
-   entrega as seções do mesmo jeito. */
-@media (max-width: 900px) {
-  .nav-links a:not(.nav-cta) {
-    display: none;
-  }
+.section-head .lead {
+  max-width: 620px;
 }
 
 /* ─────────────────────────── títulos ─────────────────────────── */
@@ -310,64 +212,28 @@ h4 {
   color: var(--ink);
 }
 .display {
-  font-size: clamp(40px, 6vw, 84px);
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font-size: clamp(42px, 5.8vw, 82px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
   font-weight: 800;
   text-wrap: balance;
-  color: var(--ink);
 }
 .h2 {
-  font-size: clamp(32px, 4.2vw, 60px);
-  line-height: 1.04;
-  letter-spacing: -0.035em;
-  color: var(--ink);
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  max-width: 18ch;
 }
 .lead {
-  font-size: clamp(17px, 1.4vw, 20px);
-  line-height: 1.5;
+  font-size: clamp(17px, 1.4vw, 19px);
+  line-height: 1.55;
   color: var(--ink-3);
   font-weight: 500;
   text-wrap: pretty;
   margin: 0;
 }
 .accent-word {
-  /* Era degradê rosa->roxo. Texto em degradê é uma das marcas mais repetidas
-     de página gerada; aqui a palavra de destaque é o acento chapado do tema. */
-  color: var(--accent);
-}
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink);
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: var(--glass);
-  border: 1px solid var(--line);
-  white-space: nowrap;
-}
-.eyebrow .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--pink);
-  box-shadow: 0 0 10px var(--pink);
-  flex-shrink: 0;
-}
-/* Variante do hero: mesma pílula, mas com texto de frase (não é rótulo de
-   seção), então sem caixa alta nem letter-spacing largo. */
-.eyebrow.eyebrow-sentence {
-  text-transform: none;
-  letter-spacing: 0;
-  font-size: 13px;
-  font-weight: 600;
-  white-space: normal;
-  text-align: left;
+  color: var(--vinho);
 }
 
 /* ─────────────────────────── botões ─────────────────────────── */
@@ -377,7 +243,7 @@ h4 {
   justify-content: center;
   gap: 10px;
   padding: 16px 26px;
-  border-radius: 999px;
+  border-radius: var(--r-m);
   font-family: inherit;
   font-weight: 700;
   font-size: 16px;
@@ -386,130 +252,148 @@ h4 {
   text-decoration: none;
   transition:
     transform 0.15s ease,
-    box-shadow 0.2s ease,
-    background 0.15s ease;
+    background 0.15s ease,
+    border-color 0.15s ease;
   white-space: nowrap;
-  position: relative;
-  overflow: hidden;
 }
-/*
- * CORREÇÃO DE CONTRASTE (3/3), e a mais visível. O desenho pedia texto BRANCO
- * sobre o rosa da marca (#FF8FB1): 2,14:1, reprova AA com folga — no botão
- * principal da página inteira. Tinta escura sobre o mesmo rosa dá 8,8:1 e é
- * exatamente o que o blog já faz (bg-pink-primary + text-gray-900, ver
- * apps/blog/src/components/CTABox.astro), então isto também alinha as duas
- * propriedades em vez de criar um terceiro jeito.
- */
+/* Primário = tinta sobre papel (15:1) e tinta sobre rosa (8,17:1): o mesmo
+   botão funciona nos dois fundos claros sem variação. */
 .btn-primary {
-  background: var(--pink);
-  color: #4a0a1f;
+  background: var(--tinta);
+  color: var(--papel);
 }
 .btn-primary:hover {
-  background: var(--pink-2);
+  background: var(--vinho-2);
   transform: translateY(-1px);
 }
 .btn-ghost {
-  background: var(--glass);
+  background: transparent;
   color: var(--ink);
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
 }
 .btn-ghost:hover {
-  background: var(--glass);
-  border-color: var(--line);
+  border-color: var(--ink);
 }
 .btn-lg {
-  padding: 19px 32px;
+  padding: 18px 30px;
   font-size: 17px;
 }
-.btn-shimmer::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: transparent;
-  transform: translateX(-100%);
-  animation: shimmer 2.6s ease-in-out infinite;
+/* Na seção preta o primário vira rosa com tinta vinho (7,25:1) — é o único
+   lugar onde o botão muda, porque o fundo mudou de verdade. */
+.sec-tinta .btn-primary {
+  background: var(--rosa);
+  color: var(--vinho-2);
 }
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  60%,
-  100% {
-    transform: translateX(100%);
-  }
+.sec-tinta .btn-primary:hover {
+  background: #ffa7c2;
 }
 
-/* ───────────────────── revelar ao rolar ───────────────────── */
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition:
-    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+/* ─────────────────────────── nav ─────────────────────────── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--papel);
+  border-bottom: 1px solid var(--line-2);
 }
-.reveal.in {
-  opacity: 1;
-  transform: translateY(0);
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: 68px;
 }
-.reveal-cascade > * {
-  opacity: 0;
-  transform: translateY(40px);
-  transition:
-    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-decoration: none;
 }
-.reveal-cascade.in > * {
-  opacity: 1;
-  transform: translateY(0);
+.logo img {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: block;
 }
-.reveal-cascade.in > *:nth-child(2) {
-  transition-delay: 100ms;
+.logo .brand-2 {
+  color: var(--vinho); /* rosa puro sobre creme reprova (2,1:1); vinho passa */
 }
-.reveal-cascade.in > *:nth-child(3) {
-  transition-delay: 200ms;
+.nav-links {
+  display: flex;
+  gap: 28px;
+  align-items: center;
 }
-.reveal-cascade.in > *:nth-child(4) {
-  transition-delay: 300ms;
+.nav-links a {
+  color: var(--ink-3);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  transition: color 0.2s;
 }
-/*
- * Sem JS o conteúdo TEM de aparecer. `.reveal` só começa invisível quando o
- * script marcou o documento — assim quem navega com JS bloqueado (e o robô que
- * lê HTML cru) vê a página inteira, não um esqueleto vazio.
- */
-html:not(.js) .reveal,
-html:not(.js) .reveal-cascade > * {
-  opacity: 1;
-  transform: none;
+.nav-links a:hover {
+  color: var(--ink);
+}
+.nav-cta {
+  background: var(--tinta);
+  color: var(--papel) !important;
+  padding: 10px 18px;
+  border-radius: var(--r-m);
+  font-weight: 700 !important;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+.nav-cta:hover {
+  background: var(--vinho-2);
+}
+/* Abaixo de 900px sobram logo + CTA: sanduíche para âncoras da mesma página
+   custa JS por nada. */
+@media (max-width: 900px) {
+  .nav-links a:not(.nav-cta) {
+    display: none;
+  }
 }
 
 /* ─────────────────────────── hero ─────────────────────────── */
 .hero {
-  padding-top: 64px;
-  padding-bottom: 100px;
+  padding-top: 72px;
+  padding-bottom: 96px;
 }
+/* minmax(0, …) em todas as pistas: sem isso o min-content de um filho
+   qualquer alarga a pista além do container e a página inteira ganha
+   rolagem horizontal no celular. */
 .hero-grid {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 48px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 64px;
   align-items: center;
 }
 @media (max-width: 1000px) {
   .hero-grid {
-    grid-template-columns: 1fr;
-    gap: 72px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 64px;
   }
 }
-.hero-content {
-  position: relative;
-  z-index: 2;
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink-2);
+  margin: 0;
 }
 .hero h1 {
-  margin-top: 22px;
+  margin-top: 26px;
 }
 .hero p.lead {
   margin-top: 26px;
-  max-width: 540px;
+  max-width: 520px;
 }
 .hero-ctas {
   margin-top: 36px;
@@ -518,272 +402,879 @@ html:not(.js) .reveal-cascade > * {
   flex-wrap: wrap;
 }
 .hero-meta {
-  margin-top: 30px;
+  margin-top: 28px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 20px;
   flex-wrap: wrap;
   padding: 0;
   margin-bottom: 0;
   list-style: none;
 }
-.meta-pill {
+.hero-meta li {
   color: var(--ink-3);
   font-size: 14px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
-.meta-pill svg {
-  color: var(--pink);
+.hero-meta svg {
+  color: var(--vinho);
   flex-shrink: 0;
 }
 
-@keyframes orbFloat1 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(-40px, 30px) scale(1.1);
-  }
+/* Entrada orquestrada do hero — a única animação de chegada da página.
+   Só com JS marcado e sem movimento reduzido; caso contrário tudo já nasce
+   visível (a regra de reduced-motion no fim zera as animações). */
+html.js .hero-intro > * {
+  opacity: 0;
+  transform: translateY(22px);
+  animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-@keyframes orbFloat2 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(50px, -40px) scale(1.05);
-  }
+html.js .hero-intro > *:nth-child(1) {
+  animation-delay: 0.05s;
 }
-@keyframes orbFloat3 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(60px, 50px) scale(0.9);
+html.js .hero-intro > *:nth-child(2) {
+  animation-delay: 0.12s;
+}
+html.js .hero-intro > *:nth-child(3) {
+  animation-delay: 0.2s;
+}
+html.js .hero-intro > *:nth-child(4) {
+  animation-delay: 0.28s;
+}
+html.js .hero-intro > *:nth-child(5) {
+  animation-delay: 0.36s;
+}
+html.js .hero-proof {
+  opacity: 0;
+  transform: translateY(22px);
+  animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+@keyframes rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* telefone do hero */
-.hero-phone {
+/* A PROVA DO HERO: o produto é um app WEB, então ele aparece num navegador —
+   não num iPhone flutuando (mentira de loja que já saiu desta página, e o
+   default de todo template). O mesmo saldo aparece no navegador do computador
+   e no do celular: duas pessoas, dois aparelhos, um número. */
+.hero-proof {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /* O vão de baixo é onde o celularzinho pendura para fora do navegador.
+     130px = altura do celularzinho (154px) menos o respiro inferior do cartão
+     (24px): ele cobre só a borda e o respiro, nunca uma linha de transação. */
+  padding-bottom: 130px;
+  padding-left: 40px;
 }
-.hero-phone-tilt {
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
+@media (max-width: 1000px) {
+  .hero-proof {
+    max-width: 560px;
+  }
 }
-
-/* fichas flutuantes */
-.float-chip {
-  /* Eram cartões escuros translúcidos com sombra — "notificação de vidro
-     flutuando", que é das marcas mais repetidas de página gerada. Viram
-     anotação: superfície do próprio tema, borda de 1px, sem sombra. O que elas
-     dizem continua igual; o que muda é parecerem parte da página em vez de
-     pairarem sobre ela. */
-  position: absolute;
-  z-index: 5;
-  background: var(--bg);
-  border-radius: var(--r-card);
+@media (max-width: 480px) {
+  .hero-proof {
+    padding-left: 0;
+  }
+}
+.browser {
+  background: var(--branco);
   border: 1px solid var(--line);
-  padding: 12px 16px;
+  border-radius: var(--r-l);
+  overflow: hidden;
+  box-shadow: 0 24px 48px -32px rgba(28, 25, 23, 0.35);
+}
+.browser-bar {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-  white-space: nowrap;
-  animation: chipFloat 6s ease-in-out infinite;
-  transform: translateZ(80px);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line-2);
+  background: var(--papel);
 }
-@keyframes chipFloat {
-  0%,
-  100% {
-    transform: translateY(0) translateZ(80px);
-  }
-  50% {
-    transform: translateY(-10px) translateZ(80px);
-  }
+.browser-dots {
+  display: flex;
+  gap: 6px;
 }
-.chip-title {
+.browser-dots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--line);
+}
+.browser-url {
+  font-family: var(--font-mono);
   font-size: 11px;
+  color: var(--ink-2);
+  padding: 6px 14px;
+  background: var(--branco);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  flex: 1;
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.browser-body {
+  padding: 22px 24px 24px;
+}
+.browser-greet {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.browser-greet .g1 {
+  font-size: 12px;
   color: var(--ink-3);
   font-weight: 500;
 }
-.chip-value {
-  font-size: 13px;
+.browser-greet .g2 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
   color: var(--ink);
+  letter-spacing: -0.02em;
 }
-.chip-avatar {
-  width: 26px;
-  height: 26px;
+.avatars {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.avatars span {
+  width: 30px;
+  height: 30px;
   border-radius: 999px;
   display: grid;
   place-items: center;
   font-weight: 700;
-  font-size: 11px;
-  color: var(--ink);
+  font-size: 12px;
+  border: 2px solid var(--branco);
+}
+.avatars span + span {
+  margin-left: -9px;
+}
+.av-l {
+  background: var(--rosa);
+  color: var(--vinho-2);
+}
+.av-m {
+  background: var(--turquesa);
+  color: var(--tinta);
+}
+
+.balance-card {
+  margin-top: 16px;
+  padding: 20px 22px;
+  border-radius: var(--r-m);
+  background: var(--rosa);
+  color: var(--vinho-2);
+}
+.balance-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.balance-value {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(26px, 2.6vw, 34px);
+  letter-spacing: -0.02em;
+  margin-top: 8px;
+}
+.balance-foot {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.balance-foot span {
+  white-space: nowrap;
+}
+
+.browser-rows {
+  margin-top: 14px;
+}
+.browser-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line-2);
+  font-size: 13.5px;
+}
+.browser-row:last-child {
+  border-bottom: 0;
+}
+.browser-row .who {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 700;
   flex-shrink: 0;
 }
-.float-chip-1 {
-  top: 12%;
-  right: calc(100% + 12px);
-  animation-delay: 0s;
+.browser-row .name {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.float-chip-2 {
-  /* 48% caía em cima do título "Últimas Transações" depois que o aparelho
-     encolheu — notificação cobrindo cabeçalho lê como erro de posicionamento.
-     Aqui ela pousa sobre uma linha da lista, que é o lugar onde uma
-     notificação de verdade apareceria. */
-  top: 57%;
-  left: calc(100% + 12px);
-  animation-delay: 1.5s;
-  background: var(--bg);
-  border-color: var(--accent);
+.browser-row .cat {
+  color: var(--ink-3);
+  font-size: 12px;
+  white-space: nowrap;
 }
-.float-chip-3 {
-  bottom: 12%;
-  right: calc(100% + 12px);
-  animation-delay: 3s;
+.browser-row .amt {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
 }
-/* O ESPAÇO NÃO É SIMÉTRICO, e por isso as regras não são.
-   As fichas 1 e 3 caem à ESQUERDA do telefone, sobre a coluna do texto, que é
-   larga: cabem fora do aparelho até bem abaixo. A ficha 2 cai à DIREITA, onde
-   só existe a margem da página — numa tela de notebook comum (1440–1512px)
-   sobram ~110px ali, e a ficha tem ~300px, então ela saía cortada pela janela.
-   O corte antigo era em 1280px, abaixo do notebook: o vão entre as duas regras
-   era justamente onde quase todo mundo está.
-   Puxar as três para dentro resolvia o corte e criava outro problema — elas
-   cobriam a tela do app, que é o que a seção existe para mostrar. Então só a
-   da direita encosta no aparelho. */
-/* Quanto ela avança sobre o aparelho depende do que sobra à direita: em 1440–1512
-   a página tem ~110px de margem e a ficha pode ficar quase toda fora; abaixo de
-   1400 a margem some e ela precisa encostar mais. Os dois valores são o máximo
-   que cabe sem cortar em cada faixa — medidos, não estimados. */
-@media (max-width: 1600px) {
-  .float-chip-2 {
-    left: auto;
-    right: -150px;
+.amt.pos {
+  color: var(--turquesa-tinta);
+}
+.amt.neg {
+  color: var(--verm);
+}
+.tag-ia {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--rosa);
+  color: var(--vinho-2);
+}
+
+/* O celular pequeno com o MESMO número, sobreposto ao canto do navegador —
+   só ao canto: ele cobre a borda e o respiro do cartão, nunca uma linha de
+   transação (linha meio coberta lia como bug, não como composição). */
+.mini-phone {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 158px;
+  border-radius: 22px;
+  background: var(--tinta);
+  padding: 7px;
+  box-shadow: 0 20px 40px -24px rgba(28, 25, 23, 0.5);
+}
+.mini-phone-screen {
+  background: var(--branco);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.mini-url {
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  color: var(--ink-3);
+  background: var(--papel);
+  padding: 5px 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--line-2);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.mini-body {
+  padding: 12px;
+}
+.mini-label {
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.mini-value {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 4px;
+  letter-spacing: -0.02em;
+}
+.mini-row {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line-2);
+  font-size: 9.5px;
+  color: var(--ink-2);
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+.mini-row .amt {
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+@media (max-width: 480px) {
+  .mini-phone {
+    width: 132px;
+    left: -4px;
   }
-}
-@media (max-width: 1400px) {
-  .float-chip-2 {
-    right: -40px;
-  }
-}
-@media (max-width: 1280px) {
-  .float-chip-1 {
-    right: auto;
-    left: -24px;
-  }
-  .float-chip-3 {
-    right: auto;
-    left: -24px;
-  }
-}
-/* Abaixo de 640px o telefone já ocupa a largura toda: as fichas sairiam da
-   tela e empurrariam a rolagem horizontal. Somem. */
-@media (max-width: 640px) {
-  .float-chip {
-    display: none;
+  /* Nos 132px o endereço inteiro não cabe em 7,5px — e URL cortada no meio
+     ("…com.b") lê como erro. Um tick menor e ele fecha inteiro. */
+  .mini-url {
+    font-size: 6px;
+    padding: 5px 6px;
   }
 }
 
-/* ───────────────────── telefone (moldura) ───────────────────── */
+/* Legenda da prova — diz em uma linha o que a imagem afirma. */
+.proof-caption {
+  position: absolute;
+  right: 0;
+  bottom: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ink-3);
+  text-align: right;
+  max-width: 300px;
+  margin: 0;
+}
+/* Em tela estreita a legenda sai do absoluto e flui abaixo do navegador,
+   recuada para não bater no celularzinho que fica pendurado à esquerda.
+   O min-height reserva o vão do celularzinho (154px menos os 24px de respiro
+   do cartão que ele pode cobrir, menos a margem) — sem isso ele sobe e tampa
+   a última linha de transação. */
+@media (max-width: 700px) {
+  .proof-caption {
+    position: static;
+    text-align: left;
+    max-width: none;
+    margin-top: 14px;
+    padding-left: 156px;
+    min-height: 116px;
+  }
+  .hero-proof {
+    padding-bottom: 0;
+  }
+}
+@media (max-width: 480px) {
+  .proof-caption {
+    padding-left: 140px;
+  }
+}
+
+/* ─────────────────── recursos: linhas de livro-caixa ─────────────────── */
+/* Três recursos, três linhas assimétricas — não três cards idênticos.
+   Cada linha: rótulo mono · texto · uma vinheta própria. */
+.ledger {
+  border-bottom: 1px solid var(--line);
+}
+.ledger-row {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) 360px;
+  gap: 48px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding: 56px 0;
+}
+@media (max-width: 980px) {
+  .ledger-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    padding: 44px 0;
+  }
+}
+.ledger-row h3 {
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  max-width: 16ch;
+}
+.ledger-row p {
+  color: var(--ink-3);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 14px 0 0;
+  max-width: 52ch;
+}
+
+/* Vinheta 1 — sincronia: a mesma transação nos dois lados. */
+.sync-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sync-card {
+  background: var(--branco);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-m);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sync-card .who {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.sync-card .t1 {
+  font-size: 12px;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+.sync-card .t2 {
+  font-size: 13.5px;
+  color: var(--ink);
+  font-weight: 700;
+  margin-top: 1px;
+}
+.sync-card .amt {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.sync-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turquesa-tinta);
+}
+.sync-link::before {
+  content: "";
+  width: 22px;
+  border-top: 2px dotted var(--turquesa-tinta);
+}
+
+/* Vinheta 2 — recibo: o papel vira campos preenchidos. */
+.receipt-scrap {
+  background: var(--branco);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-s) var(--r-s) 0 0;
+  padding: 16px 18px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 2;
+  color: var(--ink-2);
+  /* borda inferior serrilhada — o recorte do recibo */
+  clip-path: polygon(
+    0 0, 100% 0, 100% calc(100% - 7px),
+    95% 100%, 90% calc(100% - 7px), 85% 100%, 80% calc(100% - 7px),
+    75% 100%, 70% calc(100% - 7px), 65% 100%, 60% calc(100% - 7px),
+    55% 100%, 50% calc(100% - 7px), 45% 100%, 40% calc(100% - 7px),
+    35% 100%, 30% calc(100% - 7px), 25% 100%, 20% calc(100% - 7px),
+    15% 100%, 10% calc(100% - 7px), 5% 100%, 0 calc(100% - 7px)
+  );
+}
+.receipt-scrap .rr {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.receipt-scrap .total {
+  font-weight: 700;
+  color: var(--ink);
+  border-top: 1px dashed var(--line);
+  margin-top: 4px;
+  padding-top: 6px;
+}
+.receipt-result {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--rosa);
+  color: var(--vinho-2);
+  border-radius: var(--r-m);
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.receipt-result .mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* Vinheta 3 — orçamento: duas barras, os números de sempre. */
+.budget-mini {
+  background: var(--branco);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-m);
+  padding: 18px 20px;
+}
+.bm-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-2);
+  margin-bottom: 7px;
+}
+.bm-label .pct {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.bm-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line-2);
+  overflow: hidden;
+}
+.bm-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  /* Vinho, não rosa: rosa sobre o trilho claro dá 1,75:1 e a barra some para
+     quem tem baixa visão. O vinho é a mesma família e passa de 3:1. */
+  background: var(--vinho);
+}
+.bm-bar + .bm-label {
+  margin-top: 16px;
+}
+
+/* ─────────────── A ASSINATURA: o ritual do código ─────────────── */
+/* A única seção preta da página. O código do casal — o objeto mais próprio
+   deste produto — vira tipografia gigante, digitada célula a célula. */
+.sec-tinta {
+  background: var(--tinta);
+  color: var(--luz-2);
+  --focus: var(--rosa);
+}
+.sec-tinta .section-head {
+  border-top-color: rgba(255, 250, 246, 0.2);
+}
+.sec-tinta .mono-label {
+  color: var(--rosa);
+}
+.sec-tinta .h2,
+.sec-tinta h3 {
+  color: var(--luz);
+}
+.sec-tinta .lead {
+  color: var(--luz-2);
+}
+
+.code-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(4px, 0.8vw, 10px);
+  justify-content: flex-start;
+  align-items: stretch;
+  margin: 64px 0 18px;
+}
+.code-cell {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(20px, 3.6vw, 54px);
+  line-height: 1;
+  color: var(--luz);
+  border: 1px solid rgba(255, 250, 246, 0.22);
+  border-radius: var(--r-s);
+  padding: clamp(10px, 1.6vw, 24px) clamp(7px, 1vw, 15px);
+  min-width: clamp(34px, 4.8vw, 70px);
+  display: grid;
+  place-items: center;
+  background: rgba(255, 250, 246, 0.03);
+}
+.code-cell.prefix {
+  color: var(--rosa);
+  border-color: rgba(255, 143, 177, 0.45);
+  padding-left: clamp(10px, 1.4vw, 22px);
+  padding-right: clamp(10px, 1.4vw, 22px);
+}
+/* Digitação: as células aparecem em sequência quando a faixa entra na tela
+   (classe .in vem do observador em BaseLayout). Sem JS ou com movimento
+   reduzido, tudo já está visível. */
+html.js .code-strip.reveal .code-cell {
+  opacity: 0;
+  transform: none;
+}
+html.js .code-strip.reveal.in .code-cell {
+  animation: type-in 0.18s steps(1) forwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+@keyframes type-in {
+  to {
+    opacity: 1;
+  }
+}
+.code-note {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--luz-2);
+  margin: 0 0 72px;
+  max-width: 52ch;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 48px;
+  border-top: 1px solid rgba(255, 250, 246, 0.14);
+  padding-top: 44px;
+}
+@media (max-width: 860px) {
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+.step-num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 40px;
+  color: var(--rosa);
+  line-height: 1;
+}
+.step h3 {
+  font-size: 20px;
+  line-height: 1.25;
+  margin-top: 14px;
+}
+.step p {
+  margin: 10px 0 0;
+  color: var(--luz-2);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.step code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--rosa);
+  background: rgba(255, 143, 177, 0.1);
+  border: 1px solid rgba(255, 143, 177, 0.3);
+  border-radius: 5px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+.ritual-cta {
+  margin-top: 56px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.ritual-cta .aside {
+  font-size: 14px;
+  color: var(--luz-2);
+}
+
+/* ─────────────────── fatos conferíveis ─────────────────── */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 900px) {
+  .facts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.fact {
+  padding: 36px 28px;
+  border-left: 1px solid var(--line-2);
+}
+.fact:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+@media (max-width: 900px) {
+  .fact:nth-child(3) {
+    border-left: 0;
+    padding-left: 0;
+  }
+  .fact:nth-child(n + 3) {
+    border-top: 1px solid var(--line-2);
+  }
+}
+.fact-num {
+  font-family: var(--font-mono);
+  font-size: clamp(34px, 3.6vw, 48px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--vinho);
+  white-space: nowrap;
+}
+.fact-label {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 12px;
+}
+.fact-sub {
+  color: var(--ink-3);
+  font-size: 13.5px;
+  line-height: 1.5;
+  margin: 6px 0 0;
+}
+
+/* ─────────────────── vitrine do app ─────────────────── */
+.showcase-track {
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 8px 4px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.showcase-item {
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.showcase-item .phone {
+  --phone-w: 288px;
+}
+.showcase-item[data-featured] .phone {
+  --phone-w: 312px;
+}
+.showcase-caption {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 0;
+}
+@media (max-width: 1080px) {
+  .showcase-track {
+    justify-content: flex-start;
+  }
+  .showcase-item .phone,
+  .showcase-item[data-featured] .phone {
+    --phone-w: 272px;
+  }
+}
+@media (max-width: 480px) {
+  .showcase-item .phone,
+  .showcase-item[data-featured] .phone {
+    --phone-w: min(260px, calc(100vw - 88px));
+  }
+}
+.showcase-note {
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 13.5px;
+  margin-top: 24px;
+}
+/* A ressalva de loja no corpo da seção, não em letra miúda: é a informação que
+   mais muda a expectativa de quem chega (o "Baixar para iOS" mentiroso já saiu
+   desta página uma vez). */
+.store-caveat {
+  margin: 28px auto 0;
+  max-width: 640px;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  color: var(--ink-2);
+  font-size: 14.5px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+/* ───────────────── telefone (moldura) ───────────────── */
 .phone {
   --phone-w: 380px;
   width: var(--phone-w);
-  /* 380x820 é a proporção do desenho original; a razão fixa deixa o aparelho
-     encolher inteiro em vez de deformar a tela. */
   aspect-ratio: 380 / 820;
   border-radius: calc(var(--phone-w) * 0.126);
   overflow: hidden;
   position: relative;
-  background: #000;
-  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  background: var(--tinta);
+  border: 1px solid rgba(28, 25, 23, 0.35);
+  box-shadow: 0 24px 48px -32px rgba(28, 25, 23, 0.4);
   flex-shrink: 0;
 }
-/* O aparelho foi desenhado em 380px para uma tela larga. Num notebook comum
-   (1440–1512px) ele domina a metade direita e empurra as fichas para fora da
-   janela — o problema aparecia como "ficha cortada", mas a origem é o tamanho
-   dele. Encolhe conforme o espaço: a proporção é fixa, então tudo dentro da
-   tela acompanha (o raio da borda e os tamanhos de fonte saem de --phone-w). */
-@media (max-width: 1600px) {
-  .phone {
-    --phone-w: 320px;
-  }
-}
-@media (max-width: 1280px) {
-  .phone {
-    --phone-w: 300px;
-  }
-}
-@media (max-width: 460px) {
-  .phone {
-    --phone-w: min(300px, calc(100vw - 56px));
-  }
-}
-.phone-notch {
-  position: absolute;
-  top: calc(var(--phone-w) * 0.029);
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(var(--phone-w) * 0.332);
-  height: calc(var(--phone-w) * 0.097);
-  border-radius: 999px;
-  background: #000;
-  z-index: 50;
-}
-.phone-status {
+/* A barrinha com o endereço — o mesmo tratamento do .mini-phone do hero.
+   É a moldura dizendo a verdade: app web aberto no navegador do celular,
+   não screenshot de app de loja. */
+.phone-url {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: calc(var(--phone-w) * 0.055) calc(var(--phone-w) * 0.063) 0;
-  font-size: calc(var(--phone-w) * 0.042);
-  font-weight: 600;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
-.phone-status svg {
-  display: block;
+  font-family: var(--font-mono);
+  font-size: calc(var(--phone-w) * 0.032);
+  color: var(--ink-3);
+  background: var(--papel);
+  padding: calc(var(--phone-w) * 0.03) calc(var(--phone-w) * 0.04);
+  text-align: center;
+  border-bottom: 1px solid var(--line-2);
+  white-space: nowrap;
+  overflow: hidden;
 }
 .phone-glare {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60%;
-  background: transparent;
-  border-radius: calc(var(--phone-w) * 0.126) calc(var(--phone-w) * 0.126) 0 0;
-  pointer-events: none;
-  z-index: 80;
+  display: none;
 }
 .phone-screen {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  /* A tela do app tem tema próprio, claro — como o app web de verdade.
+     Não herda o tema da seção: um print não muda de cor com a página. */
+  --bg: #fbf8f4;
+  --bg-3: #ffffff;
+  --ink: #1c1917;
+  --ink-2: #3d3733;
+  --ink-3: #6b625c;
+  --ink-4: #6b625c;
+  --line: rgba(28, 25, 23, 0.14);
+  --line-2: rgba(28, 25, 23, 0.08);
+  --glass: rgba(28, 25, 23, 0.05);
+  --pink: #ff8fb1;
+  --teal: #4ecdc4;
+  --green: #146b65;
+  --accent: #a62d4a;
+  --accent-solid: #ff8fb1;
   background: var(--bg);
   color: var(--ink);
-  /* Tudo dentro da tela é dimensionado em em, a partir daqui: assim o aparelho
-     inteiro escala com uma variável só. */
-  font-size: calc(var(--phone-w) / 380 * 16px);
-  padding-top: 3.5em;
+  /* comprimento × número, nunca comprimento × comprimento: a forma anterior
+     (w / 380 * 16px) era px², inválida — o navegador descartava a regra e a
+     tela ficava em 16px fixos em toda largura, estourando no telefone de
+     260px do 390. */
+  font-size: calc(var(--phone-w) * 16 / 380);
+  /* 2.4em ≈ a altura da .phone-url (fonte 0.032w + padding 2×0.03w). */
+  padding-top: 2.4em;
   display: flex;
   flex-direction: column;
 }
 
-/* ───────────────────── telas do app (mock) ───────────────────── */
+/* ───────────────── telas do app (mock) ───────────────── */
 .scr-head {
   padding: 1em 1.25em 0;
   display: flex;
@@ -793,10 +1284,11 @@ html:not(.js) .reveal-cascade > * {
 }
 .scr-kicker {
   font-size: 0.8em;
-  color: var(--ink-4);
+  color: var(--ink-3);
   font-weight: 500;
 }
 .scr-title {
+  font-family: var(--font-display);
   font-size: 1.35em;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -814,7 +1306,6 @@ html:not(.js) .reveal-cascade > * {
   border-radius: 999px;
   display: grid;
   place-items: center;
-  color: var(--ink);
   font-weight: 700;
   font-size: 0.85em;
   border: 2px solid var(--bg);
@@ -824,30 +1315,31 @@ html:not(.js) .reveal-cascade > * {
 }
 .av-pink {
   background: var(--pink);
-  color: var(--bg) !important;
+  color: #4a0a1f;
 }
 .av-teal {
   background: var(--teal);
+  color: #1c1917;
 }
 .av-green {
-  background: rgba(52, 211, 153, 0.2);
-  color: var(--green) !important;
+  background: rgba(20, 107, 101, 0.14);
+  color: var(--green);
 }
 
 .scr-balance {
   margin: 1.25em 1em 0;
-  padding: 1.4em 1.4em 1.5em;
-  border-radius: 1.75em;
-  background: var(--accent-solid);
-  color: var(--ink);
+  padding: 1.3em 1.4em 1.4em;
+  border-radius: 1.2em;
+  background: var(--pink);
+  color: #4a0a1f;
   position: relative;
   overflow: hidden;
 }
 .scr-balance-label {
-  font-size: 0.7em;
+  font-family: var(--font-mono);
+  font-size: 0.62em;
   font-weight: 700;
-  opacity: 0.9;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .scr-balance-value {
@@ -855,39 +1347,33 @@ html:not(.js) .reveal-cascade > * {
   align-items: baseline;
   gap: 0.15em;
   margin-top: 0.35em;
-  font-weight: 800;
+  font-family: var(--font-mono);
+  font-weight: 700;
   letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
 }
 .scr-balance-value .cur {
-  font-size: 1.1em;
-  opacity: 0.9;
+  font-size: 1em;
 }
 .scr-balance-value .big {
-  font-size: 2.3em;
+  font-size: 2em;
   line-height: 1;
 }
 .scr-balance-value .cents {
-  font-size: 1.2em;
-  opacity: 0.9;
+  font-size: 1.1em;
 }
 .scr-balance-foot {
   display: flex;
   align-items: center;
   gap: 0.6em;
   margin-top: 0.9em;
-  font-size: 0.72em;
+  font-size: 0.7em;
   font-weight: 700;
 }
 .scr-balance-foot span {
-  /* Sem isto a pílula quebra em duas linhas quando o aparelho encolhe: o texto
-     tem espaço no meio ("Receitas R$ 12.700") e o flex deixa ele quebrar antes
-     de deixar a pílula transbordar. Aqui a linha é mais importante que a
-     largura — são duas etiquetas curtas, não um parágrafo. */
   white-space: nowrap;
   padding: 0.35em 0.7em;
-  border-radius: 999px;
-  background: var(--line);
+  border-radius: 0.5em;
+  background: rgba(74, 10, 31, 0.12);
 }
 
 .scr-actions {
@@ -897,7 +1383,7 @@ html:not(.js) .reveal-cascade > * {
   padding: 1.1em 1em 0;
 }
 .scr-action {
-  border-radius: 1em;
+  border-radius: 0.9em;
   background: var(--bg-3);
   border: 1px solid var(--line-2);
   padding: 0.75em 0.3em;
@@ -911,10 +1397,10 @@ html:not(.js) .reveal-cascade > * {
   text-align: center;
 }
 .scr-action svg {
-  color: var(--pink);
+  color: var(--accent);
 }
 .scr-action.is-ai svg {
-  color: var(--accent);
+  color: var(--green);
 }
 
 .scr-section-head {
@@ -929,7 +1415,7 @@ html:not(.js) .reveal-cascade > * {
 }
 .scr-section-head span {
   font-size: 0.72em;
-  color: var(--pink);
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -945,7 +1431,7 @@ html:not(.js) .reveal-cascade > * {
   align-items: center;
   gap: 0.75em;
   padding: 0.7em 0.85em;
-  border-radius: 1em;
+  border-radius: 0.9em;
   background: var(--bg-3);
   border: 1px solid var(--line-2);
 }
@@ -973,16 +1459,21 @@ html:not(.js) .reveal-cascade > * {
 }
 .scr-row-sub {
   font-size: 0.68em;
-  color: var(--ink-4);
+  color: var(--ink-3);
   margin-top: 0.15em;
-  display: flex;
-  align-items: center;
-  gap: 0.35em;
+  /* Uma linha sempre: no telefone de 260px do 390, "Recebido por Lucas"
+     quebrava em três linhas e colidia com o valor. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.scr-row-sub .scr-tag {
+  margin-left: 0.35em;
 }
 .scr-row-amount {
-  font-size: 0.8em;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  font-weight: 700;
   white-space: nowrap;
 }
 .amount-pos {
@@ -992,22 +1483,23 @@ html:not(.js) .reveal-cascade > * {
   color: var(--ink-2);
 }
 .scr-tag {
-  font-size: 0.85em;
-  font-weight: 800;
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  font-weight: 700;
   letter-spacing: 0.04em;
   padding: 0.15em 0.4em;
   border-radius: 0.35em;
-  background: rgba(99, 102, 241, 0.22);
-  color: var(--accent);
+  background: var(--pink);
+  color: #4a0a1f;
 }
 
 .scr-search {
   margin: 1em 1em 0;
   padding: 0.75em 1em;
-  border-radius: 1em;
+  border-radius: 0.9em;
   background: var(--bg-3);
   border: 1px solid var(--line-2);
-  color: var(--ink-4);
+  color: var(--ink-3);
   font-size: 0.78em;
   display: flex;
   align-items: center;
@@ -1030,17 +1522,18 @@ html:not(.js) .reveal-cascade > * {
   white-space: nowrap;
 }
 .scr-chip.is-on {
-  background: #fff;
-  color: var(--bg);
+  background: var(--ink);
+  color: var(--bg-3);
   border-color: var(--ink);
 }
 .scr-day {
-  font-size: 0.7em;
+  font-family: var(--font-mono);
+  font-size: 0.62em;
   font-weight: 700;
-  color: var(--ink-4);
-  padding: 1.1em 1.25em 0.5em;
+  color: var(--ink-3);
+  padding: 1.2em 1.5em 0.6em;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .scr-ring {
@@ -1050,6 +1543,9 @@ html:not(.js) .reveal-cascade > * {
   position: relative;
   display: grid;
   place-items: center;
+  /* A tela é flex com altura fixa: sem isto o anel encolhe mas o SVG absoluto
+     não, e o arco atropela o resumo logo abaixo. */
+  flex-shrink: 0;
 }
 .scr-ring svg {
   position: absolute;
@@ -1057,14 +1553,15 @@ html:not(.js) .reveal-cascade > * {
   transform: rotate(-90deg);
 }
 .scr-ring-num {
-  font-size: 1.9em;
-  font-weight: 800;
+  font-family: var(--font-mono);
+  font-size: 1.7em;
+  font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
 }
 .scr-ring-sub {
   font-size: 0.68em;
-  color: var(--ink-4);
+  color: var(--ink-3);
   font-weight: 600;
   margin-top: 0.3em;
 }
@@ -1076,13 +1573,13 @@ html:not(.js) .reveal-cascade > * {
 }
 .scr-budget-summary b {
   color: var(--ink);
-  font-size: 1.15em;
-  font-variant-numeric: tabular-nums;
+  font-size: 1.1em;
+  font-family: var(--font-mono);
 }
 .scr-bar {
   height: 0.4em;
   border-radius: 999px;
-  background: var(--line);
+  background: var(--line-2);
   overflow: hidden;
   margin-top: 0.45em;
 }
@@ -1090,11 +1587,13 @@ html:not(.js) .reveal-cascade > * {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: var(--accent-solid));
+  /* --accent (vinho), não --pink: mesma razão da .bm-bar — a barra é
+     informação (quanto do orçamento foi), tem de passar de 3:1. */
+  background: var(--accent);
 }
 .scr-cat {
   padding: 0.7em 0.85em;
-  border-radius: 1em;
+  border-radius: 0.9em;
   background: var(--bg-3);
   border: 1px solid var(--line-2);
 }
@@ -1110,253 +1609,72 @@ html:not(.js) .reveal-cascade > * {
   color: var(--ink);
 }
 .scr-cat-val {
-  font-size: 0.7em;
-  color: var(--ink-4);
-  font-variant-numeric: tabular-nums;
+  font-size: 0.68em;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
 }
 .scr-cat-pct {
-  font-size: 0.78em;
-  font-weight: 800;
+  font-size: 0.72em;
+  font-weight: 700;
   color: var(--ink);
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
 }
 
-/* ─────────────────────────── recursos ─────────────────────────── */
-.section-head {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 18px;
-  margin-bottom: 64px;
-}
-.section-head .lead {
-  max-width: 620px;
-}
-.feature-grid {
+/* ─────────────────── antes & depois ─────────────────── */
+.ba-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-@media (max-width: 940px) {
-  .feature-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.feature-card {
-  background: var(--glass);
-  border: 1px solid var(--line);
-  border-radius: 32px;
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  min-height: 420px;
-  position: relative;
-  overflow: hidden;
-  transition:
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.25s,
-    border-color 0.25s;
-}
-.feature-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(255, 143, 177, 0.3);
-}
-.feature-card.ai-card:hover {
-  border-color: rgba(99, 102, 241, 0.35);
-}
-.feature-card h3 {
-  font-size: 24px;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  font-weight: 700;
-}
-.feature-card p {
-  color: var(--ink-3);
-  font-size: 16px;
-  line-height: 1.55;
-  margin: 0;
-}
-.feature-icon-3d {
-  width: 72px;
-  height: 72px;
-  border-radius: 22px;
-  display: grid;
-  place-items: center;
-  background: var(--accent-solid);
-  color: var(--ink);
-  transform: rotate(-6deg);
-  position: relative;
-  flex-shrink: 0;
-}
-.feature-icon-3d::after {
-  content: "";
-  position: absolute;
-  top: 6px;
-  left: 12px;
-  right: 12px;
-  height: 14px;
-  border-radius: 8px;
-  background: transparent;
-  pointer-events: none;
-}
-.ai-card .feature-icon-3d {
-  background: var(--teal);
-}
-.feat-tag {
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  padding: 5px 10px;
-  border-radius: 6px;
-  background: rgba(99, 102, 241, 0.18);
-  color: var(--accent);
-  border: 1px solid rgba(99, 102, 241, 0.35);
-}
-.feature-visual {
-  margin-top: auto;
-  padding-top: 12px;
-}
-.fv-card {
-  border-radius: 16px;
-  background: var(--glass);
-  border: 1px solid var(--line-2);
-  padding: 14px 16px;
-}
-.fv-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.fv-name {
-  font-size: 12.5px;
-  color: var(--ink-4);
-  font-weight: 600;
-}
-.fv-value {
-  font-size: 15px;
-  color: var(--ink);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  margin-top: 2px;
-}
-.fv-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-.fv-bar-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--ink-2);
-  margin-bottom: 6px;
-}
-.fv-bar {
-  height: 8px;
-  border-radius: 999px;
-  background: var(--glass);
-  overflow: hidden;
-}
-.fv-bar i {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: var(--accent-solid));
-}
-.fv-bar + .fv-bar-label {
-  margin-top: 16px;
-}
-
-/* ─────────────────────── antes & depois ─────────────────────── */
-.ba {
-  background: var(--bg-2);
-  border-top: 1px solid var(--line-2);
-  border-bottom: 1px solid var(--line-2);
-}
-.ba-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-radius: 32px;
-  overflow: hidden;
-  position: relative;
-  border: 1px solid var(--line);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 @media (max-width: 860px) {
-  .ba-split {
-    grid-template-columns: 1fr;
+  .ba-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
-.ba-side {
-  padding: 44px 36px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
+.ba-col {
+  padding: 8px 48px 8px 0;
 }
-.ba-before {
-  /* Bloco com tema próprio: é preto dentro de uma seção creme, então precisa
-     declarar a própria tinta em vez de herdar a da seção. */
-  background: var(--black);
-  --ink: #fffaf6;
-  --ink-2: #d8d2cd;
-  --ink-3: #a39c96;
-  --line: color-mix(in srgb, #fffaf6 16%, transparent);
-  color: var(--ink-3);
+.ba-col + .ba-col {
+  border-left: 1px solid var(--line);
+  padding-left: 48px;
+  padding-right: 0;
 }
-.ba-after {
-  /* Era degradê rosa->índigo. Chapado no rosa da marca, com tema próprio. */
-  background: var(--pink);
-  --ink: #4a0a1f;
-  --ink-2: #63142c;
-  --ink-3: #6b1f33; /* 5,25:1 sobre o rosa */
-  --line: color-mix(in srgb, #4a0a1f 20%, transparent);
-  color: #4a0a1f;
+@media (max-width: 860px) {
+  .ba-col {
+    padding-right: 0;
+  }
+  .ba-col + .ba-col {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding-left: 0;
+    margin-top: 36px;
+    padding-top: 36px;
+  }
 }
-.ba-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.ba-tag {
+  font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  padding: 6px 12px;
-  border-radius: 999px;
-  width: fit-content;
-}
-.ba-before .ba-label {
-  background: var(--glass);
   color: var(--ink-3);
-  border: 1px solid var(--line-2);
 }
-.ba-after .ba-label {
-  background: rgba(255, 143, 177, 0.16);
-  color: var(--pink);
-  border: 1px solid rgba(255, 143, 177, 0.32);
+.ba-col.after .ba-tag {
+  color: var(--vinho);
 }
-.ba-side h3 {
-  font-size: 28px;
-  line-height: 1.12;
+.ba-col h3 {
+  font-size: clamp(22px, 2.2vw, 28px);
+  line-height: 1.15;
+  margin-top: 14px;
+  max-width: 18ch;
 }
-.ba-before h3 {
+.ba-col.before h3 {
   color: var(--ink-3);
 }
 .ba-list {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin: 4px 0 0;
+  margin: 26px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -1366,6 +1684,10 @@ html:not(.js) .reveal-cascade > * {
   gap: 12px;
   font-size: 15.5px;
   line-height: 1.45;
+  color: var(--ink-2);
+}
+.ba-col.before .ba-row {
+  color: var(--ink-3);
 }
 .ba-row .icon-wrap {
   width: 24px;
@@ -1376,473 +1698,42 @@ html:not(.js) .reveal-cascade > * {
   place-items: center;
   margin-top: 1px;
 }
-.ba-before .icon-wrap {
-  background: var(--glass);
-  color: var(--ink-5);
-}
-.ba-after .icon-wrap {
-  background: var(--accent-solid));
-  color: var(--ink);
-}
-.ba-divider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 2px;
-  background: var(--accent);
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
-  z-index: 2;
-}
-.ba-split.in .ba-divider {
-  transform: scaleY(1);
-}
-@media (max-width: 860px) {
-  .ba-divider {
-    display: none;
-  }
-}
-
-/* ─────────────────────── como funciona ─────────────────────── */
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  counter-reset: step;
-}
-@media (max-width: 940px) {
-  .steps {
-    grid-template-columns: 1fr;
-  }
-}
-.step {
-  position: relative;
-  padding: 32px;
-  border-radius: 28px;
-  background: var(--glass);
-  border: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.step-num {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 18px;
-  color: var(--bg);
-  background: var(--accent-solid));
-}
-.step h3 {
-  font-size: 20px;
-  line-height: 1.25;
-}
-.step p {
-  margin: 0;
-  color: var(--ink-3);
-  font-size: 15.5px;
-  line-height: 1.55;
-}
-.step code {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-  font-size: 0.92em;
-  color: var(--pink);
-  background: rgba(255, 143, 177, 0.12);
-  border: 1px solid rgba(255, 143, 177, 0.28);
-  border-radius: 6px;
-  padding: 1px 6px;
-  white-space: nowrap;
-}
-
-/* ─────────────────────── números honestos ─────────────────────── */
-.facts {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-@media (max-width: 900px) {
-  .facts {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 480px) {
-  .facts {
-    grid-template-columns: 1fr;
-  }
-}
-.fact {
-  padding: 28px 24px;
-  border-radius: 24px;
-  background: var(--glass);
-  border: 1px solid var(--line);
-}
-.fact-num {
-  font-size: 42px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
-.fact-num .grad {
-  background: var(--accent-solid));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.fact-label {
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 700;
-  margin-top: 12px;
-}
-.fact-sub {
-  color: var(--ink-3);
-  font-size: 13.5px;
-  line-height: 1.45;
-  margin-top: 6px;
-}
-
-/* ─────────────────────── vitrine do app ─────────────────────── */
-.showcase-note {
-  text-align: center;
-  color: var(--ink-4);
-  font-size: 13.5px;
-  margin-top: 28px;
-}
-/*
- * O desenho original tinha um carrossel 3D com abas e ~200 linhas de JS. Virou
- * uma trilha com rolagem por encaixe: no desktop os três aparelhos cabem lado a
- * lado (o do meio um pouco maior), no celular a pessoa arrasta. Mesmo momento
- * de "olha o app", sem estado, sem JS e navegável por teclado.
- */
-.showcase-track {
-  display: flex;
-  gap: 24px;
-  justify-content: center;
-  align-items: center;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding: 8px 4px 20px;
-  /* Barra de rolagem discreta em vez de escondida: escondê-la tira a única
-     dica de que há mais telas ao lado. */
-  scrollbar-width: thin;
-  scrollbar-color: var(--line) transparent;
-}
-.showcase-item {
-  scroll-snap-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  flex-shrink: 0;
-}
-.showcase-item .phone {
-  --phone-w: 292px;
-}
-.showcase-item[data-featured] .phone {
-  --phone-w: 316px;
-}
-.showcase-caption {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink-2);
-}
-@media (max-width: 1080px) {
-  .showcase-track {
-    justify-content: flex-start;
-  }
-  .showcase-item .phone,
-  .showcase-item[data-featured] .phone {
-    --phone-w: 280px;
-  }
-}
-@media (max-width: 480px) {
-  .showcase-item .phone,
-  .showcase-item[data-featured] .phone {
-    --phone-w: min(260px, calc(100vw - 88px));
-  }
-}
-
-/* ─────────────────────── plataformas ─────────────────────── */
-.plat-card {
-  position: relative;
-  overflow: hidden;
-  padding: 56px;
-  border-radius: 32px;
-  border: 1px solid var(--line);
-  background: var(--glass);
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 56px;
-  align-items: center;
-}
-/* O ::before daqui era um brilho borrado (blur 40px) atrás do cartão — a
-   marca de página gerada mais direta que a folha tinha. Removido; o cartão se
-   separa do fundo pela borda, como no blog. */
-.plat-text {
-  position: relative;
-  z-index: 1;
-}
-.plat-text h2 {
-  font-size: clamp(30px, 3.5vw, 48px);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-}
-.plat-text p {
-  color: var(--ink-3);
-  font-size: 17px;
-  line-height: 1.55;
-  margin-top: 16px;
-  max-width: 480px;
-}
-.plat-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 24px;
-  padding: 0;
-  list-style: none;
-}
-.plat-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: var(--glass);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  font-weight: 600;
-  font-size: 14px;
-}
-.plat-pill svg {
-  color: var(--pink);
-  flex-shrink: 0;
-}
-.plat-pill.web svg {
-  color: var(--accent);
-}
-/*
- * A ressalva de loja fica DENTRO do cartão, no mesmo peso visual do resto —
- * não em letra miúda no rodapé. É a informação que mais muda a expectativa de
- * quem chega: esconder seria o mesmo erro do "Baixar para iOS".
- */
-.plat-caveat {
-  margin-top: 22px;
-  padding: 14px 18px;
-  border-radius: 16px;
-  background: var(--glass);
-  border: 1px solid var(--line);
-  color: var(--ink-2);
-  font-size: 14.5px;
-  line-height: 1.5;
-  max-width: 480px;
-}
-.plat-devices {
-  position: relative;
-  z-index: 1;
-  height: 320px;
-}
-.plat-browser {
-  position: absolute;
-  left: 0;
-  top: 30px;
-  width: 78%;
-  background: var(--bg-3);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.6);
-  transform: rotate(-3deg);
-}
-.plat-browser-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--line-2);
-  background: var(--glass);
-}
-.plat-browser-dots {
-  display: flex;
-  gap: 6px;
-}
-.plat-browser-dots span {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-}
-.plat-browser-dots span:nth-child(1) {
-  background: #ff5f57;
-}
-.plat-browser-dots span:nth-child(2) {
-  background: #febc2e;
-}
-.plat-browser-dots span:nth-child(3) {
-  background: #28c840;
-}
-.plat-browser-url {
-  font-size: 11px;
-  color: var(--ink-4);
-  padding: 5px 12px;
-  background: var(--glass);
-  border-radius: 999px;
-  flex: 1;
-  max-width: 230px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.plat-browser-body {
-  padding: 20px;
-}
-.plat-browser-label {
-  font-size: 11px;
-  color: var(--ink-4);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.plat-browser-value {
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--ink);
-  letter-spacing: -0.03em;
-  margin-top: 4px;
-  font-variant-numeric: tabular-nums;
-}
-.plat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line-2);
-  font-size: 12px;
-}
-.plat-row:last-child {
-  border-bottom: 0;
-}
-.plat-row .l {
+.ba-col.before .icon-wrap {
+  background: var(--line-2);
   color: var(--ink-3);
 }
-.plat-row .v {
-  color: var(--ink);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.plat-row .v.neg {
-  color: var(--red);
-}
-.plat-row .v.pos {
-  color: var(--green);
-}
-.plat-phone-mini {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 150px;
-  height: 300px;
-  border-radius: 32px;
-  background: var(--bg-3);
-  border: 8px solid #1a1a22;
-  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7);
-  transform: rotate(6deg);
-  overflow: hidden;
-}
-.plat-phone-mini-screen {
-  padding: 20px 12px 12px;
-  height: 100%;
-}
-.plat-phone-mini h4 {
-  font-size: 11px;
-  font-weight: 700;
-}
-.pm-balance {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--ink);
-  margin-top: 6px;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-.pm-sub {
-  font-size: 10px;
-  color: var(--ink-4);
-}
-.pm-card {
-  margin-top: 12px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  background: rgba(255, 143, 177, 0.14);
-  border: 1px solid rgba(255, 143, 177, 0.28);
-}
-.pm-card .l1 {
-  font-size: 9px;
-  color: var(--pink);
-  font-weight: 800;
-  letter-spacing: 0.06em;
-}
-.pm-card .l2 {
-  font-size: 11px;
-  color: var(--ink);
-  font-weight: 700;
-  margin-top: 2px;
-}
-@media (max-width: 940px) {
-  .plat-card {
-    grid-template-columns: 1fr;
-    padding: 36px 24px;
-    gap: 32px;
-  }
-  .plat-devices {
-    height: 280px;
-    max-width: 380px;
-    margin: 0 auto;
-    width: 100%;
-  }
+.ba-col.after .icon-wrap {
+  background: var(--rosa);
+  color: var(--vinho-2);
 }
 
 /* ─────────────────── idiomas e moedas ─────────────────── */
 .intl-grid {
   display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 64px;
 }
 @media (max-width: 980px) {
   .intl-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
-.intl-card {
-  position: relative;
-  overflow: hidden;
-  padding: 40px;
-  border-radius: 28px;
-  border: 1px solid var(--line);
-  background: var(--glass);
+.intl-col {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
 }
-@media (max-width: 600px) {
-  .intl-card {
-    padding: 28px 22px;
-  }
+.intl-col h3 {
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.1;
+  margin-top: 16px;
+  max-width: 18ch;
 }
-.intl-card h3 {
-  font-size: 28px;
-  line-height: 1.12;
-  margin-top: 14px;
-}
-.intl-card p {
+.intl-col > p {
   color: var(--ink-3);
   font-size: 15.5px;
-  line-height: 1.55;
-  margin-top: 10px;
-  max-width: 460px;
+  line-height: 1.6;
+  margin: 14px 0 0;
+  max-width: 52ch;
 }
 .intl-langs {
   display: flex;
@@ -1857,19 +1748,24 @@ html:not(.js) .reveal-cascade > * {
   align-items: center;
   gap: 9px;
   padding: 9px 15px;
-  border-radius: 999px;
-  background: var(--glass);
-  border: 1px solid var(--line);
+  border-radius: var(--r-s);
+  background: var(--branco);
+  border: 1px solid var(--line-2);
   color: var(--ink);
   font-size: 13.5px;
   font-weight: 600;
 }
+/* Mesmos tons -tinta dos pontos do .pair: sobre o branco do chip os tons
+   vivos ficam abaixo de 3:1. */
 .lang-chip .dot {
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: var(--accent-solid));
+  background: var(--vinho);
   flex-shrink: 0;
+}
+.lang-chip:nth-child(even) .dot {
+  background: var(--turquesa-tinta);
 }
 .currency-stack {
   display: flex;
@@ -1882,28 +1778,10 @@ html:not(.js) .reveal-cascade > * {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 15px 18px;
-  border-radius: 16px;
-  background: var(--glass);
-  border: 1px solid var(--line);
-}
-.currency-row:nth-child(1) {
-  transform: rotate(-1deg);
-}
-.currency-row:nth-child(2) {
-  transform: rotate(0.6deg);
-}
-.currency-row:nth-child(3) {
-  transform: rotate(-0.4deg);
-}
-.currency-row.featured {
-  /* Sem degradê e sem sombra colorida: o destaque vem da borda no acento, que
-     é como o blog marca o que importa. */
-  background: var(--glass);
-  border-color: var(--accent);
-}
-.currency-row .who {
-  min-width: 0;
+  padding: 14px 18px;
+  border-radius: var(--r-m);
+  background: var(--branco);
+  border: 1px solid var(--line-2);
 }
 .currency-row .name {
   color: var(--ink);
@@ -1911,7 +1789,7 @@ html:not(.js) .reveal-cascade > * {
   font-weight: 700;
 }
 .currency-row .sub {
-  color: var(--ink-4);
+  color: var(--ink-3);
   font-size: 11.5px;
   margin-top: 2px;
 }
@@ -1925,77 +1803,66 @@ html:not(.js) .reveal-cascade > * {
 }
 .currency-row .amt > span {
   color: var(--ink);
-  font-weight: 800;
-  font-size: 16px;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 14px;
   white-space: nowrap;
 }
 .fx-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(99, 102, 241, 0.22);
-  color: var(--accent);
-  font-size: 10.5px;
-  font-weight: 800;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
   letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: rgba(20, 107, 101, 0.1);
+  color: var(--turquesa-tinta);
   white-space: nowrap;
 }
 
 /* ─────────────────────────── perguntas ─────────────────────────── */
 .faq-list {
-  max-width: 800px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  max-width: 780px;
+  border-top: 1px solid var(--line);
 }
 .faq-item {
-  border-radius: 20px;
-  background: var(--glass);
-  border: 1px solid var(--line);
-  overflow: hidden;
-}
-.faq-item[open] {
-  border-color: rgba(255, 143, 177, 0.32);
-  background: rgba(255, 143, 177, 0.05);
+  border-bottom: 1px solid var(--line);
 }
 .faq-item summary {
   cursor: pointer;
   list-style: none;
-  padding: 22px 26px;
+  padding: 22px 4px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  font-size: 17px;
+  font-family: var(--font-display);
+  font-size: 19px;
   font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--ink);
 }
 .faq-item summary::-webkit-details-marker {
   display: none;
 }
 .faq-item summary::after {
-  content: "";
-  width: 12px;
-  height: 12px;
+  content: "+";
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--vinho);
   flex-shrink: 0;
-  border-right: 2px solid var(--pink);
-  border-bottom: 2px solid var(--pink);
-  transform: rotate(45deg) translate(-2px, -2px);
   transition: transform 0.25s ease;
 }
 .faq-item[open] summary::after {
-  transform: rotate(-135deg) translate(-3px, -3px);
+  transform: rotate(45deg);
 }
 .faq-answer {
-  padding: 0 26px 24px;
-  color: var(--ink-3);
+  padding: 0 4px 26px;
+  color: var(--ink-2);
   font-size: 16px;
-  line-height: 1.6;
-  max-width: 68ch;
+  line-height: 1.65;
+  max-width: 64ch;
 }
 .faq-answer p {
   margin: 0 0 12px;
@@ -2004,158 +1871,118 @@ html:not(.js) .reveal-cascade > * {
   margin-bottom: 0;
 }
 .faq-answer a {
-  color: var(--pink);
+  color: var(--vinho);
   font-weight: 600;
 }
 .faq-answer code {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-  font-size: 0.92em;
-  color: var(--pink);
-  background: rgba(255, 143, 177, 0.12);
-  border: 1px solid rgba(255, 143, 177, 0.28);
-  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--vinho);
+  background: rgba(166, 45, 74, 0.08);
+  border: 1px solid rgba(166, 45, 74, 0.25);
+  border-radius: 5px;
   padding: 1px 6px;
   white-space: nowrap;
 }
 
-/* ─────────────────────────── CTA final ─────────────────────────── */
-.final-card {
-  border-radius: 48px;
-  padding: 88px 48px;
-  text-align: center;
-  position: relative;
+/* ─────────────────────────── convite final ─────────────────────────── */
+/* O único bloco rosa da página — fecha o arco papel → tinta → rosa. */
+.final {
+  background: var(--rosa);
+  color: var(--vinho-2);
+  --focus: var(--vinho-2);
+  padding: 128px 0 140px;
   overflow: hidden;
-  background: var(--bg-2);
-  border: 1px solid var(--line);
-  isolation: isolate;
 }
-@media (max-width: 640px) {
-  .final-card {
-    padding: 56px 24px;
-    border-radius: 32px;
-  }
+.final .container {
+  position: relative;
 }
-.final-mesh {
-  position: absolute;
-  inset: -20%;
-  z-index: -2;
-  opacity: 0.85;
-  background: var(--bg);
-  animation: meshShift 18s ease-in-out infinite;
+.final .mono-label {
+  color: var(--vinho-2);
 }
-/*
- * Véu escuro entre a malha colorida e o texto. Sem ele o branco cai em cima do
- * rosa da marca em alguns pontos da animação — 2,1:1 — e a frase mais
- * importante da página fica ilegível justamente quando a malha passa por trás
- * dela. Com o véu o texto fica acima de 12:1 em qualquer quadro.
- */
-.final-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--bg);
+.final .pair i {
+  background: var(--vinho-2);
 }
-@keyframes meshShift {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(-4%, 3%) scale(1.05);
-  }
-  66% {
-    transform: translate(4%, -3%) scale(0.95);
-  }
+.final .pair i + i {
+  /* Branco sobre rosa dava 2,1:1 — o ponto sumia. O turquesa fundo mantém a
+     dualidade vinho/turquesa do casal e passa de 3:1. */
+  background: var(--turquesa-tinta-2);
 }
-.final-card h2 {
-  max-width: 800px;
-  margin: 0 auto;
+.final h2 {
+  font-size: clamp(38px, 5vw, 72px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--vinho-2);
+  max-width: 15ch;
+  margin-top: 22px;
 }
-.final-card .lead {
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 19px;
-  margin: 20px auto 0;
-  max-width: 600px;
-  line-height: 1.5;
-}
-.final-avatars {
-  display: inline-flex;
-  align-items: center;
-  margin-bottom: 26px;
-}
-.final-avatars span {
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 17px;
-  color: var(--ink);
-  border: 3px solid var(--bg-2);
-}
-.final-avatars span + span {
-  margin-left: -14px;
+.final .lead {
+  color: #63142c; /* 5,89:1 sobre o rosa */
+  margin-top: 24px;
+  max-width: 520px;
 }
 .final-cta-row {
   margin-top: 40px;
   display: flex;
   gap: 14px;
-  justify-content: center;
   flex-wrap: wrap;
-  position: relative;
-  z-index: 1;
+}
+.final .btn-ghost {
+  color: var(--vinho-2);
+  border-color: rgba(74, 10, 31, 0.4);
+}
+.final .btn-ghost:hover {
+  border-color: var(--vinho-2);
 }
 .final-meta {
   margin-top: 22px;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.72);
+  color: #63142c;
 }
-.particles {
+/* O mascote como carimbo, igual às capas do blog: no CANTO da seção rosa
+   (ele é filho da section, não do .container — ancorar na coluna de texto o
+   deixava flutuando no meio-direita), levemente cortado pelo overflow:hidden,
+   como carimbo que sangra. */
+.final-mascot {
   position: absolute;
-  inset: 0;
+  right: clamp(16px, 3vw, 44px);
+  bottom: -18px;
+  width: clamp(120px, 16vw, 210px);
   pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
-.particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 999px;
-  background: var(--pink);
-  box-shadow: 0 0 8px var(--pink);
-  animation: particle-rise linear infinite;
-  opacity: 0;
-}
-@keyframes particle-rise {
-  0% {
-    transform: translateY(0) translateX(0);
-    opacity: 0;
+@media (max-width: 768px) {
+  .final {
+    /* 140px de respiro embaixo: cabe o mascote de 120px sem sobrar a faixa
+       de rosa vazio (~150px) que o padding de 200px deixava no 390. */
+    padding: 88px 0 140px;
   }
-  10% {
-    opacity: 0.8;
-  }
-  90% {
-    opacity: 0.6;
-  }
-  100% {
-    transform: translateY(-300px) translateX(var(--drift, 30px));
-    opacity: 0;
+  .final-mascot {
+    right: 8px;
+    bottom: -14px;
   }
 }
 
 /* ─────────────────────────── rodapé ─────────────────────────── */
 footer {
-  background: var(--bg-2);
-  border-top: 1px solid var(--line-2);
-  padding: 64px 0 40px;
+  background: var(--tinta);
+  color: var(--luz-2);
+  padding: 72px 0 40px;
+  --focus: var(--rosa);
+}
+footer .logo {
+  color: var(--luz);
+}
+footer .logo .brand-2 {
+  color: var(--rosa);
 }
 .foot-grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr 1fr 1fr;
   gap: 40px;
   padding-bottom: 40px;
-  border-bottom: 1px solid var(--line-2);
+  border-bottom: 1px solid rgba(255, 250, 246, 0.14);
 }
 @media (max-width: 860px) {
   .foot-grid {
@@ -2169,17 +1996,18 @@ footer {
 }
 .foot-about p {
   margin: 16px 0 0;
-  color: var(--ink-3);
+  color: var(--luz-2);
   font-size: 14.5px;
   line-height: 1.55;
   max-width: 340px;
 }
 .foot-col h2 {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: var(--luz);
 }
 .foot-col ul {
   margin: 16px 0 0;
@@ -2190,13 +2018,13 @@ footer {
   gap: 10px;
 }
 .foot-col a {
-  color: var(--ink-3);
+  color: var(--luz-2);
   text-decoration: none;
   font-size: 14.5px;
   transition: color 0.2s;
 }
 .foot-col a:hover {
-  color: var(--ink);
+  color: var(--luz);
 }
 .footer-bottom {
   display: flex;
@@ -2205,8 +2033,34 @@ footer {
   padding-top: 28px;
   flex-wrap: wrap;
   gap: 14px;
-  color: var(--ink-4);
+  color: var(--luz-2);
   font-size: 14px;
+}
+
+/* ───────────────────── revelar ao rolar ───────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* A faixa do código revela por células (ver .code-strip), não por bloco. */
+.code-strip.reveal {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+/* Sem JS o conteúdo TEM de aparecer: o script em BaseLayout marca <html> com
+   .js antes da primeira pintura, e só então o estado inicial fica invisível. */
+html:not(.js) .reveal,
+html:not(.js) .code-strip .code-cell {
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 /* ─────────────────────── movimento reduzido ─────────────────────── */
@@ -2222,21 +2076,12 @@ footer {
   html {
     scroll-behavior: auto;
   }
-  .hero-phone-tilt {
-    transform: none !important;
-  }
   .reveal,
-  .reveal-cascade > * {
+  html.js .hero-intro > *,
+  html.js .hero-proof,
+  html.js .code-strip.reveal .code-cell {
     opacity: 1 !important;
     transform: none !important;
-  }
-  .ba-split .ba-divider {
-    transform: scaleY(1) !important;
-  }
-  .particles {
-    display: none;
-  }
-  .btn-shimmer::before {
-    display: none;
+    animation: none !important;
   }
 }

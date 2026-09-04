@@ -162,8 +162,11 @@ const metaPixelNoscriptSrc = `https://www.facebook.com/tr?id=${encodeURIComponen
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 
-    <meta name="theme-color" content="#0A0A0F" />
-    <meta name="color-scheme" content="dark" />
+    {/* A página agora é clara (papel #F3EDE6): estes dois acompanham o desenho.
+        Com "dark" aqui, a barra do navegador e os controles nativos ficariam
+        escuros sobre uma página creme. */}
+    <meta name="theme-color" content="#F3EDE6" />
+    <meta name="color-scheme" content="light" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/logo-icon-96.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
@@ -184,15 +187,14 @@ const metaPixelNoscriptSrc = `https://www.facebook.com/tr?id=${encodeURIComponen
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     {/*
-      As MESMAS fontes do app e do blog. O desenho vinha com Manrope, que não é
-      usada em nenhuma outra propriedade do Paca — quem chega de um artigo
-      precisa reconhecer que está no lugar certo. Só os pesos que a página usa
-      (500/600/700/800) — cada peso a mais é um arquivo a mais no caminho
-      crítico. `display=swap` para o texto aparecer na fonte de sistema
-      enquanto elas baixam, em vez de ficar invisível.
+      As fontes do app e do blog (Bricolage + DM Sans) mais UMA utilitária:
+      Martian Mono, a voz do dinheiro desta página — o código do casal em
+      tipografia gigante, valores e rótulos de extrato. Só os pesos que a
+      página usa — cada peso a mais é um arquivo a mais no caminho crítico.
+      `display=swap` para o texto aparecer na fonte de sistema enquanto baixam.
     */}
     <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&family=Martian+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
 
@@ -219,7 +221,7 @@ const metaPixelNoscriptSrc = `https://www.facebook.com/tr?id=${encodeURIComponen
     <script is:inline>
       (function () {
         var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        var targets = document.querySelectorAll(".reveal, .reveal-cascade");
+        var targets = document.querySelectorAll(".reveal");
         if (reduced || !("IntersectionObserver" in window)) {
           for (var i = 0; i < targets.length; i++) targets[i].classList.add("in");
           return;
@@ -237,34 +239,6 @@ const metaPixelNoscriptSrc = `https://www.facebook.com/tr?id=${encodeURIComponen
           { rootMargin: "0px 0px -12% 0px", threshold: 0.08 }
         );
         for (var j = 0; j < targets.length; j++) io.observe(targets[j]);
-      })();
-    </script>
-
-    {/*
-      INCLINAÇÃO 3D DO TELEFONE seguindo o mouse. Só em ponteiro fino (mouse):
-      no toque não existe hover, e ligar isso no celular só gastaria bateria.
-      A rotação é pequena de propósito — o desenho já nasce inclinado, isto só
-      dá vida ao passar o mouse.
-    */}
-    <script is:inline>
-      (function () {
-        var tilt = document.querySelector(".hero-phone-tilt");
-        if (!tilt) return;
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-        if (!window.matchMedia("(pointer: fine)").matches) return;
-
-        var host = tilt.parentElement;
-        var base = "rotateY(-6deg) rotateX(4deg)";
-        host.addEventListener("pointermove", function (event) {
-          var box = host.getBoundingClientRect();
-          var x = (event.clientX - box.left) / box.width - 0.5;
-          var y = (event.clientY - box.top) / box.height - 0.5;
-          tilt.style.transform =
-            "rotateY(" + (-6 + x * 10).toFixed(2) + "deg) rotateX(" + (4 - y * 10).toFixed(2) + "deg)";
-        });
-        host.addEventListener("pointerleave", function () {
-          tilt.style.transform = base;
-        });
       })();
     </script>
 
