@@ -5,6 +5,12 @@ export default {
   theme: {
     extend: {
       colors: {
+        /*
+         * O chão claro do site. O mesmo creme das capas e da landing
+         * (#F3EDE6): com o fundo branco, blog e landing eram primos, não
+         * gêmeos — este token fecha as três propriedades na mesma casa.
+         */
+        cream: "#F3EDE6",
         pink: {
           primary: "#FF8FB1",
           light: "#FFB5C9",

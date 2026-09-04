@@ -156,5 +156,12 @@ const imgAttrs = {
     width: 100%;
     object-fit: contain;
     background: var(--bg);
+    /* Fio interno: com o chão do site no MESMO creme das capas, a capa creme
+       derretia no fundo (e a preta, no tema escuro). O inset acompanha o
+       recorte arredondado de quem enquadra. */
+    box-shadow: inset 0 0 0 1px rgb(28 25 23 / 0.1);
+  }
+  :global(.dark) .paca-cover-img {
+    box-shadow: inset 0 0 0 1px rgb(255 250 246 / 0.1);
   }
 </style>
