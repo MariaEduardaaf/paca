@@ -33,6 +33,8 @@ Quantos meses? Não existe número universal, e desconfiem de quem crava um. O q
 
 O item que quase ninguém considera é a **correlação**: se os dois trabalham na mesma empresa, no mesmo setor ou para o mesmo cliente grande, a chance de as duas rendas caírem juntas é bem maior — e a vantagem de ter duas rendas some justamente quando ela seria mais útil. Nesse caso, o casal precisa de mais reserva que dois solteiros somados, não de menos. O múltiplo também não é fixo: sobe quando entra filho ou financiamento, desce quando a renda fica mais previsível. Revisem uma vez por ano. E se o financiamento que está por vir é o do imóvel, montem a reserva **antes** da entrada, não depois: as contas de entrada, ITBI e cartório de [comprar a casa juntos com financiamento em nome dos dois](/blog/comprar-casa-juntos-financiamento) costumam consumir a poupança inteira, e assumir uma parcela de 30 anos sem colchão nenhum é como o casal perde a casa no primeiro imprevisto.
 
+Vale um alerta que quase ninguém faz: reserva usada para socorrer um parente deixa vocês descobertos para o próprio imprevisto, e essa decisão merece um combinado antes de acontecer — está em [como decidir a dois quando a família pede dinheiro](/blog/ajudar-os-pais-financeiramente-casal).
+
 ## Uma reserva ou duas?
 
 Essa pergunta gera desconforto porque parece uma pergunta sobre confiança. Não é — é sobre função. Reserva do casal e reserva pessoal resolvem problemas diferentes.

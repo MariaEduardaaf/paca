@@ -13,6 +13,9 @@ A boa notícia: falar de dinheiro de verdade é habilidade, não dom. Dá para a
 
 Neste guia, vocês vão ver por que o assunto trava tanto, em que momento do relacionamento cada conversa precisa acontecer, 20 perguntas prontas para guiar o primeiro papo, como reagir se aparecer uma dívida escondida — e como transformar tudo isso numa reunião mensal leve, sem clima de DR.
 
+
+Um assunto merece roteiro próprio porque quase nunca é sobre o casal: quando a família de um dos dois pede dinheiro. O caminho está em [como decidir isso a dois](/blog/ajudar-os-pais-financeiramente-casal).
+
 ## Por que é tão difícil falar de dinheiro no relacionamento
 
 Dinheiro nunca é só dinheiro. Ele carrega vergonha, status, medo e a história da família de cada um. Quando vocês conversam sobre a fatura do cartão, na verdade estão conversando sobre valores, prioridades e — sem perceber — sobre a infância de cada um.
