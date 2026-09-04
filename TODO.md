@@ -50,9 +50,6 @@ só com código — precisa de decisão de conteúdo ou de um dado que ainda nã
   do site*, mas o app não sabe se ela veio do anúncio ou do e-mail, porque esse dado só existe na URL
   de chegada. Fechar isso é guardar o UTM de entrada na sessão e repassar. *Só vale fazer junto com o
   Pixel — depende do ID que você vai passar.*
-- [ ] **Os PNGs de `/og` não foram comprimidos** — 1,3 MB que virariam ~350 KB com o mesmo tratamento
-  dado às capas novas. Deixado de fora de propósito: o AdSense está em análise e não quis mexer em
-  arquivo que o revisor pode estar olhando. Fazer depois da aprovação.
 
 ### Feito em 2026-09-03 (segunda rodada)
 
@@ -146,7 +143,8 @@ só com código — precisa de decisão de conteúdo ou de um dado que ainda nã
 - **Comprar mídia sem medição.** A estratégia tem uma regra de parada e ela não é calculável hoje. O risco não é gastar errado uma vez, é gastar errado por dias sem perceber.
 - **Cadência encenada.** O post de boas-vindas promete "pelo menos um artigo por semana"; as datas encenavam um por dia. As datas foram corrigidas, a promessa continua sem lastro — 18 artigos saíram juntos e nada foi publicado desde então.
 - **Impressão estilística uniforme.** 18 de 18 artigos terminam em "## Perguntas frequentes" e a densidade de travessão é alta e constante. O conteúdo em si foi conferido e não é vazio — a matemática e as fontes batem —, mas a uniformidade é um sinal que revisor humano nota.
-- **Branch `feat/hardening-and-blog` está 39 commits à frente do `main`** e é dela que o blog deploya. Mergear leva o código novo do app ao ar junto; decidir na hora certa.
+- ~~Branch à frente do main~~ **Resolvido em 2026-09-04**: mergeada (PRs #30/#31 + merge direto).
+  Blog e app agora saem do mesmo código; o conserto do idioma foi ao ar com o merge.
 - **iPad obrigatório:** `supportsTablet: true` torna os screenshots 2048×2732 obrigatórios na App Store.
 
 ---
