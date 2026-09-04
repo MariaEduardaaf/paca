@@ -5,7 +5,7 @@ pubDate: 2026-09-04
 category: "conversas-sobre-dinheiro"
 tags: ["ajudar os pais", "família e dinheiro", "empréstimo para parente", "combinados do casal", "finanças do casal"]
 author: "mary"
-draft: true
+draft: false
 ---
 
 A mensagem chega num domingo à noite, e nunca vem com valor: "filho, a gente precisa conversar sobre uma coisa". Às vezes é o remédio que subiu. Às vezes é a conta de luz de dois meses. Às vezes é o irmão que perdeu o emprego e a mãe ligou pedindo por ele, sem ele saber.
