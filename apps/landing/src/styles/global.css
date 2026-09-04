@@ -19,13 +19,31 @@
   --teal: #4ecdc4; /* green.primary do app: o acento não-rosa da marca */
   --teal-2: #7fdbd4;
 
-  --bg: #0a0a0f;
-  --bg-2: #111118;
-  --bg-3: #16161e;
+  /*
+   * OS TRÊS FUNDOS DA MARCA — os mesmos das capas do blog
+   * (apps/blog/src/lib/cover-art.mjs, THEMES). Chapados, nunca em degradê.
+   */
+  --cream: #f3ede6;
+  --black: #1c1917;
 
-  --ink: #ffffff;
-  --ink-2: #e5e7eb;
-  --ink-3: #9ca3af;
+  /*
+   * TEMA DE SEÇÃO. Cada bloco da página pousa num dos três fundos e alternam
+   * entre si, exatamente como os cards do blog fazem na grade — é a assinatura
+   * da marca, e é o "um único elemento repetido" que evita a página virar mais
+   * uma landing genérica. Os componentes NÃO conhecem cor: leem daqui.
+   * Os valores abaixo são o tema creme (o padrão da página).
+   */
+  --bg: var(--cream);
+  --ink: #1c1917;
+  --ink-2: #3d3733;
+  --ink-3: #6b625c;
+  --accent: #a62d4a; /* pink.800 — 5,84:1 sobre creme */ /* pink.700 — o rosa que PASSA em AA sobre claro */
+  --accent-solid: var(--pink); /* o rosa da marca, para preenchimento */
+  --on-accent: #4a0a1f;
+
+  /* Compatibilidade: o CSS antigo referencia estes. Apontam para o tema. */
+  --bg-2: var(--bg);
+  --bg-3: var(--bg);
 
   /*
    * CORREÇÃO DE CONTRASTE (1/3). No desenho original --ink-4 era #6B7280, que
@@ -33,7 +51,7 @@
    * carrega justamente as legendas pequenas (11–13px: rótulo de moeda, URL do
    * navegador falso, rodapé). #8E96A5 dá ~6,3:1 e mantém a cara de secundário.
    */
-  --ink-4: #8e96a5;
+  --ink-4: var(--ink-3);
 
   /*
    * CORREÇÃO DE CONTRASTE (2/3). --ink-5 era #4B5563 e pintava os ícones da
@@ -41,11 +59,13 @@
    * precisa. #7A828F dá ~5:1 e continua mais apagado que a coluna "Com Paca",
    * que é o contraste narrativo que o desenho quer.
    */
-  --ink-5: #7a828f;
+  --ink-5: var(--ink-3);
 
-  --line: rgba(255, 255, 255, 0.1);
-  --line-2: rgba(255, 255, 255, 0.06);
-  --glass: rgba(255, 255, 255, 0.04);
+  /* Borda em vez de sombra e de vidro fosco: é como o blog separa bloco de
+     bloco. `currentColor` faz a linha herdar o tema da seção sozinha. */
+  --line: color-mix(in srgb, currentColor 16%, transparent);
+  --line-2: color-mix(in srgb, currentColor 9%, transparent);
+  --glass: color-mix(in srgb, currentColor 4%, transparent);
 
   --green: #4ecdc4; /* green.primary */
   --red: #ff6b6b; /* red.primary */
@@ -54,6 +74,49 @@
      chegou no lugar certo. Manrope não é usada em nenhuma outra propriedade. */
   --font: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Bricolage Grotesque", var(--font);
+
+  /* Uma escala de canto só, pequena — a do blog. Canto de pílula em tudo é uma
+     das marcas de página gerada; aqui só o botão é redondo. */
+  --r: 4px;
+  --r-card: 16px;
+  --r-pill: 999px;
+}
+
+/* ───────────────── os três temas de seção ───────────────── */
+.sec-cream {
+  --bg: var(--cream);
+  --ink: #1c1917;
+  --ink-2: #3d3733;
+  --ink-3: #6b625c;
+  --accent: #a62d4a; /* pink.800 — 5,84:1 sobre creme */
+  --accent-solid: var(--pink);
+  --on-accent: #4a0a1f;
+}
+.sec-black {
+  --bg: var(--black);
+  --ink: #fffaf6;
+  --ink-2: #d8d2cd;
+  --ink-3: #a39c96;
+  /* Sobre preto o rosa da marca passa com folga (7,4:1), então aqui o acento
+     é o rosa de verdade — não precisa do tom escurecido. */
+  --accent: var(--pink);
+  --accent-solid: var(--pink);
+  --on-accent: #1c1917;
+}
+.sec-pink {
+  --bg: var(--pink);
+  --ink: #4a0a1f;
+  --ink-2: #63142c;
+  --ink-3: #6b1f33; /* 5,25:1 sobre o rosa */
+  --accent: #4a0a1f;
+  --accent-solid: #4a0a1f;
+  --on-accent: var(--pink);
+}
+.sec-cream,
+.sec-black,
+.sec-pink {
+  background: var(--bg);
+  color: var(--ink-2);
 }
 
 * {
@@ -80,8 +143,8 @@ img {
   height: auto;
 }
 ::selection {
-  background: rgba(255, 143, 177, 0.4);
-  color: #fff;
+  background: var(--pink);
+  color: #4a0a1f;
 }
 
 /*
@@ -102,7 +165,7 @@ img {
   top: -60px;
   z-index: 200;
   background: #fff;
-  color: #0a0a0f;
+  color: var(--bg);
   font-weight: 700;
   padding: 12px 18px;
   border-radius: 12px;
@@ -167,9 +230,7 @@ section {
   position: sticky;
   top: 0;
   z-index: 40;
-  -webkit-backdrop-filter: saturate(180%) blur(14px);
-  backdrop-filter: saturate(180%) blur(14px);
-  background: rgba(10, 10, 15, 0.72);
+  background: var(--bg);
   border-bottom: 1px solid var(--line-2);
 }
 .nav-inner {
@@ -186,7 +247,7 @@ section {
   font-weight: 800;
   font-size: 19px;
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--ink);
   text-decoration: none;
 }
 .logo img {
@@ -211,11 +272,11 @@ section {
   transition: color 0.2s;
 }
 .nav-links a:hover {
-  color: #fff;
+  color: var(--ink);
 }
 .nav-cta {
-  background: #fff;
-  color: #0a0a0f !important;
+  background: var(--ink);
+  color: var(--bg) !important;
   padding: 10px 18px;
   border-radius: 999px;
   font-weight: 700 !important;
@@ -226,7 +287,7 @@ section {
 }
 .nav-cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px -8px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 24px -8px var(--line);
 }
 /* Abaixo de 900px o menu sai e sobra logo + CTA: um menu sanduíche para cinco
    âncoras da MESMA página custa JS e um estado a mais para nada — a rolagem
@@ -246,7 +307,7 @@ h4 {
   letter-spacing: -0.025em;
   margin: 0;
   font-weight: 800;
-  color: #fff;
+  color: var(--ink);
 }
 .display {
   font-size: clamp(40px, 6vw, 84px);
@@ -254,13 +315,13 @@ h4 {
   letter-spacing: -0.04em;
   font-weight: 800;
   text-wrap: balance;
-  color: #fff;
+  color: var(--ink);
 }
 .h2 {
   font-size: clamp(32px, 4.2vw, 60px);
   line-height: 1.04;
   letter-spacing: -0.035em;
-  color: #fff;
+  color: var(--ink);
 }
 .lead {
   font-size: clamp(17px, 1.4vw, 20px);
@@ -270,11 +331,10 @@ h4 {
   text-wrap: pretty;
   margin: 0;
 }
-.gradient-text {
-  background: linear-gradient(120deg, var(--pink) 0%, var(--pink-2) 55%, var(--pink-3) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.accent-word {
+  /* Era degradê rosa->roxo. Texto em degradê é uma das marcas mais repetidas
+     de página gerada; aqui a palavra de destaque é o acento chapado do tema. */
+  color: var(--accent);
 }
 .eyebrow {
   display: inline-flex;
@@ -284,13 +344,11 @@ h4 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--ink);
   padding: 8px 14px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass);
   border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
   white-space: nowrap;
 }
 .eyebrow .dot {
@@ -344,26 +402,20 @@ h4 {
  */
 .btn-primary {
   background: var(--pink);
-  color: #0a0a0f;
-  box-shadow:
-    0 12px 40px -8px rgba(255, 143, 177, 0.5),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+  color: #4a0a1f;
 }
 .btn-primary:hover {
   background: var(--pink-2);
   transform: translateY(-1px);
-  box-shadow: 0 18px 48px -8px rgba(255, 143, 177, 0.7);
 }
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.04);
-  color: #fff;
+  background: var(--glass);
+  color: var(--ink);
   border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
 }
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.22);
+  background: var(--glass);
+  border-color: var(--line);
 }
 .btn-lg {
   padding: 19px 32px;
@@ -374,7 +426,7 @@ h4 {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+  background: transparent;
   transform: translateX(-100%);
   animation: shimmer 2.6s ease-in-out infinite;
 }
@@ -435,7 +487,6 @@ html:not(.js) .reveal-cascade > * {
 .hero {
   padding-top: 64px;
   padding-bottom: 100px;
-  perspective: 1600px;
 }
 .hero-grid {
   display: grid;
@@ -488,39 +539,6 @@ html:not(.js) .reveal-cascade > * {
   flex-shrink: 0;
 }
 
-/* orbes */
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(60px);
-  opacity: 0.5;
-}
-.orb-1 {
-  width: 460px;
-  height: 460px;
-  background: var(--pink);
-  top: -80px;
-  right: -120px;
-  animation: orbFloat1 12s ease-in-out infinite;
-}
-.orb-2 {
-  width: 380px;
-  height: 380px;
-  background: var(--teal);
-  bottom: -120px;
-  left: -80px;
-  animation: orbFloat2 14s ease-in-out infinite;
-}
-.orb-3 {
-  width: 280px;
-  height: 280px;
-  background: var(--pink-3);
-  top: 40%;
-  left: 30%;
-  opacity: 0.32;
-  animation: orbFloat3 16s ease-in-out infinite;
-}
 @keyframes orbFloat1 {
   0%,
   100% {
@@ -555,32 +573,31 @@ html:not(.js) .reveal-cascade > * {
   display: flex;
   justify-content: center;
   align-items: center;
-  transform-style: preserve-3d;
 }
 .hero-phone-tilt {
-  transform-style: preserve-3d;
-  transform: rotateY(-6deg) rotateX(4deg);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
 /* fichas flutuantes */
 .float-chip {
+  /* Eram cartões escuros translúcidos com sombra — "notificação de vidro
+     flutuando", que é das marcas mais repetidas de página gerada. Viram
+     anotação: superfície do próprio tema, borda de 1px, sem sombra. O que elas
+     dizem continua igual; o que muda é parecerem parte da página em vez de
+     pairarem sobre ela. */
   position: absolute;
   z-index: 5;
-  background: rgba(20, 20, 28, 0.78);
-  border-radius: 16px;
+  background: var(--bg);
+  border-radius: var(--r-card);
   border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.5);
   padding: 12px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 13px;
   font-weight: 600;
-  color: #fff;
+  color: var(--ink);
   white-space: nowrap;
   animation: chipFloat 6s ease-in-out infinite;
   transform: translateZ(80px);
@@ -601,7 +618,7 @@ html:not(.js) .reveal-cascade > * {
 }
 .chip-value {
   font-size: 13px;
-  color: #fff;
+  color: var(--ink);
 }
 .chip-avatar {
   width: 26px;
@@ -611,7 +628,7 @@ html:not(.js) .reveal-cascade > * {
   place-items: center;
   font-weight: 700;
   font-size: 11px;
-  color: #fff;
+  color: var(--ink);
   flex-shrink: 0;
 }
 .float-chip-1 {
@@ -627,8 +644,8 @@ html:not(.js) .reveal-cascade > * {
   top: 57%;
   left: calc(100% + 12px);
   animation-delay: 1.5s;
-  background: rgba(30, 78, 76, 0.62);
-  border-color: rgba(78, 205, 196, 0.42);
+  background: var(--bg);
+  border-color: var(--accent);
 }
 .float-chip-3 {
   bottom: 12%;
@@ -689,9 +706,7 @@ html:not(.js) .reveal-cascade > * {
   overflow: hidden;
   position: relative;
   background: #000;
-  box-shadow:
-    0 40px 80px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
   flex-shrink: 0;
 }
 /* O aparelho foi desenhado em 380px para uma tela larga. Num notebook comum
@@ -737,7 +752,7 @@ html:not(.js) .reveal-cascade > * {
   padding: calc(var(--phone-w) * 0.055) calc(var(--phone-w) * 0.063) 0;
   font-size: calc(var(--phone-w) * 0.042);
   font-weight: 600;
-  color: #fff;
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 .phone-status svg {
@@ -749,12 +764,7 @@ html:not(.js) .reveal-cascade > * {
   left: 0;
   right: 0;
   height: 60%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.16) 0%,
-    rgba(255, 255, 255, 0.04) 30%,
-    transparent 60%
-  );
+  background: transparent;
   border-radius: calc(var(--phone-w) * 0.126) calc(var(--phone-w) * 0.126) 0 0;
   pointer-events: none;
   z-index: 80;
@@ -764,7 +774,7 @@ html:not(.js) .reveal-cascade > * {
   inset: 0;
   overflow: hidden;
   background: var(--bg);
-  color: #fff;
+  color: var(--ink);
   /* Tudo dentro da tela é dimensionado em em, a partir daqui: assim o aparelho
      inteiro escala com uma variável só. */
   font-size: calc(var(--phone-w) / 380 * 16px);
@@ -791,7 +801,7 @@ html:not(.js) .reveal-cascade > * {
   font-weight: 800;
   letter-spacing: -0.02em;
   margin-top: 0.1em;
-  color: #fff;
+  color: var(--ink);
 }
 .scr-avatars {
   display: inline-flex;
@@ -804,7 +814,7 @@ html:not(.js) .reveal-cascade > * {
   border-radius: 999px;
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--ink);
   font-weight: 700;
   font-size: 0.85em;
   border: 2px solid var(--bg);
@@ -814,7 +824,7 @@ html:not(.js) .reveal-cascade > * {
 }
 .av-pink {
   background: var(--pink);
-  color: #0a0a0f !important;
+  color: var(--bg) !important;
 }
 .av-teal {
   background: var(--teal);
@@ -828,11 +838,10 @@ html:not(.js) .reveal-cascade > * {
   margin: 1.25em 1em 0;
   padding: 1.4em 1.4em 1.5em;
   border-radius: 1.75em;
-  background: linear-gradient(140deg, var(--pink) 0%, var(--teal) 100%);
-  color: #fff;
+  background: var(--accent-solid);
+  color: var(--ink);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 18px 40px -16px rgba(255, 143, 177, 0.5);
 }
 .scr-balance-label {
   font-size: 0.7em;
@@ -878,7 +887,7 @@ html:not(.js) .reveal-cascade > * {
   white-space: nowrap;
   padding: 0.35em 0.7em;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--line);
 }
 
 .scr-actions {
@@ -905,7 +914,7 @@ html:not(.js) .reveal-cascade > * {
   color: var(--pink);
 }
 .scr-action.is-ai svg {
-  color: var(--teal-2);
+  color: var(--accent);
 }
 
 .scr-section-head {
@@ -947,7 +956,7 @@ html:not(.js) .reveal-cascade > * {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--glass);
   color: var(--ink-2);
 }
 .scr-row-body {
@@ -957,7 +966,7 @@ html:not(.js) .reveal-cascade > * {
 .scr-row-name {
   font-size: 0.8em;
   font-weight: 700;
-  color: #fff;
+  color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -989,7 +998,7 @@ html:not(.js) .reveal-cascade > * {
   padding: 0.15em 0.4em;
   border-radius: 0.35em;
   background: rgba(99, 102, 241, 0.22);
-  color: var(--teal-2);
+  color: var(--accent);
 }
 
 .scr-search {
@@ -1022,8 +1031,8 @@ html:not(.js) .reveal-cascade > * {
 }
 .scr-chip.is-on {
   background: #fff;
-  color: #0a0a0f;
-  border-color: #fff;
+  color: var(--bg);
+  border-color: var(--ink);
 }
 .scr-day {
   font-size: 0.7em;
@@ -1066,14 +1075,14 @@ html:not(.js) .reveal-cascade > * {
   color: var(--ink-3);
 }
 .scr-budget-summary b {
-  color: #fff;
+  color: var(--ink);
   font-size: 1.15em;
   font-variant-numeric: tabular-nums;
 }
 .scr-bar {
   height: 0.4em;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--line);
   overflow: hidden;
   margin-top: 0.45em;
 }
@@ -1081,7 +1090,7 @@ html:not(.js) .reveal-cascade > * {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--pink), var(--teal));
+  background: var(--accent-solid));
 }
 .scr-cat {
   padding: 0.7em 0.85em;
@@ -1098,7 +1107,7 @@ html:not(.js) .reveal-cascade > * {
 .scr-cat-name {
   font-size: 0.8em;
   font-weight: 700;
-  color: #fff;
+  color: var(--ink);
 }
 .scr-cat-val {
   font-size: 0.7em;
@@ -1108,7 +1117,7 @@ html:not(.js) .reveal-cascade > * {
 .scr-cat-pct {
   font-size: 0.78em;
   font-weight: 800;
-  color: #fff;
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1137,8 +1146,6 @@ html:not(.js) .reveal-cascade > * {
 .feature-card {
   background: var(--glass);
   border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
   border-radius: 32px;
   padding: 32px;
   display: flex;
@@ -1154,15 +1161,9 @@ html:not(.js) .reveal-cascade > * {
 }
 .feature-card:hover {
   transform: translateY(-8px);
-  box-shadow:
-    0 30px 80px -20px rgba(255, 143, 177, 0.25),
-    0 0 0 1px rgba(255, 143, 177, 0.2);
   border-color: rgba(255, 143, 177, 0.3);
 }
 .feature-card.ai-card:hover {
-  box-shadow:
-    0 30px 80px -20px rgba(99, 102, 241, 0.3),
-    0 0 0 1px rgba(99, 102, 241, 0.25);
   border-color: rgba(99, 102, 241, 0.35);
 }
 .feature-card h3 {
@@ -1183,12 +1184,8 @@ html:not(.js) .reveal-cascade > * {
   border-radius: 22px;
   display: grid;
   place-items: center;
-  background: linear-gradient(140deg, var(--pink) 0%, var(--teal) 100%);
-  box-shadow:
-    0 18px 40px -10px rgba(255, 143, 177, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.15);
-  color: #fff;
+  background: var(--accent-solid);
+  color: var(--ink);
   transform: rotate(-6deg);
   position: relative;
   flex-shrink: 0;
@@ -1201,11 +1198,11 @@ html:not(.js) .reveal-cascade > * {
   right: 12px;
   height: 14px;
   border-radius: 8px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent);
+  background: transparent;
   pointer-events: none;
 }
 .ai-card .feature-icon-3d {
-  background: linear-gradient(140deg, var(--teal) 0%, var(--pink-3) 100%);
+  background: var(--teal);
 }
 .feat-tag {
   position: absolute;
@@ -1217,7 +1214,7 @@ html:not(.js) .reveal-cascade > * {
   padding: 5px 10px;
   border-radius: 6px;
   background: rgba(99, 102, 241, 0.18);
-  color: var(--teal-2);
+  color: var(--accent);
   border: 1px solid rgba(99, 102, 241, 0.35);
 }
 .feature-visual {
@@ -1226,7 +1223,7 @@ html:not(.js) .reveal-cascade > * {
 }
 .fv-card {
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--glass);
   border: 1px solid var(--line-2);
   padding: 14px 16px;
 }
@@ -1242,7 +1239,7 @@ html:not(.js) .reveal-cascade > * {
 }
 .fv-value {
   font-size: 15px;
-  color: #fff;
+  color: var(--ink);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   margin-top: 2px;
@@ -1255,7 +1252,7 @@ html:not(.js) .reveal-cascade > * {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--teal-2);
+  color: var(--accent);
 }
 .fv-bar-label {
   display: flex;
@@ -1268,14 +1265,14 @@ html:not(.js) .reveal-cascade > * {
 .fv-bar {
   height: 8px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--glass);
   overflow: hidden;
 }
 .fv-bar i {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--pink), var(--teal));
+  background: var(--accent-solid));
 }
 .fv-bar + .fv-bar-label {
   margin-top: 16px;
@@ -1308,12 +1305,23 @@ html:not(.js) .reveal-cascade > * {
   gap: 22px;
 }
 .ba-before {
-  background: #0e0e14;
+  /* Bloco com tema próprio: é preto dentro de uma seção creme, então precisa
+     declarar a própria tinta em vez de herdar a da seção. */
+  background: var(--black);
+  --ink: #fffaf6;
+  --ink-2: #d8d2cd;
+  --ink-3: #a39c96;
+  --line: color-mix(in srgb, #fffaf6 16%, transparent);
   color: var(--ink-3);
 }
 .ba-after {
-  background: linear-gradient(160deg, rgba(255, 143, 177, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
-  color: #fff;
+  /* Era degradê rosa->índigo. Chapado no rosa da marca, com tema próprio. */
+  background: var(--pink);
+  --ink: #4a0a1f;
+  --ink-2: #63142c;
+  --ink-3: #6b1f33; /* 5,25:1 sobre o rosa */
+  --line: color-mix(in srgb, #4a0a1f 20%, transparent);
+  color: #4a0a1f;
 }
 .ba-label {
   display: inline-flex;
@@ -1328,7 +1336,7 @@ html:not(.js) .reveal-cascade > * {
   width: fit-content;
 }
 .ba-before .ba-label {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass);
   color: var(--ink-3);
   border: 1px solid var(--line-2);
 }
@@ -1369,12 +1377,12 @@ html:not(.js) .reveal-cascade > * {
   margin-top: 1px;
 }
 .ba-before .icon-wrap {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass);
   color: var(--ink-5);
 }
 .ba-after .icon-wrap {
-  background: linear-gradient(135deg, var(--pink), var(--teal));
-  color: #fff;
+  background: var(--accent-solid));
+  color: var(--ink);
 }
 .ba-divider {
   position: absolute;
@@ -1382,7 +1390,7 @@ html:not(.js) .reveal-cascade > * {
   bottom: 0;
   left: 50%;
   width: 2px;
-  background: linear-gradient(180deg, transparent, var(--pink), var(--teal), transparent);
+  background: var(--accent);
   transform: scaleY(0);
   transform-origin: top;
   transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
@@ -1415,8 +1423,6 @@ html:not(.js) .reveal-cascade > * {
   border-radius: 28px;
   background: var(--glass);
   border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -1429,9 +1435,8 @@ html:not(.js) .reveal-cascade > * {
   place-items: center;
   font-weight: 800;
   font-size: 18px;
-  color: #0a0a0f;
-  background: linear-gradient(140deg, var(--pink), var(--pink-2));
-  box-shadow: 0 12px 30px -10px rgba(255, 143, 177, 0.55);
+  color: var(--bg);
+  background: var(--accent-solid));
 }
 .step h3 {
   font-size: 20px;
@@ -1475,25 +1480,23 @@ html:not(.js) .reveal-cascade > * {
   border-radius: 24px;
   background: var(--glass);
   border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
 }
 .fact-num {
   font-size: 42px;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1;
-  color: #fff;
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 .fact-num .grad {
-  background: linear-gradient(120deg, var(--pink), var(--teal));
+  background: var(--accent-solid));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 .fact-label {
-  color: #fff;
+  color: var(--ink);
   font-size: 14px;
   font-weight: 700;
   margin-top: 12px;
@@ -1529,7 +1532,7 @@ html:not(.js) .reveal-cascade > * {
   /* Barra de rolagem discreta em vez de escondida: escondê-la tira a única
      dica de que há mais telas ao lado. */
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-color: var(--line) transparent;
 }
 .showcase-item {
   scroll-snap-align: center;
@@ -1573,30 +1576,15 @@ html:not(.js) .reveal-cascade > * {
   padding: 56px;
   border-radius: 32px;
   border: 1px solid var(--line);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 143, 177, 0.06),
-    rgba(99, 102, 241, 0.05) 60%,
-    rgba(255, 255, 255, 0.02)
-  );
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  background: var(--glass);
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   gap: 56px;
   align-items: center;
 }
-.plat-card::before {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255, 143, 177, 0.18) 0%, transparent 40%),
-    radial-gradient(circle at 85% 70%, rgba(99, 102, 241, 0.18) 0%, transparent 42%);
-  filter: blur(40px);
-}
+/* O ::before daqui era um brilho borrado (blur 40px) atrás do cartão — a
+   marca de página gerada mais direta que a folha tinha. Removido; o cartão se
+   separa do fundo pela borda, como no blog. */
 .plat-text {
   position: relative;
   z-index: 1;
@@ -1627,20 +1615,18 @@ html:not(.js) .reveal-cascade > * {
   gap: 8px;
   padding: 10px 16px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--glass);
   border: 1px solid var(--line);
-  color: #fff;
+  color: var(--ink);
   font-weight: 600;
   font-size: 14px;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
 }
 .plat-pill svg {
   color: var(--pink);
   flex-shrink: 0;
 }
 .plat-pill.web svg {
-  color: var(--teal-2);
+  color: var(--accent);
 }
 /*
  * A ressalva de loja fica DENTRO do cartão, no mesmo peso visual do resto —
@@ -1651,7 +1637,7 @@ html:not(.js) .reveal-cascade > * {
   margin-top: 22px;
   padding: 14px 18px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass);
   border: 1px solid var(--line);
   color: var(--ink-2);
   font-size: 14.5px;
@@ -1681,7 +1667,7 @@ html:not(.js) .reveal-cascade > * {
   gap: 10px;
   padding: 12px 14px;
   border-bottom: 1px solid var(--line-2);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--glass);
 }
 .plat-browser-dots {
   display: flex;
@@ -1705,7 +1691,7 @@ html:not(.js) .reveal-cascade > * {
   font-size: 11px;
   color: var(--ink-4);
   padding: 5px 12px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--glass);
   border-radius: 999px;
   flex: 1;
   max-width: 230px;
@@ -1726,7 +1712,7 @@ html:not(.js) .reveal-cascade > * {
 .plat-browser-value {
   font-size: 26px;
   font-weight: 800;
-  color: #fff;
+  color: var(--ink);
   letter-spacing: -0.03em;
   margin-top: 4px;
   font-variant-numeric: tabular-nums;
@@ -1746,7 +1732,7 @@ html:not(.js) .reveal-cascade > * {
   color: var(--ink-3);
 }
 .plat-row .v {
-  color: #fff;
+  color: var(--ink);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -1780,7 +1766,7 @@ html:not(.js) .reveal-cascade > * {
 .pm-balance {
   font-size: 22px;
   font-weight: 800;
-  color: #fff;
+  color: var(--ink);
   margin-top: 6px;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
@@ -1804,7 +1790,7 @@ html:not(.js) .reveal-cascade > * {
 }
 .pm-card .l2 {
   font-size: 11px;
-  color: #fff;
+  color: var(--ink);
   font-weight: 700;
   margin-top: 2px;
 }
@@ -1840,8 +1826,6 @@ html:not(.js) .reveal-cascade > * {
   border-radius: 28px;
   border: 1px solid var(--line);
   background: var(--glass);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
 }
 @media (max-width: 600px) {
   .intl-card {
@@ -1874,9 +1858,9 @@ html:not(.js) .reveal-cascade > * {
   gap: 9px;
   padding: 9px 15px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass);
   border: 1px solid var(--line);
-  color: #fff;
+  color: var(--ink);
   font-size: 13.5px;
   font-weight: 600;
 }
@@ -1884,7 +1868,7 @@ html:not(.js) .reveal-cascade > * {
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--pink), var(--teal));
+  background: var(--accent-solid));
   flex-shrink: 0;
 }
 .currency-stack {
@@ -1900,7 +1884,7 @@ html:not(.js) .reveal-cascade > * {
   gap: 12px;
   padding: 15px 18px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--glass);
   border: 1px solid var(--line);
 }
 .currency-row:nth-child(1) {
@@ -1913,15 +1897,16 @@ html:not(.js) .reveal-cascade > * {
   transform: rotate(-0.4deg);
 }
 .currency-row.featured {
-  background: linear-gradient(135deg, rgba(255, 143, 177, 0.15), rgba(99, 102, 241, 0.12));
-  border-color: rgba(255, 143, 177, 0.35);
-  box-shadow: 0 14px 40px -14px rgba(255, 143, 177, 0.5);
+  /* Sem degradê e sem sombra colorida: o destaque vem da borda no acento, que
+     é como o blog marca o que importa. */
+  background: var(--glass);
+  border-color: var(--accent);
 }
 .currency-row .who {
   min-width: 0;
 }
 .currency-row .name {
-  color: #fff;
+  color: var(--ink);
   font-size: 13.5px;
   font-weight: 700;
 }
@@ -1939,7 +1924,7 @@ html:not(.js) .reveal-cascade > * {
   text-align: right;
 }
 .currency-row .amt > span {
-  color: #fff;
+  color: var(--ink);
   font-weight: 800;
   font-size: 16px;
   font-variant-numeric: tabular-nums;
@@ -1952,7 +1937,7 @@ html:not(.js) .reveal-cascade > * {
   padding: 3px 8px;
   border-radius: 6px;
   background: rgba(99, 102, 241, 0.22);
-  color: var(--teal-2);
+  color: var(--accent);
   font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -1971,8 +1956,6 @@ html:not(.js) .reveal-cascade > * {
   border-radius: 20px;
   background: var(--glass);
   border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
   overflow: hidden;
 }
 .faq-item[open] {
@@ -1989,7 +1972,7 @@ html:not(.js) .reveal-cascade > * {
   gap: 18px;
   font-size: 17px;
   font-weight: 700;
-  color: #fff;
+  color: var(--ink);
 }
 .faq-item summary::-webkit-details-marker {
   display: none;
@@ -2057,12 +2040,7 @@ html:not(.js) .reveal-cascade > * {
   inset: -20%;
   z-index: -2;
   opacity: 0.85;
-  background:
-    radial-gradient(circle at 20% 30%, var(--pink) 0%, transparent 35%),
-    radial-gradient(circle at 80% 20%, var(--teal) 0%, transparent 38%),
-    radial-gradient(circle at 60% 80%, var(--pink-3) 0%, transparent 35%),
-    radial-gradient(circle at 30% 70%, var(--pink-2) 0%, transparent 30%);
-  filter: blur(60px);
+  background: var(--bg);
   animation: meshShift 18s ease-in-out infinite;
 }
 /*
@@ -2076,12 +2054,7 @@ html:not(.js) .reveal-cascade > * {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(10, 10, 15, 0.78) 0%,
-    rgba(10, 10, 15, 0.62) 60%,
-    rgba(10, 10, 15, 0.45) 100%
-  );
+  background: var(--bg);
 }
 @keyframes meshShift {
   0%,
@@ -2119,7 +2092,7 @@ html:not(.js) .reveal-cascade > * {
   place-items: center;
   font-weight: 800;
   font-size: 17px;
-  color: #fff;
+  color: var(--ink);
   border: 3px solid var(--bg-2);
 }
 .final-avatars span + span {
@@ -2206,7 +2179,7 @@ footer {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--ink);
 }
 .foot-col ul {
   margin: 16px 0 0;
@@ -2223,7 +2196,7 @@ footer {
   transition: color 0.2s;
 }
 .foot-col a:hover {
-  color: #fff;
+  color: var(--ink);
 }
 .footer-bottom {
   display: flex;
