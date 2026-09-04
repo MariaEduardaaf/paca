@@ -73,7 +73,7 @@ De tudo o que vocês vão combinar, este é o item que mais rende e o que mais f
 
 **Ela fica mais difícil com o tempo, e não de forma linear.** Sair do mercado é uma decisão de um dia; voltar é um processo, e cada ano fora acrescenta uma explicação a mais que a pessoa vai ter que dar sobre o buraco no currículo. Não é justo e não deveria ser assim — mas é o que acontece, e planejar contra isso é mais útil do que reclamar disso.
 
-**O que mantém alguém empregável não é só a habilidade técnica: é continuar existindo profissionalmente.** Um trabalho pequeno e ocasional, um curso por ano, uma certificação renovada, o contato mantido com duas ou três pessoas da área. Nenhuma dessas coisas custa caro sozinha, e todas somadas cabem numa linha modesta do orçamento — a diferença é que elas só existem se alguém decidir que existem, porque nenhuma delas é urgente em nenhum mês específico.
+**O que mantém alguém empregável não é só a habilidade técnica: é continuar existindo profissionalmente.** E, quando esse trabalho pequeno começa a pagar, a decisão vira outra — [quando o segundo trabalho compensa de verdade](/blog/renda-extra-no-casal) tem a conta pronta. Um trabalho pequeno e ocasional, um curso por ano, uma certificação renovada, o contato mantido com duas ou três pessoas da área. Nenhuma dessas coisas custa caro sozinha, e todas somadas cabem numa linha modesta do orçamento — a diferença é que elas só existem se alguém decidir que existem, porque nenhuma delas é urgente em nenhum mês específico.
 
 ### O buraco previdenciário, que é o mais caro e o mais fácil de tapar
 

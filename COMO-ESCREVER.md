@@ -22,7 +22,7 @@ assunto aparece hoje — quanto menor, maior o buraco:
 
 | assunto | quanto já existe |
 |---|---|
-| **Renda extra, bico, segundo trabalho** | **0 menções, 0 artigos** ← o maior buraco |
+| ~~Renda extra, bico, segundo trabalho~~ | ⚠️ **coberto em 2026-09-04** — e a "lacuna" era fronteira, não buraco: ver o aviso abaixo |
 | **Pacto antenupcial: escolher o regime antes de casar** | 2 menções |
 | **Quando um sustenta o outro** | 3 menções |
 | **Herança e dinheiro que veio de fora** | 3 menções |
@@ -30,6 +30,14 @@ assunto aparece hoje — quanto menor, maior o buraco:
 
 ⚠️ **Isto é insumo, não ordem.** Se você tem um assunto que ouviu de alguém de verdade, ele vale
 mais que qualquer um desta lista — a lista só diz onde o site está descoberto.
+
+⚠️⚠️ **E confira o `BRAND.md` antes de escolher, porque esta lista já errou uma vez.** Em 2026-09-04
+ela oferecia "renda extra" como o maior buraco do blog — e o `BRAND.md` listava exatamente aquilo
+como **fora de escopo**. As "0 menções" eram zero *porque o assunto estava excluído de propósito*.
+
+**A lição, e ela vale para toda lacuna medida:** ausência pode ser **fronteira**, não oportunidade. A
+pergunta que separa as duas é *"alguém decidiu excluir isso?"*, e a resposta está no `BRAND.md`, não
+na contagem. Quem pegou o erro foi o agente de escrita, lendo o dossiê — nenhum medidor pegaria.
 
 ### 2. Abra o terminal **na raiz do projeto**
 

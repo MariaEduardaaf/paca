@@ -86,7 +86,18 @@
 - **Partial scope**: finanças pessoais individuais **quando afetam o casal** (desemprego de um,
   score de crédito de um, cartão adicional). Crédito e financiamento **na ótica dos dois titulares**
 - **Out of scope**: recomendação de investimento específico · criptomoeda especulativa · crédito
-  predatório e consignado agressivo · renda extra e "trabalhe de casa" · qualquer coisa que não passe
-  pela pergunta *"isso muda o combinado de dois adultos?"*
+  predatório e consignado agressivo · **listas de bico e "trabalhe de casa"** · qualquer coisa que
+  não passe pela pergunta *"isso muda o combinado de dois adultos?"*
+
+  ⚠️ **A linha acima dizia só "renda extra", e isso estava errado — corrigido em 2026-09-04.**
+  A exclusão sempre mirou o gênero de conteúdo: lista de 50 formas de ganhar dinheiro em casa, que é
+  o que o blog não quer ser. Escrita como estava, ela também excluía a **decisão do casal sobre um
+  segundo trabalho** — que passa no teste desta mesma linha e é assunto legítimo daqui.
+
+  **Como o erro foi descoberto, e por que fica registrado:** o `COMO-ESCREVER.md` listava "renda
+  extra" como a maior lacuna do blog, e o tema foi escolhido por ali. Quem pegou a contradição foi o
+  agente de escrita, ao ler este arquivo antes de escrever — nenhum script pegaria, porque não é erro
+  de forma. **Lacuna medida não é o mesmo que oportunidade: a ausência pode ser fronteira**, e a
+  pergunta que separa as duas é se alguém decidiu excluir aquilo de propósito.
 - **Recurring formats**: guia com combinado no fim · comparativo de métodos (o proporcional vs. meio a
   meio) · "quanto custa X no Brasil" com números reais e fonte · a conversa difícil, roteirizada
