@@ -1,0 +1,52 @@
+---
+import { ADSENSE_CLIENT, ADS_ENABLED, adSlotId } from "../lib/monetization";
+
+/**
+ * One ad placement. Network-agnostic call site: pages declare WHERE ads live
+ * ("first-fold", "in-content"); what actually renders is decided here.
+ *
+ * Renders nothing até existirem AS DUAS pontas (ver lib/monetization.ts):
+ * o `pub-` da conta E o ID deste bloco. Faltando o ID, o `<ins>` seria um
+ * bloco inválido — o AdSense o processa e nunca preenche, deixando 280px em
+ * branco com o rótulo "Publicidade" por cima. Melhor não desenhar nada.
+ */
+interface Props {
+  /** Placement id — becomes data-placement for measurement/debugging. */
+  placement: "first-fold" | "in-content";
+  class?: string;
+}
+
+const { placement, class: className = "" } = Astro.props;
+
+const slot = adSlotId(placement);
+const render = ADS_ENABLED && slot.length > 0;
+---
+
+{
+  render && (
+    <div
+      class={`ad-slot my-6 text-center ${className}`}
+      data-placement={placement}
+    >
+      {/*
+        O rótulo "Publicidade" é exigência de transparência: precisa ser
+        legível, não um sussurro. gray-400 dava 2,1:1 sobre branco e
+        gray-500 dava 3,7:1 no tema escuro — os dois reprovavam em AA.
+      */}
+      <span class="mb-1 block text-[10px] uppercase tracking-widest text-gray-600 dark:text-gray-400">
+        Publicidade
+      </span>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={slot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+      <script is:inline>
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  )
+}

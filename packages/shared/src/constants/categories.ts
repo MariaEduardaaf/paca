@@ -22,4 +22,6 @@ export const BUDGET_THRESHOLDS = {
 } as const;
 
 export const INVITE_CODE_PREFIX = "PACA";
-export const INVITE_CODE_LENGTH = 4;
+// Legacy client-generated codes were 4 chars; the create_couple RPC issues 10.
+export const INVITE_CODE_MIN_LENGTH = 4;
+export const INVITE_CODE_MAX_LENGTH = 10;

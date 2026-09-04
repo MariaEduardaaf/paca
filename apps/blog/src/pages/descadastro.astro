@@ -1,0 +1,166 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { APP_URL } from "../consts";
+
+/**
+ * Confirmação do descadastro E página de instrução.
+ *
+ * O link do rodapé de cada e-mail leva para a função `blog-unsubscribe?token=…`,
+ * que faz a baixa no banco e REDIRECIONA para cá com `?estado=ok|invalido|erro`.
+ * A função já devolveu a própria página de confirmação, mas o gateway de Edge
+ * Functions do Supabase força `text/plain` na resposta — o leitor recebia o
+ * código HTML cru na tela. Por isso a confirmação mora aqui.
+ *
+ * O aviso é revelado por JS a partir do endereço, porque o site é estático e
+ * não enxerga query string no build. Sem JS a pessoa cai na página de instrução
+ * normal — e isso é aceitável: a baixa já aconteceu no servidor ANTES do
+ * redirecionamento, então nada depende deste aviso aparecer.
+ */
+---
+
+<BaseLayout
+  title="Descadastro da newsletter"
+  description="Como sair da lista de e-mails do blog do Paca Finance: o link de descadastro, o que fazer se você não tem mais o e-mail e como falar com a gente."
+>
+  <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    {/*
+      Um bloco por estado, todos escondidos na marcação. O script revela no
+      máximo um. `role="status"` e não `alert`: é confirmação de algo que a
+      pessoa pediu, não interrupção — leitor de tela anuncia sem cortar o que
+      estiver lendo.
+    */}
+    <div
+      id="estado-ok"
+      role="status"
+      hidden
+      class="mb-8 rounded-2xl border border-pink-200 bg-pink-50 p-5 dark:border-pink-900 dark:bg-pink-950/40"
+    >
+      <p class="font-display text-lg font-semibold text-gray-800 dark:text-white">
+        Pronto, sua inscrição foi cancelada.
+      </p>
+      <p class="mt-1 text-gray-700 dark:text-gray-300">
+        Você não vai mais receber os e-mails da newsletter. Se mudar de ideia, é
+        só assinar de novo em qualquer artigo.
+      </p>
+    </div>
+
+    <div
+      id="estado-invalido"
+      role="status"
+      hidden
+      class="mb-8 rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-900"
+    >
+      <p class="font-display text-lg font-semibold text-gray-800 dark:text-white">
+        Este link de cancelamento não é mais válido.
+      </p>
+      <p class="mt-1 text-gray-700 dark:text-gray-300">
+        Ele pode estar incompleto ou já ter sido usado. Abra o link direto do
+        e-mail que você recebeu, sem editar o endereço. Se não der certo, o
+        caminho abaixo resolve.
+      </p>
+    </div>
+
+    <div
+      id="estado-erro"
+      role="status"
+      hidden
+      class="mb-8 rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-900"
+    >
+      <p class="font-display text-lg font-semibold text-gray-800 dark:text-white">
+        Não deu para concluir agora.
+      </p>
+      <p class="mt-1 text-gray-700 dark:text-gray-300">
+        Tivemos um problema temporário ao registrar o cancelamento. Abra o mesmo
+        link do e-mail de novo em alguns minutos — ou fale com a gente, que a
+        gente resolve na mão.
+      </p>
+    </div>
+
+    <h1 class="font-display text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
+      Sair da lista de e-mails
+    </h1>
+
+    <p class="mt-3 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+      Você entra quando quer e sai quando quiser. Sem formulário longo, sem
+      perguntar o motivo.
+    </p>
+
+    <div class="prose-paca mt-8">
+      <h2>O jeito mais rápido</h2>
+      <p>
+        Abra qualquer e-mail que você recebeu da gente e clique em
+        <strong>“Cancelar inscrição”</strong>, lá no rodapé. Esse link já é o seu
+        — ele tira o seu endereço da lista na hora e mostra uma página
+        confirmando. Não precisa responder ao e-mail nem esperar aprovação.
+      </p>
+
+      <h2>Perdi o e-mail. E agora?</h2>
+      <p>
+        Sem problema: escreva para a gente pelo
+        <a href={`${APP_URL}/support`}>suporte do Paca Finance</a> a partir do
+        mesmo endereço que recebe a newsletter, pedindo o descadastro. A gente
+        remove manualmente e confirma a remoção. Pedimos que use o mesmo
+        endereço só para ter certeza de que a solicitação é sua.
+      </p>
+
+      <h2>O que acontece com o seu e-mail</h2>
+      <ul>
+        <li>
+          Ele sai da lista de envios <strong>imediatamente</strong>. Os próximos
+          e-mails não vão mais para você.
+        </li>
+        <li>
+          A lista da newsletter do blog é <strong>separada da sua conta no app
+          Paca Finance</strong>. Sair da newsletter não apaga, não altera e não
+          afeta em nada os seus dados no aplicativo — e o contrário também vale.
+        </li>
+        <li>
+          Você pode voltar depois, se quiser: é só assinar de novo em qualquer
+          artigo do blog, marcando o consentimento outra vez.
+        </li>
+      </ul>
+
+      <h2>Seus direitos</h2>
+      <p>
+        Além de sair da lista, você pode pedir a confirmação, a correção ou a
+        exclusão dos seus dados a qualquer momento, como prevê a LGPD. O caminho
+        é o mesmo: <a href="/contato">fale com a gente</a>. Os detalhes de como
+        tratamos e guardamos essas informações estão na
+        <a href="/privacidade">Política de Privacidade do blog</a>.
+      </p>
+    </div>
+
+    <p class="mt-10 border-t border-gray-100 pt-6 text-sm text-gray-600 dark:border-gray-800 dark:text-gray-400">
+      <a href="/blog" class="rounded underline underline-offset-2 hover:text-pink-700 dark:hover:text-pink-300">
+        Voltar para os artigos
+      </a>
+    </p>
+  </div>
+
+  <script is:inline>
+    (function () {
+      // Lista fechada de estados: o valor vem do endereço, então nunca pode
+      // virar seletor nem texto na página. Qualquer coisa fora desta lista é
+      // ignorada e a página fica como está.
+      var permitidos = { ok: 1, invalido: 1, erro: 1 };
+      var estado;
+      try {
+        estado = new URLSearchParams(location.search).get("estado");
+      } catch (_) {
+        return;
+      }
+      if (!estado || !permitidos[estado]) return;
+
+      var bloco = document.getElementById("estado-" + estado);
+      if (bloco) bloco.hidden = false;
+
+      // Tira o parâmetro do endereço depois de mostrar: se a pessoa recarregar
+      // ou compartilhar o link, não reaparece um aviso que já foi lido.
+      try {
+        history.replaceState(null, "", location.pathname);
+      } catch (_) {
+        /* sem history: o aviso continua correto, só permanece no endereço */
+      }
+    })();
+  </script>
+</BaseLayout>

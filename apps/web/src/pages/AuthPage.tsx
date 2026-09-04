@@ -130,6 +130,26 @@ export function AuthPage() {
     return displayName.length < 1 ? t.auth.yourName : "";
   }, [displayName, nameTouched]);
 
+  // Surface OAuth callback errors: cancelling at the provider or a failed
+  // code exchange bounces back here with #error=...&error_description=...,
+  // which nothing else reads — without this the user gets zero explanation.
+  useEffect(() => {
+    const fromRaw = (raw: string) =>
+      new URLSearchParams(raw.startsWith("#") || raw.startsWith("?") ? raw.slice(1) : raw);
+    const hashParams = fromRaw(window.location.hash);
+    const searchParams = fromRaw(window.location.search);
+    const oauthError =
+      hashParams.get("error") ??
+      hashParams.get("error_description") ??
+      searchParams.get("error") ??
+      searchParams.get("error_description");
+    if (oauthError) {
+      setError(t.auth.loginError);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Sync URL with mode
   useEffect(() => {
     const newPath = mode === "login" ? "/login" : "/signup";

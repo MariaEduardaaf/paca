@@ -1,0 +1,81 @@
+---
+import { APP_URL, SIGNUP_URL } from "../consts";
+import { CATEGORIES, CATEGORY_IDS } from "../lib/categories";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="lg:col-span-2">
+        {/* Nome acessível contém o texto visível (WCAG 2.5.3) — ver Header. */}
+        <a href="/" class="inline-flex items-center gap-2.5 rounded-xl">
+          <img src="/logo-icon-96.png" alt="" class="h-9 w-9 rounded-xl" width="36" height="36" loading="lazy" />
+          <span class="font-display text-xl font-bold tracking-tight text-gray-800 dark:text-white">paca<span class="text-pink-500 dark:text-pink-300">finance</span></span>
+          <span class="sr-only">— página inicial</span>
+        </a>
+        <p class="mt-4 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+          O app brasileiro para casais organizarem o dinheiro juntos: gastos
+          compartilhados, contas divididas do jeito certo e metas a dois.
+        </p>
+      </div>
+
+      <nav aria-label="Categorias do blog">
+        <h2 class="font-display text-sm font-semibold uppercase tracking-wide text-gray-900 dark:text-white">Blog</h2>
+        <ul class="mt-4 space-y-2 text-sm">
+          {
+            CATEGORY_IDS.map((id) => (
+              <li>
+                <a
+                  href={`/categorias/${id}`}
+                  class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300"
+                >
+                  {CATEGORIES[id].label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-label="Links do Paca Finance">
+        <h2 class="font-display text-sm font-semibold uppercase tracking-wide text-gray-900 dark:text-white">Paca Finance</h2>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li>
+            <a href={SIGNUP_URL} class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Criar conta grátis</a>
+          </li>
+          <li>
+            <a href="/privacidade" class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Privacidade</a>
+          </li>
+          <li>
+            <a href={`${APP_URL}/terms`} class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Termos de uso</a>
+          </li>
+          <li>
+            <a href={`${APP_URL}/support`} class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Suporte</a>
+          </li>
+          <li>
+            <a href="/contato" class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Contato</a>
+          </li>
+          <li>
+            <a href="/sobre#politica-editorial" class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Política editorial</a>
+          </li>
+          <li>
+            <a href="/descadastro" class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Descadastro</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    {/*
+      Sem link visível para o RSS aqui de propósito. O feed continua existindo
+      e continua sendo anunciado no <head> pelo <link rel="alternate">, que é
+      como leitor de feed e agregador o encontram — nenhum deles depende de um
+      link na página. O rótulo "RSS" no rodapé só falava com quem já sabe o que
+      é, e ocupava o lugar de igual para igual com o aviso de direitos.
+    */}
+    <div class="mt-10 border-t border-gray-200 pt-6 text-sm text-gray-600 dark:border-gray-800 dark:text-gray-400">
+      <p>© {year} Paca Finance. Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>

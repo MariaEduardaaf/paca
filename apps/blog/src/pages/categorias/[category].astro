@@ -1,0 +1,252 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import Cover from "../../components/Cover.astro";
+import NewsletterForm from "../../components/NewsletterForm.astro";
+import { CATEGORIES, CATEGORY_IDS, type CategoryId } from "../../lib/categories";
+import { formatDate, readingTimeMinutes, sortByDateDesc } from "../../lib/posts";
+
+export async function getStaticPaths() {
+  return CATEGORY_IDS.map((category) => ({ params: { category } }));
+}
+
+const category = Astro.params.category as CategoryId;
+const info = CATEGORIES[category];
+
+const all = sortByDateDesc(await getCollection("blog", ({ data }) => !data.draft));
+const posts = all.filter((post) => post.data.category === category);
+
+// Categoria magra (1 ou 2 textos) não deve deixar card órfão numa grade de 3
+// colunas: com 1 post a capa vira destaque horizontal; com 2 a grade encolhe
+// para duas colunas num container mais estreito. Nos dois casos, uma faixa
+// "leia também" com posts de outras categorias fecha a página.
+const isSingle = posts.length === 1;
+const single = posts[0];
+
+const alsoRead =
+  posts.length > 0 && posts.length < 3
+    ? all.filter((post) => post.data.category !== category).slice(0, 3)
+    : [];
+
+// O hub "Ferramentas" prometia ferramenta e entregava cinco artigos — a única
+// ferramenta que existe no site não era citada em lugar nenhum dele. A
+// calculadora entra logo abaixo da introdução, antes da grade, porque é a única
+// página que a mesma pessoa reabre (sessão recorrente é o que sustenta a
+// receita por sessão) e não pode depender de o visitante rolar até o fim.
+// Fixo nesta categoria de propósito: hoje só existe uma ferramenta. Quando
+// houver uma segunda, isto vira um campo em lib/categories.
+const showsCalculator = category === "ferramentas";
+---
+
+<BaseLayout title={info.title} description={info.metaDescription}>
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <nav aria-label="Trilha de navegação" class="text-sm text-gray-600 dark:text-gray-400">
+      <ol class="flex flex-wrap items-center gap-1">
+        <li>
+          <a href="/" class="rounded-lg transition-colors hover:text-pink-700 dark:hover:text-pink-300">Início</a>
+        </li>
+        <li aria-hidden="true">›</li>
+        <li>
+          <a href="/categorias" class="rounded-lg transition-colors hover:text-pink-700 dark:hover:text-pink-300">Categorias</a>
+        </li>
+        <li aria-hidden="true">›</li>
+        <li aria-current="page" class="text-gray-700 dark:text-gray-200">{info.label}</li>
+      </ol>
+    </nav>
+
+    {/*
+      H1 usa `title`, não `label`. O `label` é o rótulo curto de menu e pílula
+      ("Organização"), e como H1 ele desperdiçava o único lugar da página em que
+      o termo de busca aparece escrito por extenso — o `title` ("Organização
+      financeira para casais") já existe e já é a <title> desta mesma página.
+      A trilha acima continua no `label`: ali o texto longo repetiria o H1 que
+      vem logo embaixo.
+    */}
+    <header class="mt-6 max-w-2xl">
+      <h1 class="font-display text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">{info.title}</h1>
+      {
+        info.intro.map((paragraph, index) => (
+          <p
+            class:list={[
+              "leading-relaxed text-gray-600 dark:text-gray-300",
+              index === 0 ? "mt-4 text-lg" : "mt-4",
+            ]}
+          >
+            {paragraph}
+          </p>
+        ))
+      }
+    </header>
+
+    {/*
+      Mesmo desenho do cartão da calculadora em RecirculationPanel (usado nas
+      páginas de artigo), repetido em vez de extraído: são dois contextos com
+      larguras e níveis de título diferentes, e um componente compartilhado
+      viraria um punhado de props para economizar dez linhas de markup.
+    */}
+    {
+      showsCalculator && (
+        <section
+          aria-labelledby="ferramenta-calculadora"
+          class="group relative mt-8 max-w-2xl rounded-2xl border border-pink-200 bg-pink-50 p-5 transition-colors hover:border-pink-300 sm:p-6 dark:border-pink-800/60 dark:bg-pink-900/15 dark:hover:border-pink-700"
+        >
+          <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-pink-800 dark:text-pink-200">
+            Ferramenta grátis
+          </p>
+          <h2
+            id="ferramenta-calculadora"
+            class="mt-1.5 font-display text-xl font-bold leading-snug text-gray-800 sm:text-2xl dark:text-white"
+          >
+            <a
+              href="/calculadora-divisao-de-contas"
+              class="rounded transition-colors after:absolute after:inset-0 after:content-[''] hover:text-pink-800 dark:hover:text-pink-200"
+            >
+              Calculadora de divisão de contas do casal
+            </a>
+          </h2>
+          <p class="mt-2 leading-relaxed text-gray-700 dark:text-gray-200">
+            Coloquem as duas rendas e o total das contas do mês: ela mostra
+            quanto cada um paga na divisão proporcional ao salário, quanto isso
+            pesa no bolso de cada um e como fica no meio a meio.
+          </p>
+          {/*
+            Afordância visual, não um segundo link: quem usa leitor de tela já
+            ouviu o link do título e não precisa de "Abrir a calculadora" logo
+            depois.
+          */}
+          <p class="mt-3 text-sm font-semibold text-pink-800 group-hover:underline group-hover:underline-offset-2 dark:text-pink-200">
+            Abrir a calculadora <span aria-hidden="true">→</span>
+          </p>
+        </section>
+      )
+    }
+
+    <nav aria-label="Outras categorias" class="mt-8">
+      <ul class="flex flex-wrap gap-2">
+        {
+          CATEGORY_IDS.map((id) => (
+            <li>
+              <a
+                href={`/categorias/${id}`}
+                aria-current={id === category ? "page" : undefined}
+                class:list={[
+                  "inline-block rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+                  id === category
+                    ? "border-pink-300 bg-pink-100 text-pink-800 dark:border-pink-600 dark:bg-pink-900 dark:text-pink-200"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-pink-300 hover:bg-pink-50 hover:text-pink-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-600 dark:hover:bg-pink-900/40 dark:hover:text-pink-200",
+                ]}
+              >
+                {CATEGORIES[id].label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <section aria-labelledby="artigos" class="mt-10">
+      <h2 id="artigos" class="sr-only">Artigos em {info.label}</h2>
+
+      {
+        isSingle && single && (
+          <article
+            class="group relative grid items-center gap-6 lg:grid-cols-[7fr_5fr] lg:gap-10"
+            style={`--kc:${info.accent};--kcd:${info.accentDark}`}
+          >
+            <div class="overflow-hidden rounded-2xl">
+              <Cover
+                category={single.data.category}
+                slug={single.id}
+                class="aspect-video w-full transition-transform duration-300 group-hover:scale-[1.02]"
+              />
+            </div>
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-[color:var(--kc)] dark:text-[color:var(--kcd)]">
+                {info.label}
+              </p>
+              <h3 class="mt-2 font-display text-2xl font-bold leading-tight text-gray-800 sm:text-[1.75rem] sm:leading-tight dark:text-white">
+                <a
+                  href={`/blog/${single.id}`}
+                  class="rounded transition-colors after:absolute after:inset-0 after:content-[''] group-hover:text-pink-700 dark:group-hover:text-pink-300"
+                >
+                  {single.data.title}
+                </a>
+              </h3>
+              <p class="mt-3 leading-relaxed text-gray-600 dark:text-gray-300">{single.data.description}</p>
+              <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                <time datetime={single.data.pubDate.toISOString()}>{formatDate(single.data.pubDate)}</time>
+                <span aria-hidden="true"> · </span>
+                <span>{readingTimeMinutes(single.body)} min de leitura</span>
+              </p>
+            </div>
+          </article>
+        )
+      }
+
+      {
+        posts.length === 2 && (
+          <div class="grid max-w-4xl gap-8 sm:grid-cols-2">
+            {posts.map((post) => (
+              <PostCard post={post} headingLevel="h3" />
+            ))}
+          </div>
+        )
+      }
+
+      {
+        posts.length >= 3 && (
+          <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <PostCard post={post} headingLevel="h3" />
+            ))}
+          </div>
+        )
+      }
+
+      {
+        posts.length === 0 && (
+          <p class="text-gray-600 dark:text-gray-300">
+            Ainda não há artigos publicados nesta categoria. Enquanto isso,
+            <a
+              href="/blog"
+              class="font-medium text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+            >
+              veja todos os artigos
+            </a>
+            .
+          </p>
+        )
+      }
+    </section>
+
+    {
+      alsoRead.length > 0 && (
+        <section aria-labelledby="leia-tambem" class="mt-14 border-t border-gray-100 pt-10 dark:border-gray-800">
+          <div class="flex flex-wrap items-baseline justify-between gap-4">
+            <h2 id="leia-tambem" class="font-display text-xl font-bold text-gray-800 sm:text-2xl dark:text-white">
+              Leia também
+            </h2>
+            <a
+              href="/blog"
+              class="rounded text-sm font-semibold text-pink-700 transition-colors hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+            >
+              Ver todos os artigos →
+            </a>
+          </div>
+          <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {alsoRead.map((post) => (
+              <PostCard post={post} headingLevel="h3" showExcerpt={false} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {/*
+      Página de categoria também é porta de entrada da busca. A captura fecha a
+      página, depois de todo o conteúdo. `source` guarda a categoria.
+    */}
+    <NewsletterForm source={`categoria-${category}`} class="mt-14" />
+  </div>
+</BaseLayout>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, createContext, useContext, type ReactNode } from "react";
+import { useI18n } from "@paca/api";
 import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
 
 type ToastType = "success" | "error" | "info";
@@ -58,6 +59,7 @@ const borderColors: Record<ToastType, string> = {
 };
 
 function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: number) => void }) {
+  const { t } = useI18n();
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
@@ -88,7 +90,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: number) =
       <button
         onClick={() => setExiting(true)}
         className="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0"
-        aria-label="Fechar"
+        aria-label={t.common.close}
       >
         <X className="w-4 h-4" />
       </button>

@@ -1,0 +1,98 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CTABox from "../components/CTABox.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
+import { APP_URL, SIGNUP_URL } from "../consts";
+---
+
+<BaseLayout
+  title="Sobre o blog"
+  description="Quem escreve o blog do Paca Finance, como o conteúdo é produzido e o que você pode esperar dos nossos guias de finanças para casais."
+>
+  <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <h1 class="font-display text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">Sobre o blog</h1>
+
+    <div class="prose-paca mt-8">
+      <p>
+        Os guias deste blog são escritos e editados por
+        <a href="/autoras/mary-kondratieva">Mary Kondratieva</a>, e é ela quem
+        decide se um texto está pronto para ir ao ar. Os artigos publicados antes
+        de setembro de 2026 assinam <strong>Equipe Paca Finance</strong> — eles
+        não foram reatribuídos, porque não foi ela quem os escreveu.
+      </p>
+      <p>
+        <strong>Usamos inteligência artificial como ferramenta de rascunho</strong>
+        — para levantar fonte, organizar estrutura e propor a primeira versão. O
+        que sai dali não é o que você lê: todo texto é reescrito, checado contra
+        as fontes e assinado por quem publica. Está dito aqui porque é a pergunta
+        que qualquer leitor tem o direito de fazer.
+      </p>
+      <p>
+        Por trás do blog está o <strong>time do Paca Finance</strong>, um app
+        brasileiro criado para casais organizarem o dinheiro juntos. A gente
+        passa o dia pensando em finanças a dois — gastos compartilhados,
+        divisão de contas, orçamento e metas — e traz para cá o que aprendemos
+        construindo o produto e conversando com casais de verdade. Se você
+        chegou agora, o <a href="/blog/bem-vindos-ao-blog-do-paca">post de
+        boas-vindas</a> conta em dois minutos o que esperar daqui.
+      </p>
+
+      <h2 id="politica-editorial">Política editorial</h2>
+      <ul>
+        <li>
+          <strong>Conteúdo prático:</strong> todo artigo termina com algo que
+          vocês conseguem aplicar ainda hoje, mesmo sem usar o Paca.
+        </li>
+        <li>
+          <strong>Sem jargão:</strong> escrevemos como quem explica para um
+          amigo, não como manual de banco.
+        </li>
+        <li>
+          <strong>Revisado:</strong> cada texto passa por revisão do time antes
+          de ser publicado, e atualizamos os artigos quando algo muda.
+        </li>
+      </ul>
+
+      <h2>Sobre o Paca Finance</h2>
+      <p>
+        O Paca é um app de finanças compartilhadas para casais: os dois
+        registram gastos que aparecem em tempo real para o parceiro, dividem
+        contas do jeito que fizer sentido (meio a meio ou proporcional),
+        definem orçamento por categoria e acompanham metas em conjunto. Você
+        pode <a href={SIGNUP_URL}>criar a conta do casal aqui</a>.
+      </p>
+
+      <h2>Transparência</h2>
+      <p>
+        O blog é mantido pela equipe do Paca Finance e, naturalmente,
+        recomendamos o nosso app quando ele resolve o problema do artigo. Fora
+        isso, o conteúdo é independente: não publicamos texto patrocinado nem
+        recebemos comissão de produtos citados. Dúvidas ou sugestões? Fale com a
+        gente pelo <a href={`${APP_URL}/support`}>suporte</a>.
+      </p>
+      {/*
+        A privacidade aponta para a DO BLOG (/privacidade), não para a do app.
+        São documentos diferentes e o link errado era material de reprovação: a
+        do app está em inglês e diz "We do not sell or share your data with
+        advertisers" — exatamente o contrário do que este site faz, e é a página
+        que o revisor do AdSense abre ao clicar num link chamado "Política de
+        Privacidade". Os Termos seguem sendo os do app, que é o que eles regem.
+      */}
+      <p>
+        Veja também a nossa
+        <a href="/privacidade">Política de Privacidade</a> e os
+        <a href={`${APP_URL}/terms`}>Termos de Uso do app</a>.
+      </p>
+    </div>
+
+    {/*
+      Quem chega no /sobre está decidindo se confia na gente — é o melhor lugar
+      da página para pedir o e-mail, logo depois da política editorial. O bloco
+      de produto continua fechando a página, e os dois têm cara diferente
+      (cinza editorial x rosa de produto) para não virarem um pedido só.
+    */}
+    <NewsletterForm source="sobre" />
+
+    <CTABox />
+  </div>
+</BaseLayout>

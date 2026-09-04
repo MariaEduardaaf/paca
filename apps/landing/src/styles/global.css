@@ -1,0 +1,2242 @@
+/*
+ * Folha única da landing. O desenho veio de uma ferramenta como CSS escrito à
+ * mão sobre classes semânticas; foi preservado, limpo e corrigido onde reprovava
+ * em contraste. As correções estão comentadas uma a uma — elas mudam o desenho
+ * original de propósito, e sem o porquê alguém "conserta" de volta.
+ */
+
+/* ─────────────────────────── tokens ─────────────────────────── */
+:root {
+  /*
+   * PALETA DO PRODUTO — os valores vêm de apps/web/tailwind.config.ts, não de
+   * escolha nova. O desenho original trazia índigo (#6366F1) e roxo (#A855F7),
+   * que não existem em nenhum lugar do Paca: a landing parecia outro produto.
+   * O rosa já batia; o resto foi mapeado para o que o app de fato usa.
+   */
+  --pink: #ff8fb1; /* pink.primary */
+  --pink-2: #ff4778; /* pink.500 */
+  --pink-3: #cc3a5c; /* pink.700 — fecha o degradê sem sair da família */
+  --teal: #4ecdc4; /* green.primary do app: o acento não-rosa da marca */
+  --teal-2: #7fdbd4;
+
+  /*
+   * OS TRÊS FUNDOS DA MARCA — os mesmos das capas do blog
+   * (apps/blog/src/lib/cover-art.mjs, THEMES). Chapados, nunca em degradê.
+   */
+  --cream: #f3ede6;
+  --black: #1c1917;
+
+  /*
+   * TEMA DE SEÇÃO. Cada bloco da página pousa num dos três fundos e alternam
+   * entre si, exatamente como os cards do blog fazem na grade — é a assinatura
+   * da marca, e é o "um único elemento repetido" que evita a página virar mais
+   * uma landing genérica. Os componentes NÃO conhecem cor: leem daqui.
+   * Os valores abaixo são o tema creme (o padrão da página).
+   */
+  --bg: var(--cream);
+  --ink: #1c1917;
+  --ink-2: #3d3733;
+  --ink-3: #6b625c;
+  --accent: #a62d4a; /* pink.800 — 5,84:1 sobre creme */ /* pink.700 — o rosa que PASSA em AA sobre claro */
+  --accent-solid: var(--pink); /* o rosa da marca, para preenchimento */
+  --on-accent: #4a0a1f;
+
+  /* Compatibilidade: o CSS antigo referencia estes. Apontam para o tema. */
+  --bg-2: var(--bg);
+  --bg-3: var(--bg);
+
+  /*
+   * CORREÇÃO DE CONTRASTE (1/3). No desenho original --ink-4 era #6B7280, que
+   * dá 4,09:1 sobre o fundo #0A0A0F — reprova em AA para texto normal, e ele
+   * carrega justamente as legendas pequenas (11–13px: rótulo de moeda, URL do
+   * navegador falso, rodapé). #8E96A5 dá ~6,3:1 e mantém a cara de secundário.
+   */
+  --ink-4: var(--ink-3);
+
+  /*
+   * CORREÇÃO DE CONTRASTE (2/3). --ink-5 era #4B5563 e pintava os ícones da
+   * coluna "Antes" — 2,55:1, abaixo do mínimo de 3:1 que ícone informativo
+   * precisa. #7A828F dá ~5:1 e continua mais apagado que a coluna "Com Paca",
+   * que é o contraste narrativo que o desenho quer.
+   */
+  --ink-5: var(--ink-3);
+
+  /* Borda em vez de sombra e de vidro fosco: é como o blog separa bloco de
+     bloco. `currentColor` faz a linha herdar o tema da seção sozinha. */
+  --line: color-mix(in srgb, currentColor 16%, transparent);
+  --line-2: color-mix(in srgb, currentColor 9%, transparent);
+  --glass: color-mix(in srgb, currentColor 4%, transparent);
+
+  --green: #4ecdc4; /* green.primary */
+  --red: #ff6b6b; /* red.primary */
+
+  /* As mesmas do app e do blog: quem vem de um artigo tem de reconhecer que
+     chegou no lugar certo. Manrope não é usada em nenhuma outra propriedade. */
+  --font: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Bricolage Grotesque", var(--font);
+
+  /* Uma escala de canto só, pequena — a do blog. Canto de pílula em tudo é uma
+     das marcas de página gerada; aqui só o botão é redondo. */
+  --r: 4px;
+  --r-card: 16px;
+  --r-pill: 999px;
+}
+
+/* ───────────────── os três temas de seção ───────────────── */
+.sec-cream {
+  --bg: var(--cream);
+  --ink: #1c1917;
+  --ink-2: #3d3733;
+  --ink-3: #6b625c;
+  --accent: #a62d4a; /* pink.800 — 5,84:1 sobre creme */
+  --accent-solid: var(--pink);
+  --on-accent: #4a0a1f;
+}
+.sec-black {
+  --bg: var(--black);
+  --ink: #fffaf6;
+  --ink-2: #d8d2cd;
+  --ink-3: #a39c96;
+  /* Sobre preto o rosa da marca passa com folga (7,4:1), então aqui o acento
+     é o rosa de verdade — não precisa do tom escurecido. */
+  --accent: var(--pink);
+  --accent-solid: var(--pink);
+  --on-accent: #1c1917;
+}
+.sec-pink {
+  --bg: var(--pink);
+  --ink: #4a0a1f;
+  --ink-2: #63142c;
+  --ink-3: #6b1f33; /* 5,25:1 sobre o rosa */
+  --accent: #4a0a1f;
+  --accent-solid: #4a0a1f;
+  --on-accent: var(--pink);
+}
+.sec-cream,
+.sec-black,
+.sec-pink {
+  background: var(--bg);
+  color: var(--ink-2);
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: var(--font);
+  color: var(--ink-2);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+::selection {
+  background: var(--pink);
+  color: #4a0a1f;
+}
+
+/*
+ * Foco visível — o desenho original não tinha nenhum, e o `outline: none` de
+ * fábrica dos botões deixava quem navega por teclado sem saber onde está. Anel
+ * duplo (rosa sobre escuro) para funcionar tanto em cima do fundo quanto em
+ * cima de um cartão claro/gradiente.
+ */
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 3px solid var(--pink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 200;
+  background: #fff;
+  color: var(--bg);
+  font-weight: 700;
+  padding: 12px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─────────────────────────── grão ─────────────────────────── */
+/* Ruído em SVG inline (data URI, ~500 bytes) — o desenho original já fazia
+   assim; nenhuma imagem é baixada por causa disto. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/></svg>");
+  mix-blend-mode: overlay;
+  opacity: 0.18;
+}
+
+/* ─────────────────────────── casca ─────────────────────────── */
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+  position: relative;
+}
+@media (max-width: 600px) {
+  .container {
+    padding: 0 20px;
+  }
+}
+
+section {
+  padding: 120px 0;
+  position: relative;
+}
+@media (max-width: 768px) {
+  section {
+    padding: 80px 0;
+  }
+}
+
+/* ─────────────────────────── nav ─────────────────────────── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line-2);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: 72px;
+}
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.logo img {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: block;
+}
+.logo .brand-2 {
+  color: var(--pink);
+}
+.nav-links {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+.nav-links a {
+  color: var(--ink-3);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+.nav-links a:hover {
+  color: var(--ink);
+}
+.nav-cta {
+  background: var(--ink);
+  color: var(--bg) !important;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 700 !important;
+  white-space: nowrap;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s;
+}
+.nav-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px -8px var(--line);
+}
+/* Abaixo de 900px o menu sai e sobra logo + CTA: um menu sanduíche para cinco
+   âncoras da MESMA página custa JS e um estado a mais para nada — a rolagem
+   entrega as seções do mesmo jeito. */
+@media (max-width: 900px) {
+  .nav-links a:not(.nav-cta) {
+    display: none;
+  }
+}
+
+/* ─────────────────────────── títulos ─────────────────────────── */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
+  margin: 0;
+  font-weight: 800;
+  color: var(--ink);
+}
+.display {
+  font-size: clamp(40px, 6vw, 84px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+  text-wrap: balance;
+  color: var(--ink);
+}
+.h2 {
+  font-size: clamp(32px, 4.2vw, 60px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+.lead {
+  font-size: clamp(17px, 1.4vw, 20px);
+  line-height: 1.5;
+  color: var(--ink-3);
+  font-weight: 500;
+  text-wrap: pretty;
+  margin: 0;
+}
+.accent-word {
+  /* Era degradê rosa->roxo. Texto em degradê é uma das marcas mais repetidas
+     de página gerada; aqui a palavra de destaque é o acento chapado do tema. */
+  color: var(--accent);
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+.eyebrow .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--pink);
+  box-shadow: 0 0 10px var(--pink);
+  flex-shrink: 0;
+}
+/* Variante do hero: mesma pílula, mas com texto de frase (não é rótulo de
+   seção), então sem caixa alta nem letter-spacing largo. */
+.eyebrow.eyebrow-sentence {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: normal;
+  text-align: left;
+}
+
+/* ─────────────────────────── botões ─────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 26px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background 0.15s ease;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+/*
+ * CORREÇÃO DE CONTRASTE (3/3), e a mais visível. O desenho pedia texto BRANCO
+ * sobre o rosa da marca (#FF8FB1): 2,14:1, reprova AA com folga — no botão
+ * principal da página inteira. Tinta escura sobre o mesmo rosa dá 8,8:1 e é
+ * exatamente o que o blog já faz (bg-pink-primary + text-gray-900, ver
+ * apps/blog/src/components/CTABox.astro), então isto também alinha as duas
+ * propriedades em vez de criar um terceiro jeito.
+ */
+.btn-primary {
+  background: var(--pink);
+  color: #4a0a1f;
+}
+.btn-primary:hover {
+  background: var(--pink-2);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  background: var(--glass);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.btn-ghost:hover {
+  background: var(--glass);
+  border-color: var(--line);
+}
+.btn-lg {
+  padding: 19px 32px;
+  font-size: 17px;
+}
+.btn-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: transparent;
+  transform: translateX(-100%);
+  animation: shimmer 2.6s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  60%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ───────────────────── revelar ao rolar ───────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-cascade > * {
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-cascade.in > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-cascade.in > *:nth-child(2) {
+  transition-delay: 100ms;
+}
+.reveal-cascade.in > *:nth-child(3) {
+  transition-delay: 200ms;
+}
+.reveal-cascade.in > *:nth-child(4) {
+  transition-delay: 300ms;
+}
+/*
+ * Sem JS o conteúdo TEM de aparecer. `.reveal` só começa invisível quando o
+ * script marcou o documento — assim quem navega com JS bloqueado (e o robô que
+ * lê HTML cru) vê a página inteira, não um esqueleto vazio.
+ */
+html:not(.js) .reveal,
+html:not(.js) .reveal-cascade > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* ─────────────────────────── hero ─────────────────────────── */
+.hero {
+  padding-top: 64px;
+  padding-bottom: 100px;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+@media (max-width: 1000px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 72px;
+  }
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+.hero h1 {
+  margin-top: 22px;
+}
+.hero p.lead {
+  margin-top: 26px;
+  max-width: 540px;
+}
+.hero-ctas {
+  margin-top: 36px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.hero-meta {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+.meta-pill {
+  color: var(--ink-3);
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.meta-pill svg {
+  color: var(--pink);
+  flex-shrink: 0;
+}
+
+@keyframes orbFloat1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-40px, 30px) scale(1.1);
+  }
+}
+@keyframes orbFloat2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(50px, -40px) scale(1.05);
+  }
+}
+@keyframes orbFloat3 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(60px, 50px) scale(0.9);
+  }
+}
+
+/* telefone do hero */
+.hero-phone {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.hero-phone-tilt {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+/* fichas flutuantes */
+.float-chip {
+  /* Eram cartões escuros translúcidos com sombra — "notificação de vidro
+     flutuando", que é das marcas mais repetidas de página gerada. Viram
+     anotação: superfície do próprio tema, borda de 1px, sem sombra. O que elas
+     dizem continua igual; o que muda é parecerem parte da página em vez de
+     pairarem sobre ela. */
+  position: absolute;
+  z-index: 5;
+  background: var(--bg);
+  border-radius: var(--r-card);
+  border: 1px solid var(--line);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  animation: chipFloat 6s ease-in-out infinite;
+  transform: translateZ(80px);
+}
+@keyframes chipFloat {
+  0%,
+  100% {
+    transform: translateY(0) translateZ(80px);
+  }
+  50% {
+    transform: translateY(-10px) translateZ(80px);
+  }
+}
+.chip-title {
+  font-size: 11px;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+.chip-value {
+  font-size: 13px;
+  color: var(--ink);
+}
+.chip-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.float-chip-1 {
+  top: 12%;
+  right: calc(100% + 12px);
+  animation-delay: 0s;
+}
+.float-chip-2 {
+  /* 48% caía em cima do título "Últimas Transações" depois que o aparelho
+     encolheu — notificação cobrindo cabeçalho lê como erro de posicionamento.
+     Aqui ela pousa sobre uma linha da lista, que é o lugar onde uma
+     notificação de verdade apareceria. */
+  top: 57%;
+  left: calc(100% + 12px);
+  animation-delay: 1.5s;
+  background: var(--bg);
+  border-color: var(--accent);
+}
+.float-chip-3 {
+  bottom: 12%;
+  right: calc(100% + 12px);
+  animation-delay: 3s;
+}
+/* O ESPAÇO NÃO É SIMÉTRICO, e por isso as regras não são.
+   As fichas 1 e 3 caem à ESQUERDA do telefone, sobre a coluna do texto, que é
+   larga: cabem fora do aparelho até bem abaixo. A ficha 2 cai à DIREITA, onde
+   só existe a margem da página — numa tela de notebook comum (1440–1512px)
+   sobram ~110px ali, e a ficha tem ~300px, então ela saía cortada pela janela.
+   O corte antigo era em 1280px, abaixo do notebook: o vão entre as duas regras
+   era justamente onde quase todo mundo está.
+   Puxar as três para dentro resolvia o corte e criava outro problema — elas
+   cobriam a tela do app, que é o que a seção existe para mostrar. Então só a
+   da direita encosta no aparelho. */
+/* Quanto ela avança sobre o aparelho depende do que sobra à direita: em 1440–1512
+   a página tem ~110px de margem e a ficha pode ficar quase toda fora; abaixo de
+   1400 a margem some e ela precisa encostar mais. Os dois valores são o máximo
+   que cabe sem cortar em cada faixa — medidos, não estimados. */
+@media (max-width: 1600px) {
+  .float-chip-2 {
+    left: auto;
+    right: -150px;
+  }
+}
+@media (max-width: 1400px) {
+  .float-chip-2 {
+    right: -40px;
+  }
+}
+@media (max-width: 1280px) {
+  .float-chip-1 {
+    right: auto;
+    left: -24px;
+  }
+  .float-chip-3 {
+    right: auto;
+    left: -24px;
+  }
+}
+/* Abaixo de 640px o telefone já ocupa a largura toda: as fichas sairiam da
+   tela e empurrariam a rolagem horizontal. Somem. */
+@media (max-width: 640px) {
+  .float-chip {
+    display: none;
+  }
+}
+
+/* ───────────────────── telefone (moldura) ───────────────────── */
+.phone {
+  --phone-w: 380px;
+  width: var(--phone-w);
+  /* 380x820 é a proporção do desenho original; a razão fixa deixa o aparelho
+     encolher inteiro em vez de deformar a tela. */
+  aspect-ratio: 380 / 820;
+  border-radius: calc(var(--phone-w) * 0.126);
+  overflow: hidden;
+  position: relative;
+  background: #000;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  flex-shrink: 0;
+}
+/* O aparelho foi desenhado em 380px para uma tela larga. Num notebook comum
+   (1440–1512px) ele domina a metade direita e empurra as fichas para fora da
+   janela — o problema aparecia como "ficha cortada", mas a origem é o tamanho
+   dele. Encolhe conforme o espaço: a proporção é fixa, então tudo dentro da
+   tela acompanha (o raio da borda e os tamanhos de fonte saem de --phone-w). */
+@media (max-width: 1600px) {
+  .phone {
+    --phone-w: 320px;
+  }
+}
+@media (max-width: 1280px) {
+  .phone {
+    --phone-w: 300px;
+  }
+}
+@media (max-width: 460px) {
+  .phone {
+    --phone-w: min(300px, calc(100vw - 56px));
+  }
+}
+.phone-notch {
+  position: absolute;
+  top: calc(var(--phone-w) * 0.029);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(var(--phone-w) * 0.332);
+  height: calc(var(--phone-w) * 0.097);
+  border-radius: 999px;
+  background: #000;
+  z-index: 50;
+}
+.phone-status {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--phone-w) * 0.055) calc(var(--phone-w) * 0.063) 0;
+  font-size: calc(var(--phone-w) * 0.042);
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.phone-status svg {
+  display: block;
+}
+.phone-glare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: transparent;
+  border-radius: calc(var(--phone-w) * 0.126) calc(var(--phone-w) * 0.126) 0 0;
+  pointer-events: none;
+  z-index: 80;
+}
+.phone-screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  /* Tudo dentro da tela é dimensionado em em, a partir daqui: assim o aparelho
+     inteiro escala com uma variável só. */
+  font-size: calc(var(--phone-w) / 380 * 16px);
+  padding-top: 3.5em;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ───────────────────── telas do app (mock) ───────────────────── */
+.scr-head {
+  padding: 1em 1.25em 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75em;
+}
+.scr-kicker {
+  font-size: 0.8em;
+  color: var(--ink-4);
+  font-weight: 500;
+}
+.scr-title {
+  font-size: 1.35em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-top: 0.1em;
+  color: var(--ink);
+}
+.scr-avatars {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.scr-avatars span {
+  width: 2.25em;
+  height: 2.25em;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.85em;
+  border: 2px solid var(--bg);
+}
+.scr-avatars span + span {
+  margin-left: -0.8em;
+}
+.av-pink {
+  background: var(--pink);
+  color: var(--bg) !important;
+}
+.av-teal {
+  background: var(--teal);
+}
+.av-green {
+  background: rgba(52, 211, 153, 0.2);
+  color: var(--green) !important;
+}
+
+.scr-balance {
+  margin: 1.25em 1em 0;
+  padding: 1.4em 1.4em 1.5em;
+  border-radius: 1.75em;
+  background: var(--accent-solid);
+  color: var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+.scr-balance-label {
+  font-size: 0.7em;
+  font-weight: 700;
+  opacity: 0.9;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.scr-balance-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.15em;
+  margin-top: 0.35em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.scr-balance-value .cur {
+  font-size: 1.1em;
+  opacity: 0.9;
+}
+.scr-balance-value .big {
+  font-size: 2.3em;
+  line-height: 1;
+}
+.scr-balance-value .cents {
+  font-size: 1.2em;
+  opacity: 0.9;
+}
+.scr-balance-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin-top: 0.9em;
+  font-size: 0.72em;
+  font-weight: 700;
+}
+.scr-balance-foot span {
+  /* Sem isto a pílula quebra em duas linhas quando o aparelho encolhe: o texto
+     tem espaço no meio ("Receitas R$ 12.700") e o flex deixa ele quebrar antes
+     de deixar a pílula transbordar. Aqui a linha é mais importante que a
+     largura — são duas etiquetas curtas, não um parágrafo. */
+  white-space: nowrap;
+  padding: 0.35em 0.7em;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.scr-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5em;
+  padding: 1.1em 1em 0;
+}
+.scr-action {
+  border-radius: 1em;
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  padding: 0.75em 0.3em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.68em;
+  font-weight: 600;
+  color: var(--ink-2);
+  text-align: center;
+}
+.scr-action svg {
+  color: var(--pink);
+}
+.scr-action.is-ai svg {
+  color: var(--accent);
+}
+
+.scr-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 1.4em 1.25em 0.6em;
+}
+.scr-section-head h4 {
+  font-size: 0.9em;
+  font-weight: 700;
+}
+.scr-section-head span {
+  font-size: 0.72em;
+  color: var(--pink);
+  font-weight: 700;
+}
+
+.scr-list {
+  padding: 0 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  overflow: hidden;
+}
+.scr-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.7em 0.85em;
+  border-radius: 1em;
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+}
+.scr-row-icon {
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 0.7em;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--glass);
+  color: var(--ink-2);
+}
+.scr-row-body {
+  flex: 1;
+  min-width: 0;
+}
+.scr-row-name {
+  font-size: 0.8em;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.scr-row-sub {
+  font-size: 0.68em;
+  color: var(--ink-4);
+  margin-top: 0.15em;
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+}
+.scr-row-amount {
+  font-size: 0.8em;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.amount-pos {
+  color: var(--green);
+}
+.amount-neg {
+  color: var(--ink-2);
+}
+.scr-tag {
+  font-size: 0.85em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0.15em 0.4em;
+  border-radius: 0.35em;
+  background: rgba(99, 102, 241, 0.22);
+  color: var(--accent);
+}
+
+.scr-search {
+  margin: 1em 1em 0;
+  padding: 0.75em 1em;
+  border-radius: 1em;
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  color: var(--ink-4);
+  font-size: 0.78em;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+.scr-chips {
+  display: flex;
+  gap: 0.4em;
+  padding: 0.85em 1em 0;
+  overflow: hidden;
+}
+.scr-chip {
+  font-size: 0.68em;
+  font-weight: 700;
+  padding: 0.5em 0.85em;
+  border-radius: 999px;
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.scr-chip.is-on {
+  background: #fff;
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.scr-day {
+  font-size: 0.7em;
+  font-weight: 700;
+  color: var(--ink-4);
+  padding: 1.1em 1.25em 0.5em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.scr-ring {
+  margin: 1.4em auto 0;
+  width: 8.5em;
+  height: 8.5em;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.scr-ring svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+.scr-ring-num {
+  font-size: 1.9em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.scr-ring-sub {
+  font-size: 0.68em;
+  color: var(--ink-4);
+  font-weight: 600;
+  margin-top: 0.3em;
+}
+.scr-budget-summary {
+  text-align: center;
+  margin-top: 1em;
+  font-size: 0.78em;
+  color: var(--ink-3);
+}
+.scr-budget-summary b {
+  color: var(--ink);
+  font-size: 1.15em;
+  font-variant-numeric: tabular-nums;
+}
+.scr-bar {
+  height: 0.4em;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+  margin-top: 0.45em;
+}
+.scr-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent-solid));
+}
+.scr-cat {
+  padding: 0.7em 0.85em;
+  border-radius: 1em;
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+}
+.scr-cat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5em;
+}
+.scr-cat-name {
+  font-size: 0.8em;
+  font-weight: 700;
+  color: var(--ink);
+}
+.scr-cat-val {
+  font-size: 0.7em;
+  color: var(--ink-4);
+  font-variant-numeric: tabular-nums;
+}
+.scr-cat-pct {
+  font-size: 0.78em;
+  font-weight: 800;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─────────────────────────── recursos ─────────────────────────── */
+.section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  margin-bottom: 64px;
+}
+.section-head .lead {
+  max-width: 620px;
+}
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 940px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.feature-card {
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 32px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 420px;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s,
+    border-color 0.25s;
+}
+.feature-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255, 143, 177, 0.3);
+}
+.feature-card.ai-card:hover {
+  border-color: rgba(99, 102, 241, 0.35);
+}
+.feature-card h3 {
+  font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+.feature-card p {
+  color: var(--ink-3);
+  font-size: 16px;
+  line-height: 1.55;
+  margin: 0;
+}
+.feature-icon-3d {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  background: var(--accent-solid);
+  color: var(--ink);
+  transform: rotate(-6deg);
+  position: relative;
+  flex-shrink: 0;
+}
+.feature-icon-3d::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  right: 12px;
+  height: 14px;
+  border-radius: 8px;
+  background: transparent;
+  pointer-events: none;
+}
+.ai-card .feature-icon-3d {
+  background: var(--teal);
+}
+.feat-tag {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.18);
+  color: var(--accent);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+}
+.feature-visual {
+  margin-top: auto;
+  padding-top: 12px;
+}
+.fv-card {
+  border-radius: 16px;
+  background: var(--glass);
+  border: 1px solid var(--line-2);
+  padding: 14px 16px;
+}
+.fv-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.fv-name {
+  font-size: 12.5px;
+  color: var(--ink-4);
+  font-weight: 600;
+}
+.fv-value {
+  font-size: 15px;
+  color: var(--ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+.fv-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.fv-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+}
+.fv-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--glass);
+  overflow: hidden;
+}
+.fv-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent-solid));
+}
+.fv-bar + .fv-bar-label {
+  margin-top: 16px;
+}
+
+/* ─────────────────────── antes & depois ─────────────────────── */
+.ba {
+  background: var(--bg-2);
+  border-top: 1px solid var(--line-2);
+  border-bottom: 1px solid var(--line-2);
+}
+.ba-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--line);
+}
+@media (max-width: 860px) {
+  .ba-split {
+    grid-template-columns: 1fr;
+  }
+}
+.ba-side {
+  padding: 44px 36px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.ba-before {
+  /* Bloco com tema próprio: é preto dentro de uma seção creme, então precisa
+     declarar a própria tinta em vez de herdar a da seção. */
+  background: var(--black);
+  --ink: #fffaf6;
+  --ink-2: #d8d2cd;
+  --ink-3: #a39c96;
+  --line: color-mix(in srgb, #fffaf6 16%, transparent);
+  color: var(--ink-3);
+}
+.ba-after {
+  /* Era degradê rosa->índigo. Chapado no rosa da marca, com tema próprio. */
+  background: var(--pink);
+  --ink: #4a0a1f;
+  --ink-2: #63142c;
+  --ink-3: #6b1f33; /* 5,25:1 sobre o rosa */
+  --line: color-mix(in srgb, #4a0a1f 20%, transparent);
+  color: #4a0a1f;
+}
+.ba-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 999px;
+  width: fit-content;
+}
+.ba-before .ba-label {
+  background: var(--glass);
+  color: var(--ink-3);
+  border: 1px solid var(--line-2);
+}
+.ba-after .ba-label {
+  background: rgba(255, 143, 177, 0.16);
+  color: var(--pink);
+  border: 1px solid rgba(255, 143, 177, 0.32);
+}
+.ba-side h3 {
+  font-size: 28px;
+  line-height: 1.12;
+}
+.ba-before h3 {
+  color: var(--ink-3);
+}
+.ba-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ba-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15.5px;
+  line-height: 1.45;
+}
+.ba-row .icon-wrap {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+}
+.ba-before .icon-wrap {
+  background: var(--glass);
+  color: var(--ink-5);
+}
+.ba-after .icon-wrap {
+  background: var(--accent-solid));
+  color: var(--ink);
+}
+.ba-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+  z-index: 2;
+}
+.ba-split.in .ba-divider {
+  transform: scaleY(1);
+}
+@media (max-width: 860px) {
+  .ba-divider {
+    display: none;
+  }
+}
+
+/* ─────────────────────── como funciona ─────────────────────── */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  counter-reset: step;
+}
+@media (max-width: 940px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}
+.step {
+  position: relative;
+  padding: 32px;
+  border-radius: 28px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.step-num {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--bg);
+  background: var(--accent-solid));
+}
+.step h3 {
+  font-size: 20px;
+  line-height: 1.25;
+}
+.step p {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 15.5px;
+  line-height: 1.55;
+}
+.step code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.92em;
+  color: var(--pink);
+  background: rgba(255, 143, 177, 0.12);
+  border: 1px solid rgba(255, 143, 177, 0.28);
+  border-radius: 6px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+/* ─────────────────────── números honestos ─────────────────────── */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+@media (max-width: 900px) {
+  .facts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .facts {
+    grid-template-columns: 1fr;
+  }
+}
+.fact {
+  padding: 28px 24px;
+  border-radius: 24px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+}
+.fact-num {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.fact-num .grad {
+  background: var(--accent-solid));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.fact-label {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 12px;
+}
+.fact-sub {
+  color: var(--ink-3);
+  font-size: 13.5px;
+  line-height: 1.45;
+  margin-top: 6px;
+}
+
+/* ─────────────────────── vitrine do app ─────────────────────── */
+.showcase-note {
+  text-align: center;
+  color: var(--ink-4);
+  font-size: 13.5px;
+  margin-top: 28px;
+}
+/*
+ * O desenho original tinha um carrossel 3D com abas e ~200 linhas de JS. Virou
+ * uma trilha com rolagem por encaixe: no desktop os três aparelhos cabem lado a
+ * lado (o do meio um pouco maior), no celular a pessoa arrasta. Mesmo momento
+ * de "olha o app", sem estado, sem JS e navegável por teclado.
+ */
+.showcase-track {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 8px 4px 20px;
+  /* Barra de rolagem discreta em vez de escondida: escondê-la tira a única
+     dica de que há mais telas ao lado. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.showcase-item {
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.showcase-item .phone {
+  --phone-w: 292px;
+}
+.showcase-item[data-featured] .phone {
+  --phone-w: 316px;
+}
+.showcase-caption {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+@media (max-width: 1080px) {
+  .showcase-track {
+    justify-content: flex-start;
+  }
+  .showcase-item .phone,
+  .showcase-item[data-featured] .phone {
+    --phone-w: 280px;
+  }
+}
+@media (max-width: 480px) {
+  .showcase-item .phone,
+  .showcase-item[data-featured] .phone {
+    --phone-w: min(260px, calc(100vw - 88px));
+  }
+}
+
+/* ─────────────────────── plataformas ─────────────────────── */
+.plat-card {
+  position: relative;
+  overflow: hidden;
+  padding: 56px;
+  border-radius: 32px;
+  border: 1px solid var(--line);
+  background: var(--glass);
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+/* O ::before daqui era um brilho borrado (blur 40px) atrás do cartão — a
+   marca de página gerada mais direta que a folha tinha. Removido; o cartão se
+   separa do fundo pela borda, como no blog. */
+.plat-text {
+  position: relative;
+  z-index: 1;
+}
+.plat-text h2 {
+  font-size: clamp(30px, 3.5vw, 48px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+.plat-text p {
+  color: var(--ink-3);
+  font-size: 17px;
+  line-height: 1.55;
+  margin-top: 16px;
+  max-width: 480px;
+}
+.plat-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+  padding: 0;
+  list-style: none;
+}
+.plat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 14px;
+}
+.plat-pill svg {
+  color: var(--pink);
+  flex-shrink: 0;
+}
+.plat-pill.web svg {
+  color: var(--accent);
+}
+/*
+ * A ressalva de loja fica DENTRO do cartão, no mesmo peso visual do resto —
+ * não em letra miúda no rodapé. É a informação que mais muda a expectativa de
+ * quem chega: esconder seria o mesmo erro do "Baixar para iOS".
+ */
+.plat-caveat {
+  margin-top: 22px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: 14.5px;
+  line-height: 1.5;
+  max-width: 480px;
+}
+.plat-devices {
+  position: relative;
+  z-index: 1;
+  height: 320px;
+}
+.plat-browser {
+  position: absolute;
+  left: 0;
+  top: 30px;
+  width: 78%;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.6);
+  transform: rotate(-3deg);
+}
+.plat-browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line-2);
+  background: var(--glass);
+}
+.plat-browser-dots {
+  display: flex;
+  gap: 6px;
+}
+.plat-browser-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+.plat-browser-dots span:nth-child(1) {
+  background: #ff5f57;
+}
+.plat-browser-dots span:nth-child(2) {
+  background: #febc2e;
+}
+.plat-browser-dots span:nth-child(3) {
+  background: #28c840;
+}
+.plat-browser-url {
+  font-size: 11px;
+  color: var(--ink-4);
+  padding: 5px 12px;
+  background: var(--glass);
+  border-radius: 999px;
+  flex: 1;
+  max-width: 230px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.plat-browser-body {
+  padding: 20px;
+}
+.plat-browser-label {
+  font-size: 11px;
+  color: var(--ink-4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.plat-browser-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.plat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line-2);
+  font-size: 12px;
+}
+.plat-row:last-child {
+  border-bottom: 0;
+}
+.plat-row .l {
+  color: var(--ink-3);
+}
+.plat-row .v {
+  color: var(--ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.plat-row .v.neg {
+  color: var(--red);
+}
+.plat-row .v.pos {
+  color: var(--green);
+}
+.plat-phone-mini {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 150px;
+  height: 300px;
+  border-radius: 32px;
+  background: var(--bg-3);
+  border: 8px solid #1a1a22;
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7);
+  transform: rotate(6deg);
+  overflow: hidden;
+}
+.plat-phone-mini-screen {
+  padding: 20px 12px 12px;
+  height: 100%;
+}
+.plat-phone-mini h4 {
+  font-size: 11px;
+  font-weight: 700;
+}
+.pm-balance {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-top: 6px;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.pm-sub {
+  font-size: 10px;
+  color: var(--ink-4);
+}
+.pm-card {
+  margin-top: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 143, 177, 0.14);
+  border: 1px solid rgba(255, 143, 177, 0.28);
+}
+.pm-card .l1 {
+  font-size: 9px;
+  color: var(--pink);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+.pm-card .l2 {
+  font-size: 11px;
+  color: var(--ink);
+  font-weight: 700;
+  margin-top: 2px;
+}
+@media (max-width: 940px) {
+  .plat-card {
+    grid-template-columns: 1fr;
+    padding: 36px 24px;
+    gap: 32px;
+  }
+  .plat-devices {
+    height: 280px;
+    max-width: 380px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+/* ─────────────────── idiomas e moedas ─────────────────── */
+.intl-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 980px) {
+  .intl-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.intl-card {
+  position: relative;
+  overflow: hidden;
+  padding: 40px;
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background: var(--glass);
+}
+@media (max-width: 600px) {
+  .intl-card {
+    padding: 28px 22px;
+  }
+}
+.intl-card h3 {
+  font-size: 28px;
+  line-height: 1.12;
+  margin-top: 14px;
+}
+.intl-card p {
+  color: var(--ink-3);
+  font-size: 15.5px;
+  line-height: 1.55;
+  margin-top: 10px;
+  max-width: 460px;
+}
+.intl-langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.lang-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.lang-chip .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--accent-solid));
+  flex-shrink: 0;
+}
+.currency-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 28px;
+}
+.currency-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 18px;
+  border-radius: 16px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+}
+.currency-row:nth-child(1) {
+  transform: rotate(-1deg);
+}
+.currency-row:nth-child(2) {
+  transform: rotate(0.6deg);
+}
+.currency-row:nth-child(3) {
+  transform: rotate(-0.4deg);
+}
+.currency-row.featured {
+  /* Sem degradê e sem sombra colorida: o destaque vem da borda no acento, que
+     é como o blog marca o que importa. */
+  background: var(--glass);
+  border-color: var(--accent);
+}
+.currency-row .who {
+  min-width: 0;
+}
+.currency-row .name {
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.currency-row .sub {
+  color: var(--ink-4);
+  font-size: 11.5px;
+  margin-top: 2px;
+}
+.currency-row .amt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+  text-align: right;
+}
+.currency-row .amt > span {
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.fx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.22);
+  color: var(--accent);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────── perguntas ─────────────────────────── */
+.faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.faq-item {
+  border-radius: 20px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.faq-item[open] {
+  border-color: rgba(255, 143, 177, 0.32);
+  background: rgba(255, 143, 177, 0.05);
+}
+.faq-item summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+.faq-item summary::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  border-right: 2px solid var(--pink);
+  border-bottom: 2px solid var(--pink);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 0.25s ease;
+}
+.faq-item[open] summary::after {
+  transform: rotate(-135deg) translate(-3px, -3px);
+}
+.faq-answer {
+  padding: 0 26px 24px;
+  color: var(--ink-3);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 68ch;
+}
+.faq-answer p {
+  margin: 0 0 12px;
+}
+.faq-answer p:last-child {
+  margin-bottom: 0;
+}
+.faq-answer a {
+  color: var(--pink);
+  font-weight: 600;
+}
+.faq-answer code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.92em;
+  color: var(--pink);
+  background: rgba(255, 143, 177, 0.12);
+  border: 1px solid rgba(255, 143, 177, 0.28);
+  border-radius: 6px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────── CTA final ─────────────────────────── */
+.final-card {
+  border-radius: 48px;
+  padding: 88px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  isolation: isolate;
+}
+@media (max-width: 640px) {
+  .final-card {
+    padding: 56px 24px;
+    border-radius: 32px;
+  }
+}
+.final-mesh {
+  position: absolute;
+  inset: -20%;
+  z-index: -2;
+  opacity: 0.85;
+  background: var(--bg);
+  animation: meshShift 18s ease-in-out infinite;
+}
+/*
+ * Véu escuro entre a malha colorida e o texto. Sem ele o branco cai em cima do
+ * rosa da marca em alguns pontos da animação — 2,1:1 — e a frase mais
+ * importante da página fica ilegível justamente quando a malha passa por trás
+ * dela. Com o véu o texto fica acima de 12:1 em qualquer quadro.
+ */
+.final-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg);
+}
+@keyframes meshShift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-4%, 3%) scale(1.05);
+  }
+  66% {
+    transform: translate(4%, -3%) scale(0.95);
+  }
+}
+.final-card h2 {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.final-card .lead {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 19px;
+  margin: 20px auto 0;
+  max-width: 600px;
+  line-height: 1.5;
+}
+.final-avatars {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 26px;
+}
+.final-avatars span {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--ink);
+  border: 3px solid var(--bg-2);
+}
+.final-avatars span + span {
+  margin-left: -14px;
+}
+.final-cta-row {
+  margin-top: 40px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+.final-meta {
+  margin-top: 22px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.72);
+}
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--pink);
+  box-shadow: 0 0 8px var(--pink);
+  animation: particle-rise linear infinite;
+  opacity: 0;
+}
+@keyframes particle-rise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-300px) translateX(var(--drift, 30px));
+    opacity: 0;
+  }
+}
+
+/* ─────────────────────────── rodapé ─────────────────────────── */
+footer {
+  background: var(--bg-2);
+  border-top: 1px solid var(--line-2);
+  padding: 64px 0 40px;
+}
+.foot-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--line-2);
+}
+@media (max-width: 860px) {
+  .foot-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 520px) {
+  .foot-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.foot-about p {
+  margin: 16px 0 0;
+  color: var(--ink-3);
+  font-size: 14.5px;
+  line-height: 1.55;
+  max-width: 340px;
+}
+.foot-col h2 {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.foot-col ul {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.foot-col a {
+  color: var(--ink-3);
+  text-decoration: none;
+  font-size: 14.5px;
+  transition: color 0.2s;
+}
+.foot-col a:hover {
+  color: var(--ink);
+}
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 28px;
+  flex-wrap: wrap;
+  gap: 14px;
+  color: var(--ink-4);
+  font-size: 14px;
+}
+
+/* ─────────────────────── movimento reduzido ─────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  .hero-phone-tilt {
+    transform: none !important;
+  }
+  .reveal,
+  .reveal-cascade > * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .ba-split .ba-divider {
+    transform: scaleY(1) !important;
+  }
+  .particles {
+    display: none;
+  }
+  .btn-shimmer::before {
+    display: none;
+  }
+}

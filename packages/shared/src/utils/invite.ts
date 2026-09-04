@@ -1,18 +1,14 @@
-import { INVITE_CODE_PREFIX, INVITE_CODE_LENGTH } from "../constants/categories";
+import {
+  INVITE_CODE_PREFIX,
+  INVITE_CODE_MIN_LENGTH,
+  INVITE_CODE_MAX_LENGTH,
+} from "../constants/categories";
 
-const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-export function generateInviteCode(): string {
-  let code = "";
-  for (let i = 0; i < INVITE_CODE_LENGTH; i++) {
-    code += CHARS[Math.floor(Math.random() * CHARS.length)];
-  }
-  return `${INVITE_CODE_PREFIX}-${code}`;
-}
-
+// Codes are generated server-side by the create_couple RPC (migration 00024).
+// Legacy couples may still hold 4-char codes, so validation accepts 4–10.
 export function isValidInviteCode(code: string): boolean {
   const pattern = new RegExp(
-    `^${INVITE_CODE_PREFIX}-[A-HJ-NP-Z2-9]{${INVITE_CODE_LENGTH}}$`
+    `^${INVITE_CODE_PREFIX}-[A-HJ-NP-Z2-9]{${INVITE_CODE_MIN_LENGTH},${INVITE_CODE_MAX_LENGTH}}$`
   );
   return pattern.test(code.toUpperCase());
 }

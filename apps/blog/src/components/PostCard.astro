@@ -1,0 +1,61 @@
+---
+import type { BlogPost } from "../lib/posts";
+import { formatDate, readingTimeMinutes } from "../lib/posts";
+import { CATEGORIES } from "../lib/categories";
+import Cover from "./Cover.astro";
+
+interface Props {
+  post: BlogPost;
+  /** Use "h3" when the card sits under an existing h2 section title. */
+  headingLevel?: "h2" | "h3";
+  /** Hide the excerpt for denser grids. */
+  showExcerpt?: boolean;
+}
+
+const { post, headingLevel = "h3", showExcerpt = true } = Astro.props;
+const Heading = headingLevel;
+const category = CATEGORIES[post.data.category];
+const minutes = readingTimeMinutes(post.body);
+---
+
+<article
+  class="group relative flex h-full flex-col"
+  style={`--kc:${category.accent};--kcd:${category.accentDark}`}
+>
+  <div class="overflow-hidden rounded-2xl">
+    <Cover
+      category={post.data.category}
+      slug={post.id}
+      class="aspect-video w-full transition-transform duration-300 group-hover:scale-[1.02]"
+    />
+  </div>
+
+  <div class="flex flex-1 flex-col pt-4">
+    <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-[color:var(--kc)] dark:text-[color:var(--kcd)]">
+      <a href={`/categorias/${post.data.category}`} class="relative z-10 rounded">
+        {category.label}
+      </a>
+    </p>
+
+    <Heading class="mt-1.5 font-display text-lg font-bold leading-snug text-gray-800 dark:text-gray-50">
+      <a
+        href={`/blog/${post.id}`}
+        class="rounded transition-colors after:absolute after:inset-0 after:content-[''] group-hover:text-pink-700 dark:group-hover:text-pink-300"
+      >
+        {post.data.title}
+      </a>
+    </Heading>
+
+    {showExcerpt && (
+      <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+        {post.data.description}
+      </p>
+    )}
+
+    <p class="mt-3 text-xs text-gray-600 dark:text-gray-400">
+      <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+      <span aria-hidden="true"> · </span>
+      <span>{minutes} min de leitura</span>
+    </p>
+  </div>
+</article>

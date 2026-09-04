@@ -1,0 +1,183 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import NewsletterForm from "../../components/NewsletterForm.astro";
+import { CATEGORIES, CATEGORY_IDS } from "../../lib/categories";
+import { formatDate, sortByDateDesc, type BlogPost } from "../../lib/posts";
+
+/**
+ * ESTA PÁGINA É O ARQUIVO — a home é a porta da marca.
+ *
+ * As duas listavam os mesmos 18 artigos com o mesmo cartão e a sobreposição de
+ * n-gramas passava de 79%: canibalização clássica, com o risco de o Google
+ * eleger a página errada como entrada da marca e de o relatório do Search
+ * Console virar duas linhas competindo entre si.
+ *
+ * Aqui o critério é CRONOLÓGICO e exaustivo: tudo que foi publicado, agrupado
+ * por mês, com os filtros por assunto. Nada de curadoria e nada de discurso de
+ * marca — isso é trabalho da home, e repetir aqui traria a duplicação de volta.
+ */
+
+const posts = sortByDateDesc(
+  await getCollection("blog", ({ data }) => !data.draft),
+);
+const total = posts.length;
+const newest = posts[0];
+const oldest = posts[posts.length - 1];
+
+// `timeZone: "UTC"` pelo mesmo motivo de lib/posts.formatDate: `pubDate` nasce
+// de uma data sem hora ("2026-09-01" = meia-noite UTC) e, num build rodando em
+// fuso negativo, o dia 1 cairia no mês anterior — o artigo apareceria sob o
+// cabeçalho errado.
+const monthFormatter = new Intl.DateTimeFormat("pt-BR", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+interface MonthGroup {
+  /** Serve de sufixo de id do cabeçalho — precisa ser único e estável. */
+  key: string;
+  label: string;
+  posts: BlogPost[];
+}
+
+// Os posts já vêm do mais novo para o mais antigo, então basta quebrar o grupo
+// quando o mês muda: nada de ordenar de novo nem de Map intermediário.
+const groups: MonthGroup[] = [];
+for (const post of posts) {
+  const date = post.data.pubDate;
+  const key = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+  const current = groups.at(-1);
+  if (current && current.key === key) {
+    current.posts.push(post);
+    continue;
+  }
+  const label = monthFormatter.format(date);
+  groups.push({
+    key,
+    label: label.charAt(0).toUpperCase() + label.slice(1),
+    posts: [post],
+  });
+}
+---
+
+<BaseLayout
+  title="Todos os artigos"
+  description={`Arquivo completo do blog do Paca Finance: os ${total} guias de finanças para casais publicados até hoje, do mais recente ao mais antigo, com filtro por assunto.`}
+>
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    {/*
+      A trilha devolve o leitor à home com âncora de marca. É de propósito: a
+      página que precisa ganhar as buscas pelo nome do produto é a home, não
+      este arquivo.
+    */}
+    <nav aria-label="Trilha de navegação" class="text-sm text-gray-600 dark:text-gray-400">
+      <ol class="flex flex-wrap items-center gap-1">
+        <li>
+          <a href="/" class="rounded-lg transition-colors hover:text-pink-700 dark:hover:text-pink-300">Início</a>
+        </li>
+        <li aria-hidden="true">›</li>
+        <li aria-current="page" class="text-gray-700 dark:text-gray-200">Todos os artigos</li>
+      </ol>
+    </nav>
+
+    <header class="mt-6 max-w-2xl">
+      <h1 class="font-display text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
+        Todos os artigos
+      </h1>
+      {
+        total > 0 && (
+          <p class="mt-3 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+            O arquivo do blog: {total === 1 ? "1 guia publicado" : `os ${total} guias publicados`} até
+            aqui, do mais recente ao mais antigo, agrupados por mês. O primeiro
+            saiu em {formatDate(oldest.data.pubDate)}; o último, em {formatDate(newest.data.pubDate)}.
+          </p>
+        )
+      }
+      <p class="mt-3 leading-relaxed text-gray-600 dark:text-gray-300">
+        Procurando por onde começar em vez da lista inteira? A apresentação do
+        blog e os textos escolhidos para quem chega agora estão na
+        <a
+          href="/"
+          class="rounded font-medium text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+          >página inicial</a
+        >.
+      </p>
+    </header>
+
+    {/*
+      Category pills link to static category pages (no client-side filtering).
+      O rótulo é VISÍVEL e o `aria-labelledby` aponta para ele: um `aria-label`
+      igual a um texto na tela faria o leitor de tela anunciar a mesma frase
+      duas vezes, e um rótulo só para leitor de tela esconderia de quem enxerga
+      que aquelas pílulas são o filtro do arquivo.
+    */}
+    <nav aria-labelledby="filtro-titulo" class="mt-10">
+      <p
+        id="filtro-titulo"
+        class="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-600 dark:text-gray-400"
+      >
+        Filtrar por assunto
+      </p>
+      <ul class="mt-3 flex flex-wrap gap-2">
+        {
+          CATEGORY_IDS.map((id) => (
+            <li>
+              <a
+                href={`/categorias/${id}`}
+                class="inline-block rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-pink-300 hover:bg-pink-50 hover:text-pink-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-600 dark:hover:bg-pink-900/40 dark:hover:text-pink-200"
+              >
+                {CATEGORIES[id].label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    {/*
+      O agrupamento por mês é o que faz esta página LER como arquivo — e é a
+      única estrutura que a home não tem como copiar sem virar outra coisa.
+      Cada mês é uma <section> com cabeçalho próprio, então o leitor de tela
+      anuncia "Setembro de 2026, 3 artigos" antes da grade.
+    */}
+    {
+      groups.map((group) => (
+        <section aria-labelledby={`mes-${group.key}`} class="mt-12">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-gray-100 pb-3 dark:border-gray-800">
+            <h2
+              id={`mes-${group.key}`}
+              class="font-display text-xl font-bold text-gray-800 sm:text-2xl dark:text-white"
+            >
+              {group.label}
+            </h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              {group.posts.length === 1 ? "1 artigo" : `${group.posts.length} artigos`}
+            </p>
+          </div>
+
+          <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {group.posts.map((post) => (
+              <PostCard post={post} headingLevel="h3" />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+
+    {
+      posts.length === 0 && (
+        <p class="mt-10 text-gray-600 dark:text-gray-300">Nenhum post publicado ainda. Volte em breve!</p>
+      )
+    }
+
+    {/*
+      /blog é página de entrada de quem vem da busca: sem captura aqui, a
+      pessoa folheava a lista e ia embora sem deixar contato. Fica depois da
+      grade — o conteúdo continua sendo a primeira coisa da página.
+    */}
+    <NewsletterForm source="blog-index" class="mt-14" />
+  </div>
+</BaseLayout>

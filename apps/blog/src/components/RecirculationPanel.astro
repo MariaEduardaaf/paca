@@ -1,0 +1,157 @@
+---
+import type { BlogPost } from "../lib/posts";
+import { readingTimeMinutes } from "../lib/posts";
+
+/**
+ * Bloco de recirculação das páginas de artigo: a calculadora e outros guias.
+ *
+ * Renderizado TRÊS vezes pelo BlogPostLayout, com `variant` diferente:
+ *  - "sidebar": coluna grudada (sticky) ao lado do texto, só nas telas largas;
+ *  - "mid":     versão curta DENTRO do texto, só no celular e no tablet;
+ *  - "inline":  o bloco grande no fim do texto, também sem a lateral.
+ * A lateral e os outros dois nunca aparecem juntos (`hidden .../block` /
+ * `...:hidden`), então o leitor de tela também enxerga só o que está visível —
+ * `display:none` sai da árvore de acessibilidade. Por isso os ids dos títulos
+ * levam sufixo: os três existem no HTML ao mesmo tempo e id repetido quebraria
+ * o `aria-labelledby`.
+ *
+ * A calculadora vem PRIMEIRO nos três modos. Na lateral isso é o que garante
+ * que ela apareça: a coluna é mais alta que a janela em tela de notebook, e o
+ * que fica embaixo depende de um scroll interno que quase ninguém descobre. No
+ * meio do texto ela é o motivo de o bloco existir: é o único destino que a
+ * mesma pessoa abre mais de uma vez, e no celular ela só aparecia depois do
+ * artigo inteiro — mas ali entra como LINK, não como o cartão rosa, que no
+ * meio da leitura seria o quarto bloco colorido da página.
+ *
+ * Sem lista de categorias aqui de propósito: os mesmos cinco links já estão no
+ * menu do topo e de novo no rodapé de toda página. Uma terceira cópia só
+ * alongava o bloco e empurrava o resto para fora da janela.
+ *
+ * Sem anúncio aqui de propósito (decisão separada).
+ */
+
+interface Props {
+  /** Já ordenados e sem o artigo atual — o layout decide a prioridade. */
+  posts: BlogPost[];
+  variant?: "sidebar" | "mid" | "inline";
+}
+
+const { posts, variant = "sidebar" } = Astro.props;
+
+const isSidebar = variant === "sidebar";
+const isMid = variant === "mid";
+const suffix = isSidebar ? "lateral" : isMid ? "meio" : "fim";
+const guiasId = `recirc-guias-${suffix}`;
+const calcId = `recirc-calculadora-${suffix}`;
+
+/*
+ * No meio do texto o título NÃO pode competir com os <h2> do artigo: quem está
+ * lendo precisa reconhecer o bloco como um aparte, e não como a próxima seção
+ * do texto. Por isso ali ele é o mesmo "chapéu" em versalete que o rótulo da
+ * calculadora e o "Neste artigo" já usam — pequeno, espaçado, cinza.
+ */
+const headingClass = isMid
+  ? "text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-600 dark:text-gray-400"
+  : [
+      "font-display font-bold text-gray-800 dark:text-white",
+      isSidebar ? "text-base" : "text-lg sm:text-xl",
+    ].join(" ");
+
+// Coluna única na lateral e no meio do texto (divisória entre itens, sem a
+// última). No fim do artigo a lista vira duas colunas a partir de `sm`, e aí
+// cada item mantém a própria divisória — em grade, "o último" é só um dos dois
+// da linha de baixo, e tirar a borda de um só deixa a base torta.
+const singleColumn = isSidebar || isMid;
+const listClass = singleColumn
+  ? "mt-3"
+  : "mt-4 sm:grid sm:grid-cols-2 sm:gap-x-10";
+const itemClass = [
+  "border-b border-gray-100 dark:border-gray-800",
+  singleColumn ? "last:border-b-0" : "",
+].join(" ");
+
+const linkClass = "group block rounded py-3 transition-colors";
+const linkTitleClass =
+  "block font-display text-[15px] font-semibold leading-snug text-gray-800 group-hover:text-pink-700 dark:text-gray-100 dark:group-hover:text-pink-300";
+const linkMetaClass = "mt-1 block text-xs text-gray-600 dark:text-gray-400";
+---
+
+<div class={isSidebar ? "space-y-8" : isMid ? "space-y-0" : "space-y-10"}>
+  {/*
+    A calculadora é o melhor destino de recirculação que temos: é a única
+    página que a mesma pessoa abre mais de uma vez. Cartão inteiro clicável
+    pelo `after:inset-0` do link do título — assim o nome acessível do link
+    continua sendo o título, e não o cartão inteiro lido em voz alta.
+  */}
+  {
+    !isMid && (
+      <section
+        aria-labelledby={calcId}
+        class="group relative rounded-2xl border border-pink-200 bg-pink-50 p-5 transition-colors hover:border-pink-300 dark:border-pink-800/60 dark:bg-pink-900/15 dark:hover:border-pink-700"
+      >
+        <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-pink-800 dark:text-pink-200">
+          Ferramenta grátis
+        </p>
+        <h2 id={calcId} class={`mt-1.5 ${headingClass}`}>
+          <a
+            href="/calculadora-divisao-de-contas"
+            class="rounded transition-colors after:absolute after:inset-0 after:content-[''] hover:text-pink-800 dark:hover:text-pink-200"
+          >
+            Calculadora de divisão de contas
+          </a>
+        </h2>
+        <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          Coloque as duas rendas e o total das contas do mês: ela mostra quanto
+          cada um paga na divisão proporcional ao salário, comparado com o meio
+          a meio.
+        </p>
+        {/*
+          Afordância visual, não um segundo link: quem usa leitor de tela já
+          ouviu o link do título e não precisa de "Abrir a calculadora" logo
+          depois.
+        */}
+        <p class="mt-3 text-sm font-semibold text-pink-800 group-hover:underline group-hover:underline-offset-2 dark:text-pink-200">
+          Abrir a calculadora <span aria-hidden="true">→</span>
+        </p>
+      </section>
+    )
+  }
+
+  {
+    (isMid || posts.length > 0) && (
+      <nav aria-labelledby={guiasId}>
+        <h2 id={guiasId} class={headingClass}>
+          {isMid ? "Continue lendo" : "Outros guias"}
+        </h2>
+
+        <ul class={listClass}>
+          {/*
+            No meio do texto a calculadora é o primeiro item da lista, e não o
+            cartão: a linha "Ferramenta grátis" faz o mesmo trabalho do rótulo
+            do cartão no lugar do tempo de leitura, sem virar um bloco colorido
+            no meio do artigo.
+          */}
+          {isMid && (
+            <li class={itemClass}>
+              <a href="/calculadora-divisao-de-contas" class={linkClass}>
+                <span class={linkTitleClass}>Calculadora de divisão de contas</span>
+                <span class={linkMetaClass}>Ferramenta grátis</span>
+              </a>
+            </li>
+          )}
+
+          {posts.map((p) => (
+            <li class={itemClass}>
+              <a href={`/blog/${p.id}`} class={linkClass}>
+                <span class={linkTitleClass}>{p.data.title}</span>
+                <span class={linkMetaClass}>
+                  {readingTimeMinutes(p.body)} min de leitura
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+</div>

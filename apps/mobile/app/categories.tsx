@@ -64,6 +64,7 @@ export default function CategoriesScreen() {
       setAdding(false);
     } catch (err) {
       console.error(err);
+      Alert.alert(t.common.error, t.common.actionError);
     }
   };
 
@@ -71,7 +72,7 @@ export default function CategoriesScreen() {
     Alert.alert(t.categoryManager.title, t.categoryManager.deleteConfirm, [
       { text: t.categoryManager.cancel, style: "cancel" },
       {
-        text: "OK",
+        text: t.common.delete,
         style: "destructive",
         onPress: async () => {
           try {
@@ -81,6 +82,7 @@ export default function CategoriesScreen() {
             });
           } catch (err) {
             console.error(err);
+            Alert.alert(t.common.error, t.common.actionError);
           }
         },
       },

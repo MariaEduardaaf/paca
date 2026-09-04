@@ -1,8 +1,12 @@
 import { z } from "zod";
-import { INVITE_CODE_PREFIX, INVITE_CODE_LENGTH } from "../constants/categories";
+import {
+  INVITE_CODE_PREFIX,
+  INVITE_CODE_MIN_LENGTH,
+  INVITE_CODE_MAX_LENGTH,
+} from "../constants/categories";
 
 const codePattern = new RegExp(
-  `^${INVITE_CODE_PREFIX}-[A-HJ-NP-Z2-9]{${INVITE_CODE_LENGTH}}$`
+  `^${INVITE_CODE_PREFIX}-[A-HJ-NP-Z2-9]{${INVITE_CODE_MIN_LENGTH},${INVITE_CODE_MAX_LENGTH}}$`
 );
 
 export const joinCoupleSchema = z.object({

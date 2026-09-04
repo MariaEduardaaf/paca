@@ -1,9 +1,12 @@
 import { useMemo } from "react";
-import { useProfile, useCouple, useTransactions, useBudget, useRealtimeTransactions, useI18n, useAppStore } from "@paca/api";
+import { useQuery } from "@tanstack/react-query";
+import { useProfile, useCouple, useTransactions, useBudget, useRealtimeTransactions, useI18n, useAppStore, supabase } from "@paca/api";
 import {
   getCurrentMonth,
+  formatLocalDate,
   type TransactionWithCategory,
 } from "@paca/shared";
+import { splitByCurrency, formatForeignBreakdown } from "@/utils/currencyBreakdown";
 import {
   TrendingUp,
   TrendingDown,
@@ -117,8 +120,23 @@ function BudgetProgress({ spent, total }: { spent: number; total: number }) {
   );
 }
 
+interface WeeklyTx {
+  type: string;
+  date: string;
+  amount: number;
+  currency: string | null;
+}
+
+/** Local YYYY-MM-DD of the Sunday that started LAST week (14-day window). */
+function getWeeklyWindowStart(): string {
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(now.getDate() - now.getDay() - 7);
+  return formatLocalDate(start);
+}
+
 // Weekly comparison card
-function WeeklySummary({ transactions }: { transactions: TransactionWithCategory[] }) {
+function WeeklySummary({ transactions }: { transactions: WeeklyTx[] }) {
   const { t, formatCurrency, formatCurrencyCompact } = useI18n();
   const { thisWeek, lastWeek } = useMemo(() => {
     const now = new Date();
@@ -191,21 +209,54 @@ export function DashboardPage() {
 
   useRealtimeTransactions(coupleId || undefined);
 
-  const income = (transactions ?? [])
+  const primaryCurrency = couple?.primary_currency ?? "BRL";
+
+  // Headline totals only make sense within one currency: exclude
+  // foreign-currency rows (auto-convert off) and surface them separately.
+  const { primary: primaryTx, foreign } = useMemo(
+    () => splitByCurrency(transactions ?? [], primaryCurrency),
+    [transactions, primaryCurrency]
+  );
+  const foreignBreakdown = formatForeignBreakdown(foreign, formatCurrency);
+
+  const income = primaryTx
     .filter((t) => t.type === "income")
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const expenses = (transactions ?? [])
+  const expenses = primaryTx
     .filter((t) => t.type === "expense")
     .reduce((sum, t) => sum + t.amount, 0);
 
   const balance = income - expenses;
   const recentTransactions = (transactions ?? []).slice(0, 5);
 
-  // Category breakdown for donut chart
+  // Weekly card: its Sunday-to-Sunday windows straddle month boundaries, so it
+  // needs its own 14-day query instead of the month-filtered list above.
+  const weeklyStart = getWeeklyWindowStart();
+  const { data: weeklyTx } = useQuery({
+    queryKey: ["transactions", "weekly", coupleId, mode, weeklyStart],
+    queryFn: async (): Promise<WeeklyTx[]> => {
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("type, date, amount, currency")
+        .eq("couple_id", coupleId)
+        .eq("scope", mode)
+        .gte("date", weeklyStart);
+      if (error) throw error;
+      return (data ?? []) as WeeklyTx[];
+    },
+    enabled: !!coupleId,
+  });
+  const weeklyPrimaryTx = useMemo(
+    () => splitByCurrency(weeklyTx ?? [], primaryCurrency).primary,
+    [weeklyTx, primaryCurrency]
+  );
+
+  // Category breakdown for donut chart (primary currency only — percentages
+  // across mixed currencies would be meaningless)
   const categoryData = useMemo(() => {
     const map = new Map<string, { name: string; color: string; value: number }>();
-    for (const tx of transactions ?? []) {
+    for (const tx of primaryTx) {
       if (tx.type !== "expense") continue;
       const rawName = tx.category?.name ?? "Outros";
       const displayName = tx.category ? translateCategory(tx.category) : translateCategory(rawName);
@@ -218,7 +269,7 @@ export function DashboardPage() {
       }
     }
     return Array.from(map.values()).sort((a, b) => b.value - a.value);
-  }, [transactions, translateCategory]);
+  }, [primaryTx, translateCategory]);
 
   if (profileLoading || txLoading) return <DashboardSkeleton />;
 
@@ -250,6 +301,11 @@ export function DashboardPage() {
         >
           {formatCurrencyCompact(balance)}
         </p>
+        {foreignBreakdown && (
+          <p className="text-white/70 text-xs mb-3 -mt-2 break-words">
+            {t.transactions.otherCurrenciesNote} {foreignBreakdown}
+          </p>
+        )}
         <div className="flex flex-wrap gap-4 sm:gap-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -335,7 +391,7 @@ export function DashboardPage() {
         </div>
 
         <div className="sm:col-span-2 lg:col-span-1">
-          <WeeklySummary transactions={transactions ?? []} />
+          <WeeklySummary transactions={weeklyPrimaryTx} />
         </div>
       </div>
 
@@ -459,10 +515,10 @@ function TransactionRow({ transaction: tx }: { transaction: TransactionWithCateg
           className={`text-sm font-semibold whitespace-nowrap tabular-nums ${
             isExpense ? "text-red-primary" : "text-emerald-500"
           }`}
-          title={formatCurrency(tx.amount)}
+          title={formatCurrency(tx.amount, tx.currency)}
         >
           {isExpense ? "- " : "+ "}
-          {formatCurrencyCompact(tx.amount)}
+          {formatCurrencyCompact(tx.amount, tx.currency)}
         </p>
         {tx.original_currency &&
           tx.original_currency !== tx.currency &&

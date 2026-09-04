@@ -1,0 +1,603 @@
+---
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import { getCollection, render } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import AdSlot from "../components/AdSlot.astro";
+import CTABox from "../components/CTABox.astro";
+import Cover from "../components/Cover.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
+import PostCard from "../components/PostCard.astro";
+import RecirculationPanel from "../components/RecirculationPanel.astro";
+import ShareBox from "../components/ShareBox.astro";
+import { SITE_TITLE, SITE_URL, APP_URL } from "../consts";
+import { CATEGORIES } from "../lib/categories";
+import { autoraDe } from "../lib/autores";
+import { ctaFor } from "../lib/ctas";
+import type { BlogPost } from "../lib/posts";
+import {
+  extractFaq,
+  formatDate,
+  readingTimeMinutes,
+  sortByDateDesc,
+} from "../lib/posts";
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const { title, description, pubDate, updatedDate, category } = post.data;
+const autora = autoraDe(post.data.author);
+const categoryInfo = CATEGORIES[category];
+const minutes = readingTimeMinutes(post.body);
+
+// CTA de produto escrito para a dor deste artigo (src/lib/ctas.ts). Slug sem
+// entrada devolve {} e o CTABox cai nos próprios defaults — artigo novo nunca
+// fica sem CTA.
+const cta = ctaFor(post.id);
+
+// Inline "Neste artigo" TOC, only for long pieces (NerdWallet pattern).
+const tocEntries = headings.filter((h) => h.depth === 2);
+const showToc = tocEntries.length >= 4;
+
+const postUrl = new URL(`/blog/${post.id}`, SITE_URL).href;
+// Logo do publisher no JSON-LD: aqui vale o arquivo grande (480x480) de
+// propósito — é lido pelo Google, não baixado pelo leitor. O que a página
+// realmente exibe é /logo-icon-96.png. O 480 também alimenta scripts/og.mjs
+// (card 1200x630); não troque nenhum dos dois pelo 96.
+const logoUrl = new URL("/logo-icon-large.png", SITE_URL).href;
+
+// Card de compartilhamento próprio do artigo, gerado por `npm run og` e
+// versionado em public/og/ (scripts/og.mjs explica o porquê). Se o PNG do post
+// ainda não foi gerado, cai no /og-default.png — o build nunca quebra por isso.
+// (process.cwd() e não import.meta.url: no build o Astro empacota este layout
+// num chunk, então import.meta.url aponta para o bundle, não para src/layouts.)
+const ogPath = `/og/${post.id}.png`;
+const ogImage = existsSync(join(process.cwd(), "public", "og", `${post.id}.png`))
+  ? ogPath
+  : "/og-default.png";
+
+// "Leia também": same category first, padded with recent posts from others.
+const allPosts = sortByDateDesc(
+  await getCollection("blog", ({ data }) => !data.draft),
+);
+const sameCategory = allPosts.filter(
+  (p) => p.id !== post.id && p.data.category === category,
+);
+const others = allPosts.filter(
+  (p) => p.id !== post.id && p.data.category !== category,
+);
+const related = [...sameCategory, ...others].slice(0, 3);
+
+/*
+ * Recirculação em três lugares: barra lateral no desktop, um bloco curto no
+ * meio do texto no celular/tablet, e o bloco grande no fim. Mesma prioridade
+ * do "Leia também": mesma categoria primeiro, depois os outros por data.
+ */
+const recircPool = [...sameCategory, ...others];
+
+/*
+ * Lateral: 6 links. A coluna já começa com o cartão da calculadora, e o que
+ * passar disso cai fora da janela num notebook — o excedente só seria
+ * alcançável pelo scroll interno da coluna, que quase ninguém descobre. Os 3
+ * primeiros repetem o "Leia também" de propósito: no desktop a lateral aparece
+ * DURANTE a leitura e os cartões só depois dela.
+ */
+const sidebarPosts = recircPool.slice(0, 6);
+
+/*
+ * Celular e tablet: aqui não existe lateral, então este bloco e o "Leia
+ * também" ficam a poucas telas um do outro. Repetir os mesmos 3 títulos nesse
+ * espaço só gastava rolagem, então o bloco do fim mostra os SEGUINTES — somados
+ * aos cartões, o leitor de celular termina com 9 destinos distintos. São 6 (e
+ * não 5) para a grade de duas colunas do tablet fechar 3 + 3, sem meia linha
+ * vazia embaixo.
+ */
+const relatedIds = new Set(related.map((p) => p.id));
+const inlinePosts = recircPool.filter((p) => !relatedIds.has(p.id)).slice(0, 6);
+
+/*
+ * Bloco do MEIO do texto (só celular e tablet, onde não existe lateral).
+ * Leva os 2 títulos mais relacionados — os mesmos do "Leia também" — pelo
+ * mesmo motivo que a lateral repete os cartões: este bloco aparece DURANTE a
+ * leitura e os cartões só depois dela, então quem clica aqui é quem nunca
+ * chegaria lá. Quem lê até o fim vê os 6 SEGUINTES no bloco de baixo, e
+ * nenhum destino se perde.
+ */
+const midPosts = related.slice(0, 2);
+
+/*
+ * ── Corpo do artigo fatiado, para caber anúncio e recirculação no meio ──
+ *
+ * POR QUE FATIAR EM VEZ DE DESENHAR <Content /> INTEIRO: num artigo de ~2.500
+ * palavras a página tem ~22 telas de celular, e o segundo anúncio caía em 82%
+ * da rolagem — a 18ª tela. Na prática a sessão nascia com UMA impressão, e é a
+ * receita por sessão que decide se o tráfego pago fecha a conta
+ * (docs/arbitragem/ESTRATEGIA.md §2). Mesmo problema para a recirculação: no
+ * celular o primeiro link para outro artigo só aparecia depois do texto todo.
+ *
+ * `post.rendered.html` é o MESMO HTML que o <Content /> desenha — o Astro já o
+ * guarda pronto no content layer, então cortá-lo aqui não re-renderiza nada.
+ * Fatiar no servidor (e não mover o anúncio com script no cliente) é o que
+ * garante três coisas: o <ins> nasce no lugar certo e nunca é movido depois de
+ * o AdSense o preencher, não há salto de layout, e a página continua correta
+ * sem JavaScript.
+ *
+ * O corte SÓ acontece antes de um <h2>, nunca no meio de um parágrafo ou de
+ * uma tabela. Isso é seguro porque nenhum artigo escreve <h2> à mão no
+ * markdown (os diagramas em HTML cru só têm <figure>/<svg>): todo `<h2 id=` do
+ * HTML veio de um `## `, e `## ` só existe no topo de uma seção.
+ *
+ * ⚠️ ARMADILHA: se um artigo passar a usar imagem de markdown (`![]()`), o HTML
+ * cru pula a otimização de imagem que o <Content /> faz e as imagens quebram —
+ * por isso `imagePaths` desliga o corte e a página volta a desenhar <Content />
+ * inteiro. Mesma rede de segurança se um dia o Astro deixar de guardar o
+ * `rendered`: o artigo perde os anúncios do meio, nunca o texto.
+ */
+const renderedHtml = post.rendered?.html ?? "";
+const hasMarkdownImages =
+  (post.rendered?.metadata?.imagePaths?.length ?? 0) > 0;
+const bodySections = renderedHtml.split(/(?=<h2 id=)/);
+const bodyLength = renderedHtml.length;
+
+/*
+ * Quantas inserções o texto aguenta — a régua é o tamanho do artigo, não um
+ * número fixo. Encher um post de 350 palavras de anúncio é exatamente o que
+ * faz o AdSense reprovar por "conteúdo não domina a página". Com dois no
+ * corpo, um artigo de 2.500 palavras fica com QUATRO no total (primeira dobra,
+ * dois no meio, um no fim) — cerca de um a cada 600 palavras, sempre com uma
+ * seção inteira de texto entre eles e nunca dois encostados. O post de boas-
+ * vindas (350 palavras) não recebe nenhum e fica com os dois de sempre.
+ *
+ * A recirculação do celular escolhe DEPOIS dos anúncios (passo 2 abaixo), e de
+ * preferência no vão entre os dois — assim ela cai onde o leitor decide se
+ * continua ou sai, sem nunca empurrar um anúncio para fora do lugar.
+ */
+const bodyWords = post.body?.trim().split(/\s+/).filter(Boolean).length ?? 0;
+const adTargets = bodyWords >= 1800 ? [1 / 3, 2 / 3] : bodyWords >= 700 ? [0.5] : [];
+
+// Quanto de HTML existe ANTES de cada pedaço. O tamanho do HTML (e não a
+// contagem de palavras) é o proxy de ALTURA: tabela e SVG rendem pouca palavra
+// e muitas telas, e é a rolagem que decide onde o anúncio é visto.
+const sectionOffsets: number[] = [];
+let offsetAcc = 0;
+for (const section of bodySections) {
+  sectionOffsets.push(offsetAcc);
+  offsetAcc += section.length;
+}
+
+/*
+ * Onde é permitido cortar: antes de um <h2> que não seja o primeiro nem o
+ * último. Antes do primeiro, o anúncio grudaria no da primeira dobra; antes do
+ * último (quase sempre o "Perguntas frequentes"), grudaria no do fim do
+ * artigo. A janela de 15%–78% diz a mesma coisa em fração de rolagem, para o
+ * caso de a primeira ou a última seção serem curtas demais para separar nada.
+ */
+const eligibleBreaks = bodySections
+  .map((_, index) => index)
+  .filter(
+    (index) =>
+      index >= 2 &&
+      index <= bodySections.length - 2 &&
+      sectionOffsets[index] / bodyLength >= 0.15 &&
+      sectionOffsets[index] / bodyLength <= 0.78,
+  );
+
+const breakRatio = (breakIndex: number) => sectionOffsets[breakIndex] / bodyLength;
+
+/*
+ * As duas folgas mínimas, e por que são DUAS.
+ *
+ * Elas existem porque o pior caso acontece de verdade: com as seções desiguais
+ * de um artigo real, o "mais perto de X%" e o "mais perto de Y%" caem nas duas
+ * pontas de uma seção curta, e o leitor vê os dois blocos separados por meia
+ * dúzia de parágrafos.
+ *
+ * Entre dois ANÚNCIOS a folga é grande (15% do artigo) porque é o que o AdSense
+ * cobra: densidade razoável, conteúdo dominando a página. Entre um anúncio e o
+ * bloco de LINKS ela é menor (8%) porque ali o risco é outro e menor — não é
+ * densidade de anúncio, é o bloco de links encostado no anúncio parecer parte
+ * dele. Duas telas de texto no meio já desfazem a confusão.
+ */
+const MIN_AD_GAP = 0.15;
+const MIN_MIXED_GAP = 0.08;
+
+/*
+ * PASSO 1 — os anúncios, que escolhem primeiro. Se o lugar tivesse de ser
+ * disputado, quem perdia era sempre o mesmo: numa fila única, a recirculação
+ * caía perto de 60% e empurrava o segundo anúncio para fora da janela dos 78%.
+ * Era a receita pagando pela navegação, quando a recirculação ainda tem o bloco
+ * inteiro no fim do artigo e o anúncio não tem outra chance.
+ *
+ * `cursor` mantém a ordem e impede duas inserções na mesma quebra;
+ * `lastAllowed` reserva uma quebra para cada anúncio que ainda falta.
+ */
+const chosenBreaks: Array<{ index: number; unit: "ad" | "recirc" }> = [];
+let cursor = 0;
+adTargets.forEach((target, position) => {
+  const lastAllowed = eligibleBreaks.length - (adTargets.length - position);
+  let bestIndex = -1;
+  let bestDistance = Number.POSITIVE_INFINITY;
+  for (let i = cursor; i <= lastAllowed; i += 1) {
+    const ratio = breakRatio(eligibleBreaks[i]);
+    const tooClose = chosenBreaks.some(
+      (chosen) => Math.abs(ratio - breakRatio(chosen.index)) < MIN_AD_GAP,
+    );
+    if (tooClose) continue;
+    const distance = Math.abs(ratio - target);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestIndex = i;
+    }
+  }
+  if (bestIndex === -1) return;
+  chosenBreaks.push({ index: eligibleBreaks[bestIndex], unit: "ad" });
+  cursor = bestIndex + 1;
+});
+
+/*
+ * PASSO 2 — a recirculação do celular, no vão que sobrou. O alvo é o meio entre
+ * os dois anúncios (ou entre o único anúncio e o fim do texto): é o ponto mais
+ * longe de qualquer anúncio, e ainda assim dentro da leitura. Quando o artigo
+ * não tem nenhuma seção começando ali (acontece: há artigos com um salto de 34%
+ * para 66% entre um <h2> e o próximo), o bloco cai na quebra livre mais próxima
+ * do alvo, mesmo que seja antes do primeiro anúncio — depois da segunda seção
+ * já é "durante a leitura", que é o que faltava no celular.
+ *
+ * O teto de 70% é o que ele NÃO pode fazer: passar disso o coloca a poucas
+ * telas do bloco grande do fim do artigo, e aí são duas listas de links quase
+ * coladas em vez de recirculação durante a leitura. Sem quebra que sirva, o
+ * bloco não entra — no celular ele continua existindo no fim.
+ */
+if (chosenBreaks.length > 0) {
+  const adRatios = chosenBreaks.map((chosen) => breakRatio(chosen.index));
+  const target =
+    adRatios.length >= 2
+      ? (adRatios[0] + adRatios[1]) / 2
+      : (adRatios[0] + 1) / 2;
+  const taken = new Set(chosenBreaks.map((chosen) => chosen.index));
+  let bestIndex = -1;
+  let bestDistance = Number.POSITIVE_INFINITY;
+  for (const breakIndex of eligibleBreaks) {
+    if (taken.has(breakIndex)) continue;
+    const ratio = breakRatio(breakIndex);
+    if (ratio > 0.7) continue;
+    if (adRatios.some((adRatio) => Math.abs(ratio - adRatio) < MIN_MIXED_GAP)) continue;
+    const distance = Math.abs(ratio - target);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestIndex = breakIndex;
+    }
+  }
+  if (bestIndex !== -1) chosenBreaks.push({ index: bestIndex, unit: "recirc" });
+}
+
+// A recirculação foi escolhida por último, então a lista está fora de ordem.
+chosenBreaks.sort((a, b) => a.index - b.index);
+const breakUnits = new Map(chosenBreaks.map((c) => [c.index, c.unit]));
+
+// Só troca <Content /> pelo HTML fatiado quando há mesmo o que inserir: assim
+// o artigo curto e o caso de segurança acima seguem pelo caminho de antes.
+const splitBody =
+  bodyLength > 0 && !hasMarkdownImages && breakUnits.size > 0;
+
+const bodyParts: Array<{ html: string; after: "ad" | "recirc" | null }> = [];
+if (splitBody) {
+  let start = 0;
+  for (const [index, unit] of breakUnits) {
+    bodyParts.push({ html: bodySections.slice(start, index).join(""), after: unit });
+    start = index;
+  }
+  bodyParts.push({ html: bodySections.slice(start).join(""), after: null });
+}
+
+const blogPostingJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
+  inLanguage: "pt-BR",
+  mainEntityOfPage: { "@type": "WebPage", "@id": postUrl },
+  /*
+   * ⚠️ Person quando há pessoa, Organization quando é a equipe. A diretriz de
+   * qualidade pede byline COM link para o histórico de quem escreve — o `url`
+   * abaixo é essa metade, e sem ele o nome é só texto decorativo.
+   */
+  author:
+    autora.url && autora.url !== "/sobre"
+      ? { "@type": "Person", name: autora.nome, url: new URL(autora.url, SITE_URL).href }
+      : { "@type": "Organization", name: SITE_TITLE, url: APP_URL },
+  publisher: {
+    "@type": "Organization",
+    name: SITE_TITLE,
+    logo: { "@type": "ImageObject", url: logoUrl },
+  },
+  image: [new URL(ogImage, SITE_URL).href],
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Início",
+      item: new URL("/", SITE_URL).href,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Blog",
+      item: new URL("/blog", SITE_URL).href,
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: categoryInfo.label,
+      item: new URL(`/categorias/${category}`, SITE_URL).href,
+    },
+    { "@type": "ListItem", position: 4, name: title, item: postUrl },
+  ],
+};
+
+// FAQPage JSON-LD only when the markdown body has an H2 "Perguntas frequentes"
+// with "### question" + paragraph pairs (parsed from post.body in lib/posts).
+const faqItems = extractFaq(post.body);
+const faqJsonLd =
+  faqItems.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqItems.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: { "@type": "Answer", text: item.answer },
+        })),
+      }
+    : null;
+---
+
+<BaseLayout title={title} description={description} type="article" ogImage={ogImage}>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(blogPostingJsonLd)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    {faqJsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />}
+    <meta property="article:published_time" content={pubDate.toISOString()} />
+    {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
+  </Fragment>
+
+  {/*
+    Duas colunas só a partir de 1152px. A conta que decide o breakpoint: a
+    coluna de texto tem 45rem (720px) — exatamente a medida de leitura de antes,
+    quando o artigo era `max-w-3xl px-4` —, a lateral tem 280px e o vão 40px.
+    São 1040px; 1152 é o ponto em que o `max-w-6xl` chega ao próprio limite e
+    sobram 1104px de conteúdo, ou seja 64px de folga sem tirar um pixel do
+    texto. Em 1024 sobrariam 976px e a única forma de encaixar seria espremendo
+    o texto, que é justamente o que segura a pessoa lendo — então aí não tem
+    lateral e o conteúdo dela vai para o fim do artigo.
+
+    Não é `xl:` (1280px) porque a faixa 1152–1279 é onde mora o notebook de
+    1280x800 (a janela dá ~1265px com a barra de rolagem): com `xl` ele caía no
+    layout de celular tendo espaço de sobra para a lateral.
+
+    `justify-center` mantém o artigo centralizado abaixo desse ponto, onde a
+    lateral é `display:none` e some da linha.
+  */}
+  <div class="mx-auto flex max-w-6xl justify-center gap-10 px-4 py-10 sm:px-6">
+    <article
+      class="w-full min-w-0 max-w-[45rem]"
+      style={`--kc:${categoryInfo.accent};--kcd:${categoryInfo.accentDark}`}
+    >
+      <nav aria-label="Trilha de navegação" class="text-sm text-gray-600 dark:text-gray-400">
+        <ol class="flex flex-wrap items-center gap-1">
+          <li>
+            <a href="/" class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">Início</a>
+          </li>
+          <li aria-hidden="true">›</li>
+          <li>
+            <a href="/blog" class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">Blog</a>
+          </li>
+          <li aria-hidden="true">›</li>
+          <li>
+            <a href={`/categorias/${category}`} class="rounded transition-colors hover:text-pink-700 dark:hover:text-pink-300">
+              {categoryInfo.label}
+            </a>
+          </li>
+        </ol>
+      </nav>
+
+      <header class="mt-6">
+        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--kc)] dark:text-[color:var(--kcd)]">
+          <a href={`/categorias/${category}`} class="rounded">{categoryInfo.label}</a>
+        </p>
+
+        <h1 class="mt-3 font-display text-[2.1rem] font-bold leading-[1.15] text-gray-800 sm:text-[2.6rem] dark:text-white">
+          {title}
+        </h1>
+
+        <p class="mt-4 text-lg leading-relaxed text-gray-600 dark:text-gray-300">{description}</p>
+
+        <div class="mt-6 flex items-center gap-3 border-y border-gray-100 py-4 dark:border-gray-800">
+          <img
+            src="/logo-icon-96.png"
+            alt=""
+            class="h-9 w-9 rounded-full"
+            width="36"
+            height="36"
+          />
+          <p class="text-sm text-gray-600 dark:text-gray-300">
+            <a
+              href={autora.url ?? "/sobre"}
+              class="rounded font-semibold text-gray-800 hover:text-pink-700 dark:text-gray-100 dark:hover:text-pink-300"
+            >
+              {autora.nome}
+            </a>
+            <span class="block text-gray-600 sm:inline dark:text-gray-400">
+              <span class="hidden sm:inline" aria-hidden="true"> · </span>
+              Publicado em <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+              {
+                updatedDate && (
+                  <>
+                    <span aria-hidden="true"> · </span>
+                    Atualizado em <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+                  </>
+                )
+              }
+              <span aria-hidden="true"> · </span>
+              {minutes} min de leitura
+            </span>
+          </p>
+        </div>
+
+        {/* Primeira dobra, junto do título — o slot de maior valor (ESTRATEGIA §5). */}
+        <AdSlot placement="first-fold" />
+
+        <div class="mt-8 overflow-hidden rounded-2xl">
+          <Cover category={category} slug={post.id} class="aspect-video w-full" />
+        </div>
+      </header>
+
+      {
+        showToc && (
+          <nav
+            aria-labelledby="toc-title"
+            class="mt-8 rounded-2xl border border-gray-100 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-800/60"
+          >
+            <p id="toc-title" class="text-xs font-semibold uppercase tracking-[0.12em] text-gray-600 dark:text-gray-400">
+              Neste artigo
+            </p>
+            <ol class="mt-3 space-y-2 text-[15px]">
+              {tocEntries.map((h) => (
+                <li>
+                  <a
+                    href={`#${h.slug}`}
+                    class="rounded text-gray-700 transition-colors hover:text-pink-700 dark:text-gray-200 dark:hover:text-pink-300"
+                  >
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+
+      {
+        splitBody ? (
+          bodyParts.map((part, index) => (
+            <>
+              <div class={index === 0 ? "prose-paca mt-10" : "prose-paca"} set:html={part.html} />
+
+              {/*
+                O anúncio do meio reusa o bloco "in-content" porque hoje esse é
+                o único ID de bloco que existe além do da primeira dobra — o
+                mesmo bloco pode aparecer mais de uma vez na página. A classe
+                `ad-in-body` é só o gancho para separar as duas posições na
+                medição enquanto não houver um bloco próprio.
+              */}
+              {part.after === "ad" && <AdSlot placement="in-content" class="mt-10 ad-in-body" />}
+
+              {/*
+                Recirculação no meio do texto, só onde NÃO existe a lateral. No
+                desktop este bloco seria uma terceira cópia dos mesmos links,
+                com a coluna grudada ao lado mostrando-os o tempo todo.
+              */}
+              {part.after === "recirc" && (
+                <div class="my-10 border-y border-gray-100 py-5 min-[1152px]:hidden dark:border-gray-800">
+                  <RecirculationPanel posts={midPosts} variant="mid" />
+                </div>
+              )}
+            </>
+          ))
+        ) : (
+          <div class="prose-paca mt-10">
+            <Content />
+          </div>
+        )
+      }
+
+      {/*
+        Ordem do fim do artigo, de propósito (o texto termina aqui):
+
+        1. Compartilhar — o passo que o próprio artigo pede ("combina com a outra
+           pessoa"). É um convite leve e a favor do leitor, então vem primeiro.
+        2. Anúncio.
+        3. Newsletter — o único pedido de e-mail da página. Vem antes de QUALQUER
+           bloco de recirculação, e não só antes dos cards: link para outro
+           artigo tira a pessoa desta página, e quem sai daqui nunca mais vê o
+           formulário. O e-mail é o que traz a mesma pessoa de volta de graça
+           (ESTRATEGIA §6) — perdê-lo custa mais que um pageview a mais.
+        4. Recirculação do celular e do tablet — o conteúdo da lateral, que
+           nessas larguras não existe. Fica depois da newsletter pelo motivo
+           acima; o leitor de celular já teve a versão curta dela no meio do
+           texto, então aqui ela não é mais a primeira chance de recircular.
+        5. "Leia também".
+        6. CTABox (produto) — fecha a página. Fica longe da newsletter de
+           propósito: os dois pedidos colados viravam um muro no fim do texto, e
+           a grade de artigos entre eles dá o respiro.
+      */}
+      <ShareBox url={postUrl} title={title} />
+
+      <AdSlot placement="in-content" />
+
+      {/* `source` = slug, para saber que conteúdo converte (ESTRATEGIA §6). */}
+      <NewsletterForm source={post.id} />
+
+      <aside
+        aria-label="Continue navegando no blog"
+        class="mt-14 border-t border-gray-100 pt-10 min-[1152px]:hidden dark:border-gray-800"
+      >
+        <RecirculationPanel posts={inlinePosts} variant="inline" />
+      </aside>
+
+      {
+        related.length > 0 && (
+          <section aria-labelledby="relacionados" class="mt-14 border-t border-gray-100 pt-10 dark:border-gray-800">
+            <h2 id="relacionados" class="font-display text-xl font-bold text-gray-800 sm:text-2xl dark:text-white">
+              Leia também
+            </h2>
+            <div class="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((p) => (
+                <PostCard post={p} showExcerpt={false} />
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <CTABox {...cta} />
+
+      <p class="mt-12 border-t border-gray-100 pt-6 text-[13px] leading-relaxed text-gray-600 dark:border-gray-800 dark:text-gray-400">
+        Conteúdo editorial do blog do Paca Finance. Não é recomendação de
+        investimento. Saiba como produzimos e revisamos nossos guias na
+        <a href="/sobre#politica-editorial" class="rounded underline underline-offset-2 hover:text-pink-700 dark:hover:text-pink-300">política editorial</a>.
+      </p>
+    </article>
+
+    {/*
+      Depois do artigo no HTML de propósito: quem navega por Tab lê o texto
+      inteiro antes de cair na lateral, mesmo com o desenho pondo as duas lado
+      a lado. `sticky` para acompanhar a leitura — é isso que faz a
+      recirculação funcionar. O `max-h` + `overflow-y-auto` são o seguro para
+      quando a lista crescer e ficar mais alta que a janela: sem eles o pé da
+      lateral ficaria inalcançável. A margem negativa com o padding de volta
+      só existe para o contorno de foco não ser cortado pela borda do scroll.
+
+      SEM `overscroll-contain` de propósito: com ele, quem estivesse com o
+      cursor sobre a lateral rolava a lateral até o fim e a PÁGINA parava de
+      rolar — o leitor ficava preso. Deixando o padrão, a rolagem encadeia:
+      termina a lateral, continua o artigo.
+    */}
+    <aside aria-label="Continue navegando no blog" class="hidden w-[17.5rem] shrink-0 min-[1152px]:block">
+      <div class="sticky top-8 -mx-1 max-h-[calc(100vh-4rem)] overflow-y-auto px-1 py-1">
+        <RecirculationPanel posts={sidebarPosts} variant="sidebar" />
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

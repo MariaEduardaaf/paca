@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+    /*
+     * Faz o navegador pintar no tema certo o que o CSS não alcança: barra de
+     * rolagem, campos de formulário nativos e o fundo antes da primeira pintura.
+     * Segue a classe .dark (que o script anti-flash aplica), não a preferência
+     * do sistema — senão quem escolhe o tema manualmente vê campo claro em
+     * página escura. Importa mais desde que o blog tem formulário de e-mail e
+     * a calculadora.
+     */
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-white font-body text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100;
+  }
+
+  /*
+   * Foco visível em tudo que recebe teclado.
+   *
+   * `outline` de verdade, não `ring`: o ring do Tailwind é box-shadow e o
+   * `ring-offset` precisa saber a cor do fundo ATRÁS do elemento. O blog tem
+   * campo branco dentro de cartão cinza dentro de seção cinza (calculadora) —
+   * ali o offset pintava um halo da cor errada. O outline nativo desenha por
+   * cima de qualquer fundo e ainda acompanha o border-radius nos navegadores
+   * atuais. Contraste do indicador (WCAG 1.4.11): pink-700 sobre branco 4,9:1;
+   * pink-300 sobre gray-900 8,7:1.
+   */
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-pink-700 dark:outline-pink-300;
+  }
+
+  ::selection {
+    @apply bg-pink-200 text-gray-900;
+  }
+
+  /*
+   * Quem pediu menos movimento no sistema não deve levar scroll animado nem
+   * transição de hover. `scroll-smooth` fica só para quem não pediu.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-pink-700 focus:px-4 focus:py-2 focus:font-semibold focus:text-white;
+  }
+
+  /* Hand-rolled prose styles for post bodies (no @tailwindcss/typography). */
+  .prose-paca {
+    @apply text-[1.0625rem] leading-[1.75] text-gray-700 dark:text-gray-200;
+  }
+
+  .prose-paca > * + * {
+    @apply mt-5;
+  }
+
+  .prose-paca h2 {
+    @apply mt-12 scroll-mt-24 font-display text-2xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .prose-paca h3 {
+    @apply mt-8 scroll-mt-24 font-display text-xl font-semibold text-gray-900 dark:text-white;
+  }
+
+  .prose-paca h4 {
+    @apply mt-6 font-display text-lg font-semibold text-gray-900 dark:text-white;
+  }
+
+  .prose-paca p {
+    @apply leading-relaxed;
+  }
+
+  .prose-paca a {
+    @apply font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 transition-colors hover:text-pink-800 hover:decoration-pink-700 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200;
+  }
+
+  .prose-paca strong {
+    @apply font-semibold text-gray-900 dark:text-white;
+  }
+
+  .prose-paca ul {
+    @apply list-disc space-y-2 pl-6 marker:text-pink-600 dark:marker:text-pink-300;
+  }
+
+  .prose-paca ol {
+    @apply list-decimal space-y-2 pl-6 marker:font-semibold marker:text-pink-700 dark:marker:text-pink-300;
+  }
+
+  .prose-paca blockquote {
+    @apply rounded-r-xl border-l-4 border-pink-300 bg-pink-50 py-3 pl-5 pr-4 italic text-gray-700 dark:border-pink-600 dark:bg-gray-800 dark:text-gray-200;
+  }
+
+  .prose-paca code {
+    @apply rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-pink-800 dark:bg-gray-800 dark:text-pink-200;
+  }
+
+  .prose-paca pre {
+    @apply overflow-x-auto rounded-xl bg-gray-800 p-4 text-sm text-gray-100 dark:bg-gray-800;
+  }
+
+  .prose-paca pre code {
+    @apply bg-transparent p-0 text-inherit;
+  }
+
+  .prose-paca hr {
+    @apply my-10 border-gray-200 dark:border-gray-700;
+  }
+
+  .prose-paca img {
+    @apply rounded-2xl;
+  }
+
+  .prose-paca table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .prose-paca th {
+    @apply border-b-2 border-gray-200 px-3 py-2 text-left font-semibold text-gray-900 dark:border-gray-700 dark:text-white;
+  }
+
+  .prose-paca td {
+    @apply border-b border-gray-100 px-3 py-2 dark:border-gray-800;
+  }
+
+  /*
+   * Diagrams: inline SVG written straight into the article markdown. They
+   * carry information from the text (the math, the comparison), never
+   * decoration — no photos, no stock art. Colors come from these classes so
+   * one file controls both themes; the brand fills stay fixed because they
+   * hold contrast on white and on gray-900 alike.
+   */
+  .diagram {
+    @apply my-8;
+  }
+
+  .diagram svg {
+    @apply block h-auto w-full;
+  }
+
+  .diagram text {
+    font-family: "DM Sans", system-ui, sans-serif;
+  }
+
+  .diagram figcaption {
+    @apply mt-3 text-sm text-gray-600 dark:text-gray-400;
+  }
+
+  .diagram .d-ink {
+    fill: #212529;
+  }
+
+  /*
+   * `d-muted` também rotula números dentro dos diagramas (12–13px), então
+   * precisa passar AA como texto: #868e96 dava 3,3:1 sobre branco. #495057 dá
+   * 8,2:1 e continua claramente mais fraco que a tinta principal.
+   */
+  .diagram .d-muted {
+    fill: #495057;
+  }
+
+  .diagram .d-track {
+    fill: #f1f3f5;
+  }
+
+  .diagram .d-rule {
+    stroke: #e9ecef;
+  }
+
+  :is(.dark) .diagram .d-ink {
+    fill: #f1f3f5;
+  }
+
+  :is(.dark) .diagram .d-muted {
+    fill: #adb5bd;
+  }
+
+  :is(.dark) .diagram .d-track {
+    fill: #343a40;
+  }
+
+  :is(.dark) .diagram .d-rule {
+    stroke: #343a40;
+  }
+}

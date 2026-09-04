@@ -1,7 +1,10 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
-import { createAdminClient, isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
+import { createAdminClient } from "../_shared/adminClient.ts";
+import { isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
+import { advisorFallback, resolveLang } from "../_shared/i18n.ts";
+import { convert } from "../_shared/fx.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
@@ -27,33 +30,6 @@ interface AdvisorRequest {
   notes?: string | null;
   language?: string;        // locale hint so Gemini replies in the user's language
   mode?: "couple" | "personal";  // financial scope to consider in context
-}
-
-// ---- FX helper (same approach as scan functions) ----
-async function fetchRates(base: string): Promise<Record<string, number>> {
-  try {
-    const res = await fetch(`https://open.er-api.com/v6/latest/${base}`);
-    if (!res.ok) return {};
-    const data = await res.json();
-    if (data?.result !== "success" || !data?.rates) return {};
-    return data.rates as Record<string, number>;
-  } catch {
-    return {};
-  }
-}
-
-async function convert(
-  amount: number,
-  from: string,
-  to: string
-): Promise<{ converted: number; rate: number }> {
-  if (from === to) return { converted: amount, rate: 1 };
-  const rates = await fetchRates(from);
-  const rate = rates[to];
-  if (!rate || !Number.isFinite(rate) || rate <= 0) {
-    return { converted: amount, rate: 1 };
-  }
-  return { converted: Math.round(amount * rate), rate };
 }
 
 // ---- Verdict rules: deterministic, AI only explains ----
@@ -183,7 +159,8 @@ Deno.serve(async (req) => {
     // Free tier: 3 advisor questions/month per couple. Premium bypasses.
     // Counted server-side across both partners (service_role).
     const admin = createAdminClient();
-    if (!(await isPremium(admin, profile.couple_id))) {
+    const premium = await isPremium(admin, profile.couple_id);
+    if (!premium) {
       const quota = await checkMonthlyQuota(admin, profile.couple_id, ["advise"], 3);
       if (!quota.allowed) return quotaExceededResponse(quota, corsHeaders);
     }
@@ -194,7 +171,9 @@ Deno.serve(async (req) => {
       .eq("id", profile.couple_id)
       .single();
     const primaryCurrency: string = (couple?.primary_currency ?? "BRL").toUpperCase();
-    const autoConvert: boolean = couple?.auto_convert_currency ?? true;
+    // The original-currency mode (auto-convert OFF) is a Premium feature.
+    // Enforce it HERE, not in the UI: free couples always convert.
+    const autoConvert: boolean = premium ? (couple?.auto_convert_currency ?? true) : true;
 
     const body = (await req.json()) as AdvisorRequest;
     if (!body?.item?.trim() || !body?.amount || body.amount <= 0) {
@@ -204,9 +183,18 @@ Deno.serve(async (req) => {
 
     const rawAmount = Math.abs(Math.round(body.amount));
     const rawCurrency = (body.currency ?? primaryCurrency).toUpperCase().slice(0, 3) || primaryCurrency;
-    const { converted: convertedAmount, rate } = autoConvert
+    const fx = autoConvert
       ? await convert(rawAmount, rawCurrency, primaryCurrency)
-      : { converted: rawAmount, rate: 1 };
+      : { converted: rawAmount, rate: 1, ok: true };
+    if (!fx.ok) {
+      // Without a real rate the verdict would be computed on unconverted money.
+      // Fail loudly so the user can retry instead of getting bogus advice.
+      return jsonResponse(
+        { error: "Currency conversion is temporarily unavailable. Please try again." },
+        502
+      );
+    }
+    const { converted: convertedAmount, rate } = fx;
     const storedCurrency = autoConvert ? primaryCurrency : rawCurrency;
 
     // ---- Gather financial context from the last 3 months ----
@@ -335,7 +323,9 @@ Deno.serve(async (req) => {
     const { verdict, reasons } = computeVerdict(convertedAmount, body.urgency, ctx);
 
     // ---- Ask Gemini to explain in friend-direct tone ----
-    const language = (body.language ?? "pt").slice(0, 2);
+    // resolveLang keeps the default consistent with the app-wide locale ('en')
+    // instead of an ad-hoc Portuguese fallback.
+    const language = resolveLang(body.language);
     const languageLabel: Record<string, string> = {
       en: "English",
       pt: "Brazilian Portuguese",
@@ -375,7 +365,7 @@ You already know the verdict — you just have to EXPLAIN it in plain language
 and suggest one concrete alternative when it helps.
 
 Rules:
-- Reply in ${languageLabel[language] ?? "Brazilian Portuguese"}.
+- Reply in ${languageLabel[language] ?? "English"}.
 - Keep it short: 2 to 4 sentences in "reasoning".
 - Reference one or two concrete numbers from the facts (rounded to whole units).
 - Never lecture. No "you should be more careful" energy. Treat them like an adult friend.
@@ -429,14 +419,9 @@ ${factsForPrompt}`;
       console.error("Gemini error:", JSON.stringify(aiData));
     }
 
-    // Last-resort fallback so we always show something
+    // Last-resort fallback so we always show something, in the user's language.
     if (!reasoning) {
-      reasoning =
-        verdict === "go"
-          ? "Os números batem: cabe no mês sem apertar as contas."
-          : verdict === "wait"
-            ? "Não é proibido, mas esse mês ia ficar apertado. Vale esperar um pouco."
-            : "Esse mês não dá, não. O saldo ou o orçamento não cobrem essa compra.";
+      reasoning = advisorFallback(language, verdict);
     }
 
     const impact = {
@@ -482,8 +467,12 @@ ${factsForPrompt}`;
       return jsonResponse({ error: "Could not save advice", details: insertError.message }, 500);
     }
 
-    // Log usage (fire-and-forget)
-    supabase
+    // Log usage AWAITED, only after the advice row saved and before returning:
+    // metering before the save would burn one of the 3 free monthly uses on a
+    // failed request, and a fire-and-forget insert can be dropped when the
+    // isolate is torn down, undercounting the quota/rate meters. On insert
+    // failure we still return the result (metering must never break the feature).
+    const { error: usageError } = await supabase
       .from("usage_stats")
       .insert({
         profile_id: profile.id,
@@ -495,10 +484,8 @@ ${factsForPrompt}`;
           primary_currency: primaryCurrency,
           original_currency: rawCurrency,
         },
-      })
-      .then((res: { error: unknown }) => {
-        if (res.error) console.error("usage log failed:", res.error);
       });
+    if (usageError) console.error("usage log failed:", usageError);
 
     return jsonResponse(saved);
   } catch (error) {

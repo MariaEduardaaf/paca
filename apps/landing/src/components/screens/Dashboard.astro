@@ -1,0 +1,87 @@
+---
+import Icon from "../Icon.astro";
+
+/*
+ * Tela de Início do app, desenhada em HTML.
+ *
+ * OS RÓTULOS SÃO OS DE VERDADE: "Saldo do Casal", "Últimas Transações",
+ * "Ver todas" e a saudação vêm de packages/shared/src/i18n/pt.ts (dashboard.*).
+ * Se a interface mudar lá, esta ilustração passa a mentir sobre a própria tela.
+ *
+ * OS DADOS SÃO DE EXEMPLO, e a página diz isso por escrito abaixo da vitrine:
+ * "Lucas & Marina" e os valores são figurantes, não usuários. Nenhum número
+ * daqui é citado como afirmação em lugar nenhum da página.
+ */
+---
+
+<div class="scr-head">
+  <div>
+    <div class="scr-kicker">Boa tarde</div>
+    <div class="scr-title">Lucas &amp; Marina</div>
+  </div>
+  <div class="scr-avatars">
+    <span class="av-pink">L</span>
+    <span class="av-teal">M</span>
+  </div>
+</div>
+
+<div class="scr-balance">
+  <div class="scr-balance-label">Saldo do Casal · maio</div>
+  <div class="scr-balance-value">
+    <span class="cur">R$</span><span class="big">8.420</span><span class="cents">,50</span>
+  </div>
+  <div class="scr-balance-foot">
+    <span>Receitas R$ 12.700</span>
+    <span>Despesas R$ 4.279</span>
+  </div>
+</div>
+
+<div class="scr-actions">
+  <div class="scr-action"><Icon name="arrow-up" size="1.4em" />Receita</div>
+  <div class="scr-action"><Icon name="arrow-down" size="1.4em" />Despesa</div>
+  <div class="scr-action is-ai"><Icon name="camera" size="1.4em" />Recibo</div>
+  <div class="scr-action"><Icon name="pie" size="1.4em" />Orçamento</div>
+</div>
+
+<div class="scr-section-head">
+  <h4>Últimas Transações</h4>
+  <span>Ver todas</span>
+</div>
+
+<div class="scr-list">
+  <div class="scr-row">
+    <div class="scr-row-icon" style="color:var(--green)"><Icon name="arrow-up" size="1.1em" /></div>
+    <div class="scr-row-body">
+      <div class="scr-row-name">Salário</div>
+      <div class="scr-row-sub">Lucas · Hoje</div>
+    </div>
+    <div class="scr-row-amount amount-pos">+ R$ 6.500,00</div>
+  </div>
+
+  <div class="scr-row">
+    <div class="scr-row-icon"><Icon name="cart" size="1.1em" /></div>
+    <div class="scr-row-body">
+      <div class="scr-row-name">Mercado Extra</div>
+      <div class="scr-row-sub">Marina · Alimentação <span class="scr-tag">IA</span></div>
+    </div>
+    <div class="scr-row-amount amount-neg">− R$ 287,50</div>
+  </div>
+
+  <div class="scr-row">
+    <div class="scr-row-icon"><Icon name="receipt" size="1.1em" /></div>
+    <div class="scr-row-body">
+      <div class="scr-row-name">Delivery</div>
+      <div class="scr-row-sub">Marina · Alimentação</div>
+    </div>
+    <div class="scr-row-amount amount-neg">− R$ 68,90</div>
+  </div>
+
+  <div class="scr-row">
+    <div class="scr-row-icon"><Icon name="car" size="1.1em" /></div>
+    <div class="scr-row-body">
+      <div class="scr-row-name">Corrida</div>
+      <div class="scr-row-sub">Lucas · Transporte</div>
+    </div>
+    <div class="scr-row-amount amount-neg">− R$ 24,00</div>
+  </div>
+</div>

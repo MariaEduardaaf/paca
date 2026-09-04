@@ -26,7 +26,7 @@ import {
   useAppStore,
   useIsPremium,
 } from "@paca/api";
-import { LOCALE_LABELS, SUPPORTED_CURRENCIES, type Locale } from "@paca/shared";
+import { LOCALE_LABELS, SUPPORTED_CURRENCIES, escapeCsvField, type Locale } from "@paca/shared";
 import { ScreenContainer } from "../../components/ScreenContainer";
 import { PaywallModal, type PaywallReason } from "../../components/PaywallModal";
 
@@ -34,7 +34,7 @@ export default function Profile() {
   const router = useRouter();
   const { t, dateLocale, locale, setLocale, currency, setCurrency, translateCategory } = useI18n();
 
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
   const updateProfile = useUpdateProfile();
@@ -65,8 +65,16 @@ export default function Profile() {
   };
 
   const handleLanguageChange = async (newLocale: Locale) => {
+    const previous = locale;
     setLocale(newLocale);
-    await updateProfile.mutateAsync({ language: newLocale });
+    try {
+      await updateProfile.mutateAsync({ language: newLocale });
+    } catch {
+      // Server kept the old language — revert so the app doesn't silently
+      // flip back on the next cold start.
+      setLocale(previous);
+      Alert.alert(t.common.error, t.common.actionError);
+    }
   };
 
   const handleCurrencyChange = async (newCurrency: string) => {
@@ -80,7 +88,11 @@ export default function Profile() {
 
   const handleReplayTutorial = async () => {
     // Reset the flag — the tabs layout re-opens the modal on next profile fetch
-    await updateProfile.mutateAsync({ tutorial_completed: false });
+    try {
+      await updateProfile.mutateAsync({ tutorial_completed: false });
+    } catch {
+      Alert.alert(t.common.error, t.common.actionError);
+    }
   };
 
   const handleToggleAutoConvert = async () => {
@@ -99,8 +111,13 @@ export default function Profile() {
 
   const handleSaveName = async () => {
     if (!newName.trim()) return;
-    await updateProfile.mutateAsync({ display_name: newName.trim() });
-    setEditingName(false);
+    try {
+      await updateProfile.mutateAsync({ display_name: newName.trim() });
+      setEditingName(false);
+    } catch {
+      // Keep the editor open so the typed name isn't lost.
+      Alert.alert(t.common.error, t.common.actionError);
+    }
   };
 
   const handleShareCode = async () => {
@@ -119,8 +136,14 @@ export default function Profile() {
         text: t.profile.signOut,
         style: "destructive",
         onPress: async () => {
-          await supabase.auth.signOut();
-          router.replace("/(auth)/login");
+          try {
+            // useAuth().signOut also resets the zustand store and clears the
+            // query cache so the next account never sees this user's data.
+            await signOut();
+            router.replace("/(auth)/login");
+          } catch {
+            Alert.alert(t.common.error, t.common.actionError);
+          }
         },
       },
     ]);
@@ -141,15 +164,17 @@ export default function Profile() {
     }
 
     const header = `${t.profile.csvHeader}\n`;
+    // escapeCsvField: descriptions/categories are user-authored — escape
+    // quotes and neutralize =/+/-/@ formula injection, same as the web export.
     const rows = data
       .map((row: any) => {
         const val = (row.amount / 100).toFixed(2);
-        return `${row.date},"${row.description}",${row.type === "income" ? t.profile.csvIncome : t.profile.csvExpense},${val},"${translateCategory(row.category?.name)}"`;
+        return `${row.date},${escapeCsvField(row.description)},${row.type === "income" ? t.profile.csvIncome : t.profile.csvExpense},${val},${escapeCsvField(translateCategory(row.category?.name))}`;
       })
       .join("\n");
 
     try {
-      await Share.share({ message: header + rows, title: "Transações Paca Finance" });
+      await Share.share({ message: header + rows, title: `${t.nav.transactions} — Paca Finance` });
     } catch {}
   };
 
@@ -490,7 +515,7 @@ export default function Profile() {
         <SectionTitle title={t.profile.support} />
         <View className="mx-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 mb-4">
           <TouchableOpacity
-            onPress={() => Linking.openURL("https://paca-web-twmh.vercel.app/terms")}
+            onPress={() => Linking.openURL("https://app.pacafinance.com.br/terms")}
             className="flex-row items-center justify-between px-5 py-4 border-b border-gray-50 dark:border-gray-700/50"
             activeOpacity={0.7}
           >
@@ -503,7 +528,7 @@ export default function Profile() {
             <Ionicons name="chevron-forward" size={18} color="#D1D5DB" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => Linking.openURL("https://paca-web-twmh.vercel.app/privacy")}
+            onPress={() => Linking.openURL("https://app.pacafinance.com.br/privacy")}
             className="flex-row items-center justify-between px-5 py-4"
             activeOpacity={0.7}
           >

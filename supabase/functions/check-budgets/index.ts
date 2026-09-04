@@ -1,10 +1,36 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { budgetAlert, resolveLang } from "../_shared/i18n.ts";
+import { budgetAlert, budgetAlertTitles, resolveLang, type BudgetAlertKey } from "../_shared/i18n.ts";
+import { timingSafeEqualStr } from "../_shared/crypto.ts";
 import { notifyAndPush } from "../_shared/push.ts";
+
+// Cron-only function: scans ALL couples' budgets (service_role) and sends
+// budget alerts. It must never be publicly invocable.
+//
+// REQUIRED SECRET: set CRON_SECRET in the function's env
+//   (supabase secrets set CRON_SECRET=<random value>)
+// and configure the scheduler to send it as `Authorization: Bearer <CRON_SECRET>`.
+// The function FAILS CLOSED (503) when CRON_SECRET is not configured, and
+// rejects any request without the matching header (401). Deploying with
+// --no-verify-jwt is only safe together with this check.
 
 Deno.serve(async (req) => {
   try {
+    const cronSecret = Deno.env.get("CRON_SECRET");
+    if (!cronSecret) {
+      return new Response(
+        JSON.stringify({ error: "CRON_SECRET is not configured; refusing to run" }),
+        { status: 503, headers: { "Content-Type": "application/json" } }
+      );
+    }
+    const authHeader = req.headers.get("Authorization") ?? "";
+    if (!timingSafeEqualStr(authHeader, `Bearer ${cronSecret}`)) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -28,6 +54,37 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Prefetch once per run (both are per-couple/per-recipient lookups that
+    // would otherwise be N+1 queries inside the loops below):
+    // - each couple's primary currency, so spent totals can skip unconverted
+    //   foreign-currency rows exactly like the client-side useBudgets does;
+    // - every budget_alert already sent this month, keyed user:couple:title,
+    //   for the dedup check.
+    const coupleIds = Array.from(new Set(budgets.map((b) => b.couple_id)));
+    const [couplesRes, sentRes] = await Promise.all([
+      supabase.from("couples").select("id, primary_currency").in("id", coupleIds),
+      supabase
+        .from("notifications")
+        .select("target_user_id, couple_id, title")
+        .eq("type", "budget_alert")
+        .gte("created_at", currentMonth),
+    ]);
+    if (sentRes.error) {
+      // Fail closed on the dedup prefetch: better to miss one run than to
+      // spam identical pushes every cron tick while the DB hiccups.
+      console.error("budget-alert dedup prefetch failed; aborting run", sentRes.error);
+      return new Response(JSON.stringify({ error: "dedup prefetch failed" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const primaryByCouple = new Map(
+      (couplesRes.data ?? []).map((c) => [c.id, c.primary_currency])
+    );
+    const sentKeys = new Set(
+      (sentRes.data ?? []).map((n) => `${n.target_user_id}:${n.couple_id}:${n.title}`)
+    );
+
     let alertsSent = 0;
 
     for (const budget of budgets) {
@@ -36,7 +93,7 @@ Deno.serve(async (req) => {
       // Sum transactions matching this budget's scope (and owner for personal).
       let txQuery = supabase
         .from("transactions")
-        .select("amount, category_id")
+        .select("amount, currency, category_id")
         .eq("couple_id", budget.couple_id)
         .eq("scope", budget.scope ?? "couple")
         .eq("type", "expense")
@@ -48,7 +105,14 @@ Deno.serve(async (req) => {
       const { data: transactions } = await txQuery;
       if (!transactions) continue;
 
-      const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
+      // Unconverted foreign-currency rows (auto-convert off) can't be added to
+      // primary-currency cents — leave them out, matching useBudgets on the
+      // client so a push can never contradict the UI.
+      const primaryCurrency = primaryByCouple.get(budget.couple_id);
+      const totalSpent = transactions.reduce((sum, t) => {
+        if (t.currency && primaryCurrency && t.currency !== primaryCurrency) return sum;
+        return sum + t.amount;
+      }, 0);
       const ratio = totalSpent / budget.total_amount;
 
       // Personal budgets notify only the owner; couple budgets notify both.
@@ -74,44 +138,42 @@ Deno.serve(async (req) => {
 
       const pct = Math.round(ratio * 100);
 
-      // Alert at 80%
-      if (ratio >= 0.8 && ratio < 1.0) {
-        for (const member of recipients) {
-          const lang = resolveLang(member.language);
-          const { title, body } = budgetAlert(
-            lang,
-            isPersonal ? "nearPersonal" : "nearCouple",
-            pct
-          );
-          await notifyAndPush(supabase, {
-            couple_id: budget.couple_id,
-            target_user_id: member.id,
-            type: "budget_alert",
-            title,
-            body,
-          });
-          alertsSent++;
-        }
-      }
+      // One alert variant per run: 80% ("near") or 100% ("exceeded").
+      const alertKey: BudgetAlertKey | null =
+        ratio >= 1.0
+          ? (isPersonal ? "exceededPersonal" : "exceededCouple")
+          : ratio >= 0.8
+            ? (isPersonal ? "nearPersonal" : "nearCouple")
+            : null;
+      if (!alertKey) continue;
 
-      // Alert at 100%
-      if (ratio >= 1.0) {
-        for (const member of recipients) {
-          const lang = resolveLang(member.language);
-          const { title, body } = budgetAlert(
-            lang,
-            isPersonal ? "exceededPersonal" : "exceededCouple",
-            pct
-          );
-          await notifyAndPush(supabase, {
-            couple_id: budget.couple_id,
-            target_user_id: member.id,
-            type: "budget_alert",
-            title,
-            body,
-          });
-          alertsSent++;
-        }
+      // Dedup: this function runs on a cron, so without a guard the same
+      // couple would get the identical alert on every run. The notifications
+      // table has no metadata column, but titles are static per (lang, key),
+      // so "a budget_alert this month with any localized title of this key"
+      // means this threshold was already announced to this recipient
+      // (per user + couple + scope + threshold + calendar month — there is at
+      // most one couple budget and one personal budget per user per month).
+      // Tested against the sentKeys Set prefetched above (one query per run).
+      const dedupTitles = budgetAlertTitles(alertKey);
+
+      for (const member of recipients) {
+        const alreadySent = dedupTitles.some((t) =>
+          sentKeys.has(`${member.id}:${budget.couple_id}:${t}`)
+        );
+        if (alreadySent) continue;
+
+        const lang = resolveLang(member.language);
+        const { title, body } = budgetAlert(lang, alertKey, pct);
+        await notifyAndPush(supabase, {
+          couple_id: budget.couple_id,
+          target_user_id: member.id,
+          type: "budget_alert",
+          title,
+          body,
+        });
+        sentKeys.add(`${member.id}:${budget.couple_id}:${title}`);
+        alertsSent++;
       }
     }
 

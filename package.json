@@ -11,7 +11,10 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test && npm run test:functions",
+    "test:packages": "turbo run test",
+    "test:functions": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test \"supabase/tests/**/*.test.ts\""
   },
   "devDependencies": {
     "turbo": "^2.4.0",

@@ -1,0 +1,360 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, APP_URL } from "../consts";
+import { ADSENSE_CLIENT, ADS_ENABLED, META_PIXEL_ID, TRACKED_HOSTS } from "../lib/monetization";
+
+interface Props {
+  /** Page title (the "| Paca Finance" suffix is appended only when it fits). */
+  title?: string;
+  description?: string;
+  /** og:type — "article" on post pages. */
+  type?: "website" | "article";
+  /**
+   * Absolute or root-relative OG image; defaults to /og-default.png.
+   * NOTE: public/og-default.png is currently a copy of the app's
+   * logo-full.png — an acceptable placeholder until a real 1200x630
+   * OG image is produced (public/og-default.svg is a branded draft).
+   */
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = SITE_DESCRIPTION,
+  type = "website",
+  ogImage = "/og-default.png",
+} = Astro.props;
+
+/*
+ * Sufixo de marca CONDICIONAL. " | Paca Finance" soma 15 caracteres fixos e o
+ * Google corta a <title> por volta de 60: com o sufixo sempre ligado, 17 dos
+ * 18 artigos estouravam o limite e nos piores o corte caía em cima da própria
+ * palavra-chave, no fim do título. Então a marca só entra quando cabe inteira
+ * no orçamento; passando disso o título vai sozinho — a marca continua visível
+ * no domínio exibido na SERP e em og:site_name, a palavra-chave não.
+ * Consequência esperada: título de artigo raramente leva o sufixo; página fixa,
+ * categoria e calculadora (escritas curtas de propósito) levam sempre.
+ */
+const TITLE_BUDGET = 60;
+const BRAND_SUFFIX = ` | ${SITE_TITLE}`;
+const fullTitle = title
+  ? title.length + BRAND_SUFFIX.length <= TITLE_BUDGET
+    ? `${title}${BRAND_SUFFIX}`
+    : title
+  : `${SITE_TITLE} — Blog de finanças para casais`;
+
+// trailingSlash: "never" — normalize the canonical the same way (root stays "/").
+const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const canonical = new URL(pathname, SITE_URL).href;
+const ogImageUrl = new URL(ogImage, SITE_URL).href;
+
+/*
+ * MEDIÇÃO DA SAÍDA PARA O APP — o que a dona lê no relatório é uma frase:
+ *
+ *   utm_source=blog         quem mandou  → o blog (separa do tráfego que chega
+ *                                          ao app por qualquer outro caminho)
+ *   utm_medium=<posição>    onde clicou  → header, footer, article_body,
+ *                                          cta_box, sidebar, page_body
+ *   utm_campaign=<página>   de que página → "blog-como-dividir-contas-casal"
+ *
+ * É medium + campaign que responde à pergunta que decide investimento: ARTIGO
+ * POR ARTIGO, empurrar o app rende mais do que segurar a pessoa no blog (onde
+ * ela vê anúncio)? Sem o medium, um artigo cujo clique veio do RODAPÉ — que é
+ * igual em todas as páginas — parecia um artigo que converte pelo texto.
+ *
+ * Os valores são chave de relatório, não texto de interface: ficam em inglês
+ * como o resto do código, minúsculos e sem acento, que é o que a ferramenta de
+ * analytics espera (valor de UTM diferencia maiúscula e vira duas linhas).
+ */
+const APP_HOST = new URL(APP_URL).hostname;
+
+/*
+ * O caminho da página vira o nome da campanha: "/" → "home",
+ * "/blog/x" → "blog-x", "/categorias/y" → "categorias-y". Sem inventar prefixo:
+ * dá para voltar do relatório para a URL de origem só lendo o valor.
+ */
+const utmCampaign = (pathname === "/" ? "home" : pathname.slice(1).replace(/\//g, "-"))
+  .toLowerCase()
+  .replace(/[^a-z0-9-]+/g, "-");
+
+/*
+ * META PIXEL — a medição do tráfego pago. O ID e a lista de domínios vivem em
+ * src/lib/monetization.ts, junto das outras chaves de terceiro; lá está escrito
+ * por que este valor fica no código enquanto o do AdSense fica em variável de
+ * ambiente, e o que NUNCA pode ser enviado (valor, saldo, renda, orçamento —
+ * app de finanças, e as Ferramentas Comerciais da Meta proíbem dado financeiro).
+ */
+const META_PIXEL_ENABLED = META_PIXEL_ID.length > 0;
+
+/*
+ * Snippet padrão do Meta, com três decisões que não se veem:
+ *
+ * 1. A GUARDA DE DOMÍNIO. O `init` só roda se o hostname estiver na lista. Sem
+ *    ela o pixel dispararia em localhost e nos deploys de pré-visualização da
+ *    Vercel — que são build de produção como qualquer outro — e a nossa própria
+ *    navegação entraria na medição que vai decidir quanto gastar no Meta.
+ *    O <noscript> abaixo NÃO tem como ser guardado (é uma imagem, sem JS); é
+ *    ruído aceitável, porque só dispara para quem navega sem JavaScript.
+ * 2. O ID entra por JSON.stringify: ele cai DENTRO de JavaScript, e uma aspa
+ *    perdida quebraria o <head> de todas as páginas.
+ * 3. Vai por set:html, e não escrito como JS no template: dentro de uma
+ *    expressão `{...}` o Astro leria as chaves do próprio snippet como
+ *    expressão dele.
+ */
+const metaPixelSnippet = `if (${JSON.stringify(TRACKED_HOSTS)}.indexOf(location.hostname) !== -1) {
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', ${JSON.stringify(META_PIXEL_ID)});
+fbq('track', 'PageView');
+}`;
+const metaPixelNoscriptSrc = `https://www.facebook.com/tr?id=${encodeURIComponent(META_PIXEL_ID)}&ev=PageView&noscript=1`;
+
+/*
+ * Entidade do site, em TODA página. Até aqui só os artigos tinham dados
+ * estruturados: /, /blog, /categorias e /sobre não diziam ao Google de quem é
+ * o site. Isso pesa mais neste projeto do que no normal — existe um projeto de
+ * cripto homônimo ("Paca Finance", outro domínio, marcado como golpe), e sem
+ * entidade própria o Google mistura os dois. O `sameAs` é o que amarra blog e
+ * app como duas propriedades da MESMA marca.
+ *
+ * SEM `potentialAction`/SearchAction de propósito: o blog não tem rota de busca
+ * (conferido em src/pages/), e declarar uma que não existe é dado estruturado
+ * falso — o Google trata como spam de marcação.
+ *
+ * Não colide com o BlogPostLayout: lá saem BlogPosting, BreadcrumbList e
+ * FAQPage, tipos que não se repetem aqui. O `logo` aponta para o mesmo
+ * /logo-icon-large.png que o `publisher` de lá usa, para o Google ver um único
+ * desenho de marca — se um mudar, o outro muda junto.
+ */
+const organizationId = new URL("/#organization", SITE_URL).href;
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": organizationId,
+      name: SITE_TITLE,
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: new URL("/logo-icon-large.png", SITE_URL).href,
+        width: 480,
+        height: 480,
+      },
+      sameAs: [APP_URL],
+    },
+    {
+      "@type": "WebSite",
+      "@id": new URL("/#website", SITE_URL).href,
+      name: SITE_TITLE,
+      url: SITE_URL,
+      description: SITE_DESCRIPTION,
+      inLanguage: "pt-BR",
+      publisher: { "@id": organizationId },
+    },
+  ],
+};
+---
+
+<html lang="pt-BR" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    {/*
+      Só amplia a PRÉVIA — nada aqui é `noindex`/`nofollow`, a indexação segue
+      o padrão. Sem `max-image-preview:large` o Google limita a miniatura ao
+      tamanho pequeno e o card do Discover sai sem a imagem grande, que é o
+      formato de maior clique. Discover é o canal de volume barato em finanças
+      pessoais, então isso anda junto com as imagens indexáveis dos artigos.
+    */}
+    <meta name="robots" content="max-image-preview:large" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content={SITE_TITLE} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <meta name="theme-color" content="#FF8FB1" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE_TITLE} — Blog`}
+      href={new URL("/rss.xml", SITE_URL).href}
+    />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(siteJsonLd)} />
+
+    <meta name="generator" content={Astro.generator} />
+
+    {/* No-flash theme: set .dark on <html> before first paint. */}
+    <script is:inline>
+      (function () {
+        var theme = "light";
+        try {
+          var stored = localStorage.getItem("theme");
+          if (stored === "dark" || stored === "light") {
+            theme = stored;
+          } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            theme = "dark";
+          }
+        } catch (_) {
+          /* storage unavailable — keep light */
+        }
+        document.documentElement.classList.toggle("dark", theme === "dark");
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/*
+      Bricolage Grotesque com o EIXO ÓPTICO (opsz 12..96) e o peso 800: é o que
+      a palavra gigante das capas usa (src/lib/cover-art.mjs). Sem o 800 a capa
+      cai no 700 e sai visivelmente mais leve que o desenho aprovado; sem o eixo
+      óptico, o corpo de 172px sai com o desenho de letra pensado para texto
+      corrido. scripts/og.mjs carrega exatamente a mesma lista (com
+      display=block, porque screenshot não espera swap).
+    */}
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    {/* Rede de anúncio — só carrega quando PUBLIC_ADSENSE_CLIENT existir (lib/monetization.ts). */}
+    {
+      ADS_ENABLED && (
+        <script
+          is:inline
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossorigin="anonymous"
+        />
+      )
+    }
+
+    {/* Fase 1 (docs/arbitragem/PLANO-DE-ACAO.md): a tag de medição "Caju" entra
+        AQUI quando a dona passar o snippet. */}
+
+    {/* Meta Pixel — o `init` é guardado por domínio (ver o snippet acima).
+        Vazia (hoje), o HTML sai exatamente como saía antes: nada de Meta. */}
+    {META_PIXEL_ENABLED && <script is:inline set:html={metaPixelSnippet} />}
+    {
+      /* O <noscript> é o padrão do Meta e não é enfeite: ele conta a visita de
+         quem navega com JS bloqueado. Sem ele, esse público some do relatório e
+         o custo por lead do Meta sai inflado — a compra de mídia pagou por uma
+         visita que a medição não viu. */
+      META_PIXEL_ENABLED && (
+        <noscript>
+          <img height="1" width="1" style="display:none" alt="" src={metaPixelNoscriptSrc} />
+        </noscript>
+      )
+    }
+
+    <slot name="head" />
+  </head>
+  <body class="flex min-h-full flex-col bg-white dark:bg-gray-900">
+    <a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
+    <Header />
+    {/*
+      `tabindex="-1"` no alvo do link de pular: sem isso o Safari só rola a
+      página e devolve o Tab para o topo do cabeçalho — o link parece funcionar
+      e não funciona. Como o foco aqui é programático, o `:focus-visible` não
+      dispara e nenhum contorno estranho aparece.
+    */}
+    <main id="conteudo" tabindex="-1" class="flex-1 focus:outline-none">
+      <slot />
+    </main>
+    <Footer />
+
+    {/*
+      MARCAÇÃO UTM DE TODO LINK QUE SAI PARA O APP (esquema explicado no topo
+      deste arquivo).
+
+      POR QUE AQUI, E NÃO NOS ~10 CALL SITES. Marcar link a link é frágil do
+      pior jeito: não dá alarme. O próximo link nasce sem UTM, ninguém percebe,
+      e o relatório fica errado sem nunca quebrar. Deste jeito, todo link para o
+      app já nasce marcado — inclusive os que vierem de artigo novo.
+
+      O ROBÔ DO GOOGLE NÃO VÊ ESTA MARCAÇÃO, E ISSO É BOM. Ela acontece no
+      navegador, depois que o HTML já foi entregue; no HTML estático (o que o
+      crawler lê, e o que o revisor do AdSense está lendo agora) os links
+      continuam limpos. Se fosse feita no build, cada link viraria uma URL com
+      query no índice do Google — variante duplicada da mesma página do app, sem
+      ganho nenhum. O preço é quem navega sem JS sair sem marcação: público
+      irrisório, e a marcação existe para medir compra de mídia, que é tráfego
+      de navegador real.
+
+      No fim do <body> de propósito: script inline no <head> roda antes do
+      próprio corpo da página existir, e não acharia link nenhum.
+    */}
+    <script is:inline define:vars={{ appHost: APP_HOST, utmCampaign }}>
+      (function () {
+        /*
+         * De ONDE o clique saiu, deduzido da posição do link no documento —
+         * do container mais específico para o mais genérico.
+         *
+         * A lateral e a caixa de produto são as duas <aside> da página, então
+         * o que as separa é a estrutura: a lateral fica AO LADO do artigo (é
+         * irmã dele), a caixa de produto fica DENTRO do conteúdo. Nada de
+         * olhar aria-label — mudar o texto de um rótulo não pode, em silêncio,
+         * trocar a coluna de um relatório.
+         */
+        function placementOf(link) {
+          if (link.closest("header")) return "header";
+          if (link.closest("footer")) return "footer";
+          var box = link.closest("aside");
+          if (box) {
+            var besideArticle =
+              box.parentElement && box.parentElement.querySelector(":scope > article");
+            return besideArticle && !box.closest("article") ? "sidebar" : "cta_box";
+          }
+          if (link.closest("article")) return "article_body";
+          return "page_body";
+        }
+
+        var links = document.querySelectorAll("a[href]");
+        for (var i = 0; i < links.length; i++) {
+          var link = links[i];
+          // `hostname` já vem do href resolvido pelo navegador: link interno do
+          // blog, âncora, mailto e link externo caem fora sem regex nenhuma.
+          if (link.hostname !== appHost) continue;
+
+          var url = new URL(link.href);
+          // Só preenche o que falta. É isso que torna a passagem idempotente
+          // (rodar duas vezes não muda nada) e o que preserva um link marcado
+          // à mão no futuro — quem escreveu o parâmetro tinha um motivo.
+          // A classe URL cuida do resto: query que já existia é mantida e a
+          // âncora (#) continua no fim, onde precisa estar.
+          if (!url.searchParams.has("utm_source")) url.searchParams.set("utm_source", "blog");
+          if (!url.searchParams.has("utm_medium"))
+            url.searchParams.set("utm_medium", placementOf(link));
+          if (!url.searchParams.has("utm_campaign"))
+            url.searchParams.set("utm_campaign", utmCampaign);
+          link.href = url.href;
+        }
+      })();
+    </script>
+  </body>
+</html>

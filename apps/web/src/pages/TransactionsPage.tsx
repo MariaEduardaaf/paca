@@ -23,6 +23,7 @@ import { TransactionsSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/Toast";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { exportMonthlyReport } from "@/utils/exportPdf";
+import { splitByCurrency, formatForeignBreakdown } from "@/utils/currencyBreakdown";
 
 type TypeFilter = "all" | "income" | "expense";
 type PaidByFilter = "all" | "me" | "partner";
@@ -52,8 +53,9 @@ export function TransactionsPage() {
   const { data: couple } = useCouple();
   const mode = useAppStore((s) => s.mode);
   const { data: categories = [] } = useCategories(mode);
-  const { t, formatCurrency, formatCurrencyCompact, formatDate, formatMonthYear, translateCategory } = useI18n();
+  const { t, locale, dateLocale, formatCurrency, formatCurrencyCompact, formatDate, formatMonthYear, translateCategory } = useI18n();
   const coupleId = profile?.couple_id ?? "";
+  const primaryCurrency = couple?.primary_currency ?? "BRL";
 
   const saved = useMemo(loadFilters, []);
   const [month, setMonth] = useState(saved.month ?? getCurrentMonth());
@@ -123,17 +125,29 @@ export function TransactionsPage() {
     setMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`);
   };
 
-  const income = (filtered ?? [])
+  // Headline totals only make sense within one currency: exclude
+  // foreign-currency rows (auto-convert off) and surface them separately.
+  const { primary: primaryTx, foreign } = useMemo(
+    () => splitByCurrency(filtered, primaryCurrency),
+    [filtered, primaryCurrency]
+  );
+  const foreignBreakdown = formatForeignBreakdown(foreign, formatCurrency);
+
+  const income = primaryTx
     .filter((t) => t.type === "income")
     .reduce((sum, t) => sum + t.amount, 0);
-  const expenses = (filtered ?? [])
+  const expenses = primaryTx
     .filter((t) => t.type === "expense")
     .reduce((sum, t) => sum + t.amount, 0);
 
   const handleDelete = async (id: string) => {
     if (!confirm(t.transactions.deleteConfirm)) return;
-    await deleteTransaction.mutateAsync(id);
-    toast(t.transactions.deleted);
+    try {
+      await deleteTransaction.mutateAsync(id);
+      toast(t.transactions.deleted);
+    } catch {
+      toast(t.common.errorBoundaryMessage, "error");
+    }
   };
 
   // Group by date
@@ -161,13 +175,26 @@ export function TransactionsPage() {
             <button
               type="button"
               onClick={async () => {
-                await exportMonthlyReport(
-                  transactions!,
-                  month,
-                  profile?.display_name ?? "Paca",
-                  translateCategory
-                );
-                toast(t.transactions.pdfExported);
+                try {
+                  await exportMonthlyReport(
+                    transactions!,
+                    month,
+                    profile?.display_name ?? "Paca",
+                    {
+                      t,
+                      locale,
+                      dateLocale,
+                      formatCurrency,
+                      formatDate,
+                      formatMonthYear,
+                      translateCategory,
+                      primaryCurrency,
+                    }
+                  );
+                  toast(t.transactions.pdfExported);
+                } catch {
+                  toast(t.common.errorBoundaryMessage, "error");
+                }
               }}
               className="flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
@@ -191,6 +218,7 @@ export function TransactionsPage() {
         <div className="col-span-2 lg:col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 border border-gray-100 dark:border-gray-700 flex items-center justify-between gap-2">
           <button
             onClick={prevMonth}
+            aria-label={t.format.previousMonth}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0"
           >
             <ChevronLeft className="w-5 h-5 text-gray-500" />
@@ -200,6 +228,7 @@ export function TransactionsPage() {
           </span>
           <button
             onClick={nextMonth}
+            aria-label={t.format.nextMonth}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0"
           >
             <ChevronRight className="w-5 h-5 text-gray-500" />
@@ -245,6 +274,13 @@ export function TransactionsPage() {
           </p>
         </div>
       </div>
+
+      {/* Foreign-currency amounts excluded from the totals above */}
+      {foreignBreakdown && (
+        <p className="text-xs text-gray-400 -mt-4 mb-6 px-1 break-words">
+          {t.transactions.otherCurrenciesNote} {foreignBreakdown}
+        </p>
+      )}
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6">
@@ -318,7 +354,7 @@ export function TransactionsPage() {
             <>
               <button
                 type="button"
-                aria-label="Close"
+                aria-label={t.common.close}
                 onClick={() => setCategoryMenuOpen(false)}
                 className="fixed inset-0 z-10 bg-transparent cursor-default"
               />
@@ -465,10 +501,10 @@ export function TransactionsPage() {
                           ? "text-red-primary"
                           : "text-emerald-500"
                       }`}
-                      title={formatCurrency(tx.amount)}
+                      title={formatCurrency(tx.amount, tx.currency)}
                     >
                       {tx.type === "expense" ? "- " : "+ "}
-                      {formatCurrencyCompact(tx.amount)}
+                      {formatCurrencyCompact(tx.amount, tx.currency)}
                     </p>
                     {tx.original_currency &&
                       tx.original_currency !== tx.currency &&

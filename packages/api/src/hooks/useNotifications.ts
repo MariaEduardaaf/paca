@@ -30,20 +30,50 @@ export function useNotifications(targetProfileId: string | undefined | null) {
   // notification shows up without needing a manual refresh.
   useEffect(() => {
     if (!targetProfileId) return;
+    const invalidate = () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", targetProfileId],
+      });
+    };
+
     const channel = supabase
       .channel(`notifications:${targetProfileId}`)
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
           schema: "public",
           table: "notifications",
           filter: `target_user_id=eq.${targetProfileId}`,
         },
-        () => {
-          queryClient.invalidateQueries({
-            queryKey: ["notifications", targetProfileId],
-          });
+        invalidate
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "notifications",
+          filter: `target_user_id=eq.${targetProfileId}`,
+        },
+        invalidate
+      )
+      .on(
+        "postgres_changes",
+        {
+          // DELETE events only carry the old row's PK (default replica
+          // identity), so the filter above would never match them. After
+          // migration 00032 (replica identity full) payload.old carries
+          // target_user_id and we skip other users' deletes.
+          event: "DELETE",
+          schema: "public",
+          table: "notifications",
+        },
+        (payload) => {
+          const oldTarget = (payload.old as { target_user_id?: string })
+            ?.target_user_id;
+          if (oldTarget && oldTarget !== targetProfileId) return;
+          invalidate();
         }
       )
       .subscribe();

@@ -1,15 +1,11 @@
+// Creates the caller's couple via the create_couple RPC (migration 00024) and
+// returns the server-generated invite code. Kept for backward compatibility
+// with clients that call this function — new clients call the RPC directly
+// through @paca/api useCreateCouple. The old direct insert+update body was
+// removed: after migration 00025 profiles.couple_id is not client-writable,
+// so the RPC (SECURITY DEFINER) is the only valid path.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-
-const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-function generateCode(): string {
-  let code = "";
-  for (let i = 0; i < 4; i++) {
-    code += CHARS[Math.floor(Math.random() * CHARS.length)];
-  }
-  return `PACA-${code}`;
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -37,70 +33,36 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Get profile
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("id, couple_id")
-      .eq("user_id", user.id)
-      .single();
+    const { data, error } = await supabase.rpc("create_couple");
 
-    if (!profile) {
-      return new Response(JSON.stringify({ error: "Perfil não encontrado" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+    if (error) {
+      const message = error.message ?? "";
+      if (message.includes("ALREADY_IN_COUPLE")) {
+        return new Response(JSON.stringify({ error: "Você já está em um casal" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      if (message.includes("PROFILE_NOT_FOUND")) {
+        return new Response(JSON.stringify({ error: "Perfil não encontrado" }), {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      throw error;
     }
 
-    if (profile.couple_id) {
-      return new Response(JSON.stringify({ error: "Você já está em um casal" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    // Generate unique invite code
-    let inviteCode: string;
-    let attempts = 0;
-    do {
-      inviteCode = generateCode();
-      const { data: existing } = await supabase
-        .from("couples")
-        .select("id")
-        .eq("invite_code", inviteCode)
-        .single();
-      if (!existing) break;
-      attempts++;
-    } while (attempts < 10);
-
-    // Create couple
-    const { data: couple, error: coupleError } = await supabase
-      .from("couples")
-      .insert({
-        invite_code: inviteCode,
-        created_by: profile.id,
-      })
-      .select()
-      .single();
-
-    if (coupleError) throw coupleError;
-
-    // Link profile to couple
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ couple_id: couple.id })
-      .eq("id", profile.id);
-
-    if (updateError) throw updateError;
+    const result = data as { couple_id: string; invite_code: string };
 
     return new Response(
       JSON.stringify({
-        couple_id: couple.id,
-        invite_code: inviteCode,
-        invite_link: `https://pacafinance.app/invite/${inviteCode}`,
+        couple_id: result.couple_id,
+        invite_code: result.invite_code,
+        invite_link: `https://pacafinance.app/invite/${result.invite_code}`,
       }),
       { headers: { "Content-Type": "application/json" } }
     );
-  } catch (error) {
+  } catch (_error) {
     return new Response(JSON.stringify({ error: "Erro ao criar casal" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

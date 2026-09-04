@@ -6,7 +6,7 @@ export function PrivacyPage() {
       <p>
         This policy describes how Paca Finance ("the app", "we") collects, uses,
         and protects information about its users. The app is offered worldwide
-        through the App Store and the web at paca-web-twmh.vercel.app.
+        through the App Store and the web at app.pacafinance.com.br.
       </p>
 
       <h2>What we collect</h2>

@@ -64,4 +64,35 @@ export function formatMonthYearLocalized(dateStr: string, locale: Locale): strin
   });
 }
 
+// RU/UK need three plural forms (one/few/many) — a binary n === 1 check
+// produces wrong grammar for counts ending in 2-4.
+const pluralRulesCache = new Map<Locale, Intl.PluralRules>();
+
+export function selectPluralCategory(locale: Locale, count: number): Intl.LDMLPluralRule {
+  let rules = pluralRulesCache.get(locale);
+  if (!rules) {
+    rules = new Intl.PluralRules(LOCALE_DATE_MAP[locale]);
+    pluralRulesCache.set(locale, rules);
+  }
+  return rules.select(count);
+}
+
+/** Locale-correct "transaction(s)" word for scan counts (one/few/many). */
+export function scanTransactionWord(
+  slice: { transaction: string; transactionFew: string; transactions: string },
+  locale: Locale,
+  count: number
+): string {
+  // Zero é plural em pt-BR ("0 transações"), mas o CLDR classifica pt como
+  // one para i = 0..1 — o Intl está certo pela norma e errado pelo uso, e
+  // renderizaria "0 transação". Só o português precisa do desvio: en usa
+  // "other" no zero, e ru/uk já caem em "many".
+  if (count === 0 && locale === "pt") return slice.transactions;
+
+  const cat = selectPluralCategory(locale, count);
+  if (cat === "one") return slice.transaction;
+  if (cat === "few") return slice.transactionFew;
+  return slice.transactions;
+}
+
 export type { TranslationKeys };

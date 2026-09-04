@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScreenContainer } from "../components/ScreenContainer";
@@ -18,15 +19,15 @@ import {
   useAskAdvisor,
   usePurchaseAdviceHistory,
   useShareAdvice,
-  supabase,
+  useCategories,
   useI18n,
   useAppStore,
   QuotaExceededError,
 } from "@paca/api";
+import { parseMoneyInput } from "@paca/shared";
 import type {
   AdviceUrgency,
   AdviceVerdict,
-  Category,
   PurchaseAdvice,
 } from "@paca/shared";
 
@@ -53,21 +54,11 @@ export default function AdvisorScreen() {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<PurchaseAdvice | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [paywall, setPaywall] = useState<PaywallReason | null>(null);
 
-  useEffect(() => {
-    const fetch = async () => {
-      if (!profile?.couple_id) return;
-      const { data } = await supabase
-        .from("categories")
-        .select("*")
-        .or(`is_default.eq.true,couple_id.eq.${profile.couple_id}`)
-        .order("name");
-      if (data) setCategories(data);
-    };
-    fetch();
-  }, [profile?.couple_id]);
+  // Shared hook: proper mode scoping (the old ad-hoc .or ignored scope) plus
+  // the hidden_category_ids filter so soft-deleted defaults don't reappear.
+  const { data: categories = [] } = useCategories(mode);
 
   const resetForm = () => {
     setItem("");
@@ -85,9 +76,9 @@ export default function AdvisorScreen() {
       setError(t.advisor.missingItem);
       return;
     }
-    const parsed = parseFloat(amount.replace(",", "."));
-    const cents = Math.round(parsed * 100);
-    if (!cents || Number.isNaN(cents) || cents <= 0) {
+    // Locale-tolerant: "12,50", "12.50" and "1.234,56" all parse correctly.
+    const cents = parseMoneyInput(amount);
+    if (!cents) {
       setError(t.advisor.missingAmount);
       return;
     }
@@ -111,8 +102,13 @@ export default function AdvisorScreen() {
 
   const handleShare = async () => {
     if (!result) return;
-    const updated = await share.mutateAsync({ id: result.id, shared: true });
-    setResult(updated);
+    try {
+      const updated = await share.mutateAsync({ id: result.id, shared: true });
+      setResult(updated);
+    } catch {
+      // The inline error banner only renders in the form view, so alert here.
+      Alert.alert(t.common.error, t.advisor.genericError);
+    }
   };
 
   return (

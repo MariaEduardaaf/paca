@@ -26,6 +26,7 @@ export const uk: TranslationKeys = {
     tryAgain: "Спробувати ще раз",
     errorBoundaryMessage: "Щось пішло не так. Спробуйте ще раз.",
     loadError: "Не вдалося завантажити дані.",
+    actionError: "Не вдалося виконати дію. Перевірте з'єднання та спробуйте ще раз.",
   },
 
   nav: {
@@ -169,6 +170,7 @@ export const uk: TranslationKeys = {
     addFirstMonth: "Додайте першу транзакцію за місяць",
     noResults: "Немає результатів",
     scan: "Фото / Скріншот",
+    otherCurrenciesNote: "Інші валюти (не входять до підсумків):",
   },
 
   budget: {
@@ -285,7 +287,9 @@ export const uk: TranslationKeys = {
     joinCouple: "Приєднатися до пари",
     enterCode: "Введіть отриманий код",
     enterCodeFromPartner: "Введіть код, який надіслав вам партнер",
-    invalidCode: "Невірний код. Формат: PACA-XXXX",
+    invalidCode: "Невірний код. Перевірте формат (PACA-...).",
+    coupleFull: "У цій парі вже двоє людей.",
+    alreadyInCouple: "Ви вже в парі.",
     codeNotFound: "Код не знайдено. Уточніть у партнера.",
     createError: "Помилка створення пари. Спробуйте знову.",
     enter: "Увійти",
@@ -309,22 +313,36 @@ export const uk: TranslationKeys = {
     aiExtractingSingle: "з транзакції",
     aiExtractingMulti: "з транзакцій",
     transactionsFound: "транзакцію(й) знайдено",
+    foundOne: "Знайдено {count} транзакцію",
+    foundFew: "Знайдено {count} транзакції",
+    foundMany: "Знайдено {count} транзакцій",
     reviewBeforeSave: "Перевірте перед збереженням",
     confidence: "впевненість",
     scanAnother: "Сканувати інше",
     saveCount: "Зберегти",
     transaction: "транзакція",
+    transactionFew: "транзакції",
     transactions: "транзакцій",
     imageError: "Помилка аналізу зображення. Спробуйте знову.",
     saveError: "Помилка збереження транзакцій",
+    partialSaveError:
+      "Деякі транзакції не вдалося зберегти. Збережені прибрано зі списку — натисніть «Зберегти» ще раз, щоб повторити решту.",
     takePhoto: "Зробити фото",
     chooseGallery: "Обрати з галереї",
     another: "Інше",
+    permissionError: "Доступ до камери або фото заборонено. Дозвольте доступ у налаштуваннях, щоб сканувати чеки.",
+    openSettings: "Відкрити налаштування",
   },
 
   format: {
     previousMonth: "Попередній місяць",
     nextMonth: "Наступний місяць",
+  },
+
+  pdf: {
+    monthlyReport: "Звіт за місяць",
+    type: "Тип",
+    generatedAt: "Сформовано",
   },
 
   notifications: {

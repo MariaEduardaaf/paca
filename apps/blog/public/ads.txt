@@ -1,0 +1,7 @@
+# ads.txt — autoriza quem pode vender o inventário deste site (spec do IAB).
+# Obrigatório para receber do AdSense/AdX.
+# Servido em https://blog.pacafinance.com.br/ads.txt
+#
+# Se um dia migrar para a AdSeleto (ou outra rede), ela assume o MANAGERDOMAIN
+# e fornece as linhas próprias — que entram AQUI, sem remover esta.
+google.com, pub-6444699882561703, DIRECT, f08c47fec0942fa0

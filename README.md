@@ -21,7 +21,8 @@ Built as a **Turborepo monorepo** with a web app, mobile app, and shared package
 paca/
 ├── apps/
 │   ├── web/          # React + Vite web app
-│   └── mobile/       # Expo + React Native mobile app
+│   ├── mobile/       # Expo + React Native mobile app
+│   └── blog/         # Astro static blog (pt-BR SEO: finanças para casais)
 ├── packages/
 │   ├── api/          # Supabase client, React hooks, i18n provider
 │   └── shared/       # Types, validations, constants, translations
@@ -40,7 +41,7 @@ paca/
 - **Bills** — Fixed monthly bills checklist. Mark as paid, track progress
 - **Smart Scan** — AI-powered receipt and bank statement scanning via Edge Functions
 - **Couple System** — Invite code pairing, shared data with RLS, real-time sync
-- **i18n** — English (default), Portuguese, Russian. User selectable in settings
+- **i18n** — English (default), Portuguese, Russian, Ukrainian. User selectable in settings
 - **Dark Mode** — Full dark mode support on web
 
 ## Getting Started
@@ -75,12 +76,7 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ### Database Setup
 
-Run the migrations in order on your Supabase project (SQL Editor):
-
-1. `supabase/migrations/00001_initial_schema.sql`
-2. `supabase/migrations/00002_fix_couples_rls_policy.sql`
-3. `supabase/migrations/00003_bills.sql`
-4. `supabase/migrations/00004_profile_language.sql`
+Run **all** the migrations in `supabase/migrations/` in order (`00001` → `00022`) on your Supabase project (SQL Editor). They cover the full schema: core tables, bills, multi-currency, i18n (incl. Ukrainian), purchase advisor, usage stats, subscriptions, partner offers, and push tokens.
 
 Optionally run `supabase/seed.sql` for default categories.
 
@@ -116,7 +112,7 @@ Supabase client, React hooks (`useProfile`, `useTransactions`, `useBudget`, `use
 
 ## i18n
 
-Three languages supported: **English**, **Portuguese**, **Russian**.
+Four languages supported: **English**, **Portuguese**, **Russian**, **Ukrainian**.
 
 - Translations live in `packages/shared/src/i18n/`
 - Language preference stored in `profiles.language` column and `localStorage`

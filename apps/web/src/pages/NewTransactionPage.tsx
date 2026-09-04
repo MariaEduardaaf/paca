@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useProfile, useCouple, useAddTransaction, useI18n, useAppStore } from "@paca/api";
-import { supabase } from "@paca/api";
+import {
+  useProfile,
+  useCouple,
+  useAddTransaction,
+  useCategories,
+  useI18n,
+  useAppStore,
+} from "@paca/api";
 import {
   transactionInsertSchema,
-  DEFAULT_CATEGORIES,
+  parseMoneyInput,
+  getTodayLocal,
   type TransactionType,
-  type Category,
 } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -36,39 +42,24 @@ export function NewTransactionPage() {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(getTodayLocal());
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { data: categories = [] } = useCategories(mode);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      let query = supabase.from("categories").select("*").order("name");
-      if (mode === "couple") {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${profile?.couple_id})`
-        );
-      } else if (profile?.id) {
-        query = query.or(
-          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${profile.id})`
-        );
-      } else {
-        query = query.eq("is_default", true);
-      }
-      const { data } = await query;
-      if (data) {
-        setCategories(data);
-        if (data.length > 0 && !categoryId) setCategoryId(data[0].id);
-      }
-    };
-    if (profile?.couple_id) fetchCategories();
-  }, [profile?.couple_id, profile?.id, mode]);
+    if (categories.length > 0 && !categoryId) setCategoryId(categories[0].id);
+  }, [categories, categoryId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    const amountCents = Math.round(parseFloat(amount.replace(",", ".")) * 100);
+    const amountCents = parseMoneyInput(amount);
+    if (amountCents == null) {
+      setError(t.transactions.invalidAmount);
+      return;
+    }
 
     const result = transactionInsertSchema.safeParse({
       type,
@@ -90,6 +81,7 @@ export function NewTransactionPage() {
         couple_id: profile!.couple_id!,
         paid_by: profile!.id,
         scope: mode,
+        currency: couple?.primary_currency ?? "BRL",
       });
       toast(t.transactions.transactionAdded);
       navigate("/transactions");
@@ -104,6 +96,7 @@ export function NewTransactionPage() {
       <div className="flex items-center gap-2 sm:gap-4 mb-6 sm:mb-8 min-w-0">
         <button
           onClick={() => navigate(-1)}
+          aria-label={t.common.back}
           className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
         >
           <ArrowLeft className="w-5 h-5 text-gray-500" />

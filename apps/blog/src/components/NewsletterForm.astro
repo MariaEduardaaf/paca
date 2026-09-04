@@ -1,0 +1,413 @@
+---
+import { APP_URL, SUBSCRIBE_ENDPOINT, SIGNUP_URL } from "../consts";
+
+/**
+ * Bloco de captura de e-mail do blog.
+ *
+ * LGPD (docs/arbitragem/ESTRATEGIA.md §7): o consentimento é **específico para
+ * marketing**, a caixinha nasce DESMARCADA, o aviso de privacidade fica a um
+ * clique e o descadastro existe desde o primeiro e-mail (/descadastro + link
+ * direto na função `blog-unsubscribe`). Nada de opt-in embutido no ato de
+ * enviar o formulário.
+ *
+ * A base de leads vive no backend do blog, separada dos usuários do app.
+ */
+interface Props {
+  /** Slug do artigo de onde veio a inscrição — vira `source` no POST. */
+  source?: string | null;
+  class?: string;
+}
+
+const { source = null, class: className = "" } = Astro.props;
+
+// Ids únicos por instância: a home e o artigo podem renderizar o bloco na mesma
+// sessão, e cada <label for> precisa apontar para um campo só.
+const uid = `nl-${crypto.randomUUID().slice(0, 8)}`;
+const emailId = `${uid}-email`;
+const consentId = `${uid}-consent`;
+const statusId = `${uid}-status`;
+const hpId = `${uid}-hp`;
+const successTitleId = `${uid}-success-title`;
+
+const privacyUrl = "/privacidade";
+
+// Rota pública de cadastro do app. O sucesso da inscrição não pode ser um beco
+// sem saída: confirmar e oferecer o passo seguinte é o momento de maior
+// intenção que a página vai ter.
+const signupUrl = SIGNUP_URL;
+---
+
+<!--
+  Cartão neutro de propósito: fica claramente separado do CTABox (rosa, que
+  vende o app) para não parecer mais um bloco de produto no fim do artigo.
+-->
+<section
+  aria-labelledby={`${uid}-title`}
+  class={`my-12 rounded-2xl border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50 ${className}`}
+>
+  <div class="p-6 sm:p-8">
+    <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-pink-700 dark:text-pink-300">
+      Newsletter
+    </p>
+
+    <h2
+      id={`${uid}-title`}
+      class="mt-2 font-display text-xl font-bold text-gray-800 sm:text-2xl dark:text-white"
+    >
+      Receba os guias por e-mail
+    </h2>
+
+    <p data-nl-intro class="mt-2 max-w-xl text-[15px] leading-relaxed text-gray-600 dark:text-gray-300">
+      Avisamos quando sai um guia novo de finanças a dois: dividir contas,
+      organizar o orçamento e conversar sobre dinheiro sem briga. Só isso —
+      sem fórmula mágica e sem e-mail todo dia.
+    </p>
+
+    {/*
+      Largura travada (max-w-2xl): o bloco agora também vive em páginas largas
+      (/blog, categorias, home) e, sem isso, o campo de e-mail esticava por
+      quase mil pixels — parecia caixa de busca, não convite.
+    */}
+    <form
+      class="relative mt-6 max-w-2xl"
+      data-newsletter
+      data-endpoint={SUBSCRIBE_ENDPOINT}
+      data-source={source ?? ""}
+    >
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <div class="flex-1">
+          <label
+            for={emailId}
+            class="block text-sm font-medium text-gray-700 dark:text-gray-200"
+          >
+            Seu e-mail
+          </label>
+          <input
+            type="email"
+            id={emailId}
+            name="email"
+            required
+            maxlength="254"
+            autocomplete="email"
+            inputmode="email"
+            placeholder="voce@email.com"
+            aria-describedby={statusId}
+            data-nl-email
+            class="mt-1.5 w-full rounded-xl border border-gray-500 bg-white px-4 py-2.5 text-[15px] text-gray-800 placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500"
+          />
+        </div>
+
+        <div class="sm:self-end">
+          <button
+            type="submit"
+            data-nl-submit
+            class="w-full rounded-xl bg-pink-primary px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm transition-colors hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-60 sm:mt-1.5 sm:w-auto"
+          >
+            Quero receber
+          </button>
+        </div>
+      </div>
+
+      {/*
+        Honeypot. Escondido de gente por CSS (fora da tela, sem tamanho) em vez
+        de `display:none`/`hidden`, porque parte dos bots ignora campos que o
+        navegador não renderiza — assim ele continua "visível" para o robô.
+        Para acessibilidade: `aria-hidden` tira do leitor de tela e
+        `tabindex="-1"` tira do tab order, então nenhum humano com teclado ou
+        leitor de tela chega nele (aria-hidden com elemento focável seria o
+        erro clássico — o tabindex negativo é o que evita isso).
+        Se vier preenchido, o backend responde 200 sem gravar.
+      */}
+      <div
+        class="pointer-events-none absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden opacity-0"
+        aria-hidden="true"
+      >
+        <label for={hpId}>Não preencha este campo</label>
+        <input
+          type="text"
+          id={hpId}
+          name="hp"
+          tabindex="-1"
+          autocomplete="off"
+          data-nl-hp
+        />
+      </div>
+
+      <div class="mt-4 flex items-start gap-2.5">
+        {/*
+          NÃO pré-marcado: consentimento específico para marketing (LGPD).
+          `required` fica para o caso sem JS; o script desliga a validação
+          nativa (novalidate) para mostrar a mensagem em pt-BR no próprio bloco.
+        */}
+        <input
+          type="checkbox"
+          id={consentId}
+          name="consent"
+          required
+          data-nl-consent
+          class="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-400 text-pink-500 accent-pink-500 dark:border-gray-600"
+        />
+        <label
+          for={consentId}
+          class="text-[13px] leading-relaxed text-gray-600 dark:text-gray-300"
+        >
+          Aceito receber conteúdo do Paca Finance por e-mail e sei que posso
+          cancelar quando quiser, pelo link em qualquer mensagem. Veja a
+          {/*
+            Abre em nova aba de propósito: ler o aviso de privacidade ANTES de
+            consentir não pode custar o e-mail já digitado. `rel` obrigatório
+            junto de target="_blank" (noopener) e o texto entre parênteses avisa
+            quem usa leitor de tela que o contexto vai mudar.
+          */}
+          <a
+            href={privacyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="rounded font-medium text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+            >Política de Privacidade</a> (abre em nova aba).
+        </label>
+      </div>
+
+      {/*
+        Uma única região viva para sucesso e erro: o leitor de tela anuncia a
+        mudança sem roubar o foco (role="status" = aria-live polite).
+      */}
+      <p
+        id={statusId}
+        role="status"
+        aria-live="polite"
+        data-nl-status
+        class="mt-3 text-sm leading-relaxed empty:mt-0"
+      >
+      </p>
+    </form>
+
+    {/*
+      Estado de sucesso: substitui o formulário no lugar dele, confirma e
+      entrega o próximo passo (criar conta grátis no app). Nasce escondido pela
+      classe `hidden` além do atributo — uma classe de display do Tailwind
+      venceria o `[hidden]` do navegador. O foco vai para este bloco quando ele
+      aparece: sem isso, quem usa teclado perderia o foco junto com o botão de
+      enviar, e quem usa leitor de tela não saberia que a página mudou.
+    */}
+    <div
+      data-nl-success
+      hidden
+      tabindex="-1"
+      aria-labelledby={successTitleId}
+      class="mt-6 hidden focus:outline-none"
+    >
+      <p class="flex items-start gap-2 text-sm font-semibold text-green-700 dark:text-green-300">
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="mt-0.5 h-4 w-4 shrink-0"
+        >
+          <path d="M4.5 12.75l6 6 9-13.5"></path>
+        </svg>
+        Pronto, seu e-mail está na lista. O próximo guia chega em breve.
+      </p>
+
+      <h3
+        id={successTitleId}
+        class="mt-4 font-display text-lg font-bold text-gray-800 dark:text-white"
+      >
+        Enquanto o primeiro e-mail não chega
+      </h3>
+      <p class="mt-2 max-w-xl text-[15px] leading-relaxed text-gray-600 dark:text-gray-300">
+        Ler ajuda, mas o combinado só existe quando os dois veem os mesmos
+        números. Crie sua conta no Paca, registre os gastos do mês e convide
+        quem divide as contas com você. Grátis para começar.
+      </p>
+      <a
+        href={signupUrl}
+        class="mt-4 inline-block rounded-xl bg-pink-primary px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm transition-colors hover:bg-pink-400"
+      >
+        Criar conta grátis
+      </a>
+    </div>
+
+    {/*
+      Sem JavaScript o envio é IMPOSSÍVEL — o blog é estático e o único destino
+      é a edge function, que fala JSON, não form-urlencoded. O <form> não tem
+      `action`, então um submit sem JS viraria um GET para a própria página com
+      `?email=...&consent=on` na URL: o e-mail (dado pessoal) iria parar no
+      histórico do navegador, no Referer da próxima navegação e nos logs de
+      acesso — e a pessoa veria a página recarregar sem se inscrever de fato.
+      Por isso, sem JS, o formulário é escondido e no lugar dele aparece o
+      caminho humano. O <style> dentro de <noscript> só é aplicado quando o
+      scripting está desligado, então isso não custa nada ao caso normal.
+    */}
+    <noscript>
+      <style>[data-newsletter] { display: none !important; }</style>
+      <p class="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
+        A inscrição na newsletter precisa de JavaScript ativado. Se preferir não
+        ativar, escreva para o <a href={`${APP_URL}/support`} class="font-semibold underline underline-offset-2">suporte do Paca Finance</a>
+        pedindo para entrar na lista — a gente registra o seu consentimento junto
+        com você.
+      </p>
+    </noscript>
+  </div>
+</section>
+
+{/*
+  JS inline mínimo, no mesmo espírito do toggle de tema: sem framework, sem
+  dependência nova.
+
+  O guard é POR FORMULÁRIO (`data-nl-bound`), não uma flag global. Com uma flag
+  global, uma página com dois blocos quebrava de um jeito silencioso: cada
+  instância do componente emite sua própria cópia deste script, a primeira cópia
+  roda quando o segundo <form> ainda não existe no DOM, e a segunda cópia saía
+  na porta por causa da flag — resultado, o segundo formulário ficava sem
+  listener e o submit virava um GET com o e-mail na URL. Marcando cada form,
+  qualquer cópia do script adota os formulários que ainda não foram ligados e
+  ignora os que já estão.
+*/}
+<script is:inline>
+  (function () {
+    var MESSAGES = {
+      invalid_email: "Esse e-mail não parece válido. Confere e tenta de novo.",
+      consent_required:
+        "Marque a caixinha de consentimento para a gente poder te enviar os e-mails.",
+      rate_limited:
+        "Muitas tentativas em pouco tempo. Espera alguns minutos e tenta de novo.",
+      server_error:
+        "Não deu para concluir agora. Tenta de novo daqui a pouco, por favor.",
+      success:
+        "Pronto! Seu e-mail está na lista. O próximo guia chega em breve.",
+    };
+
+    function setStatus(el, message, kind) {
+      el.textContent = message;
+      el.className =
+        "mt-3 text-sm leading-relaxed empty:mt-0 " +
+        (kind === "success"
+          ? "font-medium text-green-700 dark:text-green-300"
+          : "font-medium text-red-700 dark:text-red-300");
+    }
+
+    document.querySelectorAll("[data-newsletter]").forEach(function (form) {
+      if (form.dataset.nlBound === "1") return;
+      form.dataset.nlBound = "1";
+
+      var email = form.querySelector("[data-nl-email]");
+      var consent = form.querySelector("[data-nl-consent]");
+      var hp = form.querySelector("[data-nl-hp]");
+      var button = form.querySelector("[data-nl-submit]");
+      var status = form.querySelector("[data-nl-status]");
+      // O bloco de sucesso é irmão do <form>, dentro do mesmo <section>.
+      var success = (form.closest("section") || document).querySelector(
+        "[data-nl-success]",
+      );
+      var defaultLabel = button.textContent;
+      var sending = false;
+
+      // `required` continua no HTML (semântica e leitor de tela). Com JS ligado,
+      // desligamos a validação nativa para dar as mensagens em pt-BR aqui
+      // dentro, em vez do balãozinho do navegador.
+      form.noValidate = true;
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        if (sending) return;
+
+        var value = (email.value || "").trim();
+
+        // Checagem barata só para dar mensagem imediata; o servidor valida de novo.
+        if (!value || value.indexOf("@") < 1 || value.indexOf(".") < 0) {
+          setStatus(status, MESSAGES.invalid_email, "error");
+          email.setAttribute("aria-invalid", "true");
+          email.focus();
+          return;
+        }
+        email.removeAttribute("aria-invalid");
+
+        if (!consent.checked) {
+          setStatus(status, MESSAGES.consent_required, "error");
+          consent.setAttribute("aria-invalid", "true");
+          consent.focus();
+          return;
+        }
+        consent.removeAttribute("aria-invalid");
+
+        sending = true;
+        button.disabled = true;
+        button.textContent = "Enviando…";
+        status.textContent = "Enviando…";
+        status.className = "mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300";
+
+        var source = form.getAttribute("data-source") || null;
+        var ok = false;
+        var subscribed = false;
+
+        fetch(form.getAttribute("data-endpoint"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: value,
+            consent: true,
+            source: source,
+            hp: hp && hp.value ? hp.value : null,
+          }),
+        })
+          .then(function (response) {
+            ok = response.ok;
+            return response.text();
+          })
+          .then(function (text) {
+            // Corpo vazio ou não-JSON não derruba o fluxo: vira erro genérico.
+            var data = {};
+            try {
+              data = JSON.parse(text) || {};
+            } catch (_) {
+              data = {};
+            }
+            var result = { ok: ok, data: data };
+            if (result.ok && result.data && result.data.ok) {
+              subscribed = true;
+              // Sucesso vira PASSO SEGUINTE, não beco sem saída: o formulário
+              // sai de cena e no lugar dele entra a confirmação + o convite
+              // para criar a conta no app.
+              if (success) {
+                form.hidden = true;
+                // O parágrafo de "o que você vai receber" já cumpriu o papel:
+                // depois de assinar, ele só empurra o próximo passo para baixo.
+                var intro = (form.closest("section") || document).querySelector(
+                  "[data-nl-intro]",
+                );
+                if (intro) intro.hidden = true;
+                success.hidden = false;
+                success.classList.remove("hidden");
+                success.focus();
+              } else {
+                // Se por algum motivo o bloco de sucesso não existir, ainda
+                // assim confirma: trava os campos e mostra a mensagem.
+                form.querySelectorAll("input, button").forEach(function (el) {
+                  el.disabled = true;
+                });
+                setStatus(status, MESSAGES.success, "success");
+              }
+              return;
+            }
+            var code = (result.data && result.data.error) || "server_error";
+            setStatus(status, MESSAGES[code] || MESSAGES.server_error, "error");
+          })
+          .catch(function () {
+            setStatus(status, MESSAGES.server_error, "error");
+          })
+          .finally(function () {
+            sending = false;
+            // No sucesso o botão fica travado; em erro volta ao estado original
+            // para a pessoa poder tentar de novo.
+            button.textContent = subscribed ? "Inscrito" : defaultLabel;
+            if (!subscribed) button.disabled = false;
+          });
+      });
+    });
+  })();
+</script>

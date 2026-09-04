@@ -1,0 +1,108 @@
+---
+import Icon from "../Icon.astro";
+
+/*
+ * Tela de Orçamento. "Orçamento do Mês" e "Gastos por Categoria" saem de pt.ts
+ * (dashboard.monthBudget / dashboard.spendingByCategory); as categorias são as
+ * PADRÃO do app (migration 00013: Alimentação, Transporte, Moradia, Lazer,
+ * Compras…), não categorias inventadas para a ilustração.
+ *
+ * SEM selo de "ALERTA" nas barras, ao contrário do desenho original: a tela de
+ * orçamento do app (apps/web/src/pages/BudgetPage.tsx) mostra porcentagem e
+ * barra, e nenhum aviso visual em cima do limite. Desenhar um selo que a tela
+ * não tem seria prometer um comportamento na imagem.
+ *
+ * A soma bate: 1.180 + 460 + 1.800 + 180 + 320 = 3.940 de 5.100 = 77%.
+ * Anel e barras conferidos à mão — número de mentira em ilustração de produto
+ * é o tipo de detalhe que dá para checar, então checa.
+ */
+const spent = 3940;
+const total = 5100;
+const percent = Math.round((spent / total) * 100);
+
+// Circunferência do anel (r=52) para desenhar o arco com stroke-dasharray.
+const RADIUS = 52;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+const dash = (CIRCUMFERENCE * percent) / 100;
+
+const categories = [
+  { name: "Alimentação", icon: "cart", spent: 1180, limit: 1500 },
+  { name: "Transporte", icon: "car", spent: 460, limit: 800 },
+  { name: "Moradia", icon: "home", spent: 1800, limit: 2000 },
+  { name: "Lazer", icon: "sparkles", spent: 180, limit: 400 },
+  { name: "Compras", icon: "receipt", spent: 320, limit: 400 },
+] as const;
+
+const brl = (value: number) => `R$ ${value.toLocaleString("pt-BR")}`;
+---
+
+<div class="scr-head">
+  <div>
+    <div class="scr-kicker">Maio · 15 dias restantes</div>
+    <div class="scr-title">Orçamento do Mês</div>
+  </div>
+  <div class="scr-avatars">
+    <span class="av-pink">L</span>
+    <span class="av-teal">M</span>
+  </div>
+</div>
+
+<div class="scr-ring">
+  <svg viewBox="0 0 120 120">
+    <circle cx="60" cy="60" r={RADIUS} fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="10"
+    ></circle>
+    <circle
+      cx="60"
+      cy="60"
+      r={RADIUS}
+      fill="none"
+      stroke="url(#ringGrad)"
+      stroke-width="10"
+      stroke-linecap="round"
+      stroke-dasharray={`${dash} ${CIRCUMFERENCE}`}></circle>
+    <defs>
+      <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#FF8FB1"></stop>
+        <stop offset="100%" stop-color="#4ecdc4"></stop>
+      </linearGradient>
+    </defs>
+  </svg>
+  <div style="text-align:center">
+    <div class="scr-ring-num">{percent}%</div>
+    <div class="scr-ring-sub">usado</div>
+  </div>
+</div>
+
+<div class="scr-budget-summary">
+  <b>{brl(spent)}</b> de {brl(total)}
+</div>
+
+<div class="scr-section-head">
+  <h4>Gastos por Categoria</h4>
+  <span>Editar</span>
+</div>
+
+<div class="scr-list">
+  {
+    categories.map((category) => {
+      const pct = Math.round((category.spent / category.limit) * 100);
+      return (
+        <div class="scr-cat">
+          <div class="scr-cat-top">
+            <div style="display:flex;align-items:center;gap:0.5em;min-width:0">
+              <Icon name={category.icon} size="1em" />
+              <span class="scr-cat-name">{category.name}</span>
+            </div>
+            <span class="scr-cat-pct">{pct}%</span>
+          </div>
+          <div class="scr-bar">
+            <i style={`width:${pct}%`} />
+          </div>
+          <div class="scr-cat-val" style="margin-top:0.4em">
+            {brl(category.spent)} de {brl(category.limit)}
+          </div>
+        </div>
+      );
+    })
+  }
+</div>

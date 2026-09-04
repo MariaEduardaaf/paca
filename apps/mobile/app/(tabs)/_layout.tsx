@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useColorScheme } from "react-native";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -13,6 +14,7 @@ import { TutorialModal } from "@/components/TutorialModal";
 
 export default function TabLayout() {
   const { t } = useI18n();
+  const scheme = useColorScheme();
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
   const updateProfile = useUpdateProfile();
@@ -40,11 +42,15 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: "#FF8FB1",
-          tabBarInactiveTintColor: "#ADB5BD",
+          // #ADB5BD was tuned for the light bar; use a darker-scheme gray on dark.
+          tabBarInactiveTintColor: scheme === "dark" ? "#6B7280" : "#ADB5BD",
           tabBarStyle: {
             borderTopWidth: 0,
             elevation: 0,
             shadowOpacity: 0,
+            // Match the gray-900/white screen backgrounds so the bar doesn't
+            // stay light-theme white in system dark mode.
+            backgroundColor: scheme === "dark" ? "#111827" : "#FFFFFF",
           },
         }}
       >

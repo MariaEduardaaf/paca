@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useProfile, useUpdateTransaction, useI18n } from "@paca/api";
+import { useUpdateTransaction, useCategories, useI18n } from "@paca/api";
 import { supabase } from "@paca/api";
 import {
   transactionUpdateSchema,
+  parseMoneyInput,
+  centsToInput,
+  type FinanceScope,
   type TransactionType,
-  type Category,
 } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -16,7 +18,6 @@ import { ArrowLeft } from "lucide-react";
 export function EditTransactionPage() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { data: profile } = useProfile();
   const updateTransaction = useUpdateTransaction();
   const { toast } = useToast();
   const { t, translateCategory } = useI18n();
@@ -28,24 +29,14 @@ export function EditTransactionPage() {
   const [date, setDate] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [currency, setCurrencyCode] = useState<string>("");
   const [originalAmount, setOriginalAmount] = useState<number | null>(null);
   const [originalCurrency, setOriginalCurrency] = useState<string | null>(null);
+  const [txScope, setTxScope] = useState<FinanceScope | null>(null);
 
-  // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const { data } = await supabase
-        .from("categories")
-        .select("*")
-        .or(`is_default.eq.true,couple_id.eq.${profile?.couple_id}`)
-        .order("name");
-      if (data) setCategories(data);
-    };
-    if (profile?.couple_id) fetchCategories();
-  }, [profile?.couple_id]);
+  // Categories for the transaction's scope (shared hook filters hidden defaults)
+  const { data: categories = [] } = useCategories(txScope ?? "couple");
 
   // Fetch existing transaction
   useEffect(() => {
@@ -64,7 +55,8 @@ export function EditTransactionPage() {
       }
 
       setType(data.type);
-      setAmount((data.amount / 100).toFixed(2).replace(".", ","));
+      setTxScope((data.scope as FinanceScope) ?? "couple");
+      setAmount(centsToInput(data.amount));
       setDescription(data.description);
       setCategoryId(data.category_id);
       setDate(data.date);
@@ -83,7 +75,11 @@ export function EditTransactionPage() {
 
     if (!id) return;
 
-    const amountCents = Math.round(parseFloat(amount.replace(",", ".")) * 100);
+    const amountCents = parseMoneyInput(amount);
+    if (amountCents == null) {
+      setError(t.transactions.invalidAmount);
+      return;
+    }
 
     // If transaction was auto-converted and user changed the converted amount,
     // recompute exchange_rate to keep original_amount * rate ≈ amount.
@@ -134,6 +130,7 @@ export function EditTransactionPage() {
       <div className="flex items-center gap-2 sm:gap-4 mb-6 sm:mb-8 min-w-0">
         <button
           onClick={() => navigate(-1)}
+          aria-label={t.common.back}
           className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
         >
           <ArrowLeft className="w-5 h-5 text-gray-500" />

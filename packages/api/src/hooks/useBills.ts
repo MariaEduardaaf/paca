@@ -25,11 +25,14 @@ export function useBills(options: UseBillsOptions) {
 
       // Fetch payments for this month
       const billIds = bills.map((b) => b.id);
-      const { data: payments } = await supabase
+      const { data: payments, error: payError } = await supabase
         .from("bill_payments")
         .select("*")
         .in("bill_id", billIds)
         .eq("month", month);
+
+      // A swallowed error here would render every bill as unpaid.
+      if (payError) throw payError;
 
       const paymentMap = new Map(
         (payments ?? []).map((p) => [p.bill_id, p])
@@ -79,40 +82,22 @@ export function useToggleBill() {
       paid: boolean;
       profileId: string;
     }) => {
-      // Try to find existing payment
-      const { data: existing } = await supabase
+      // Single upsert keyed on unique(bill_id, month) — a select-then-insert
+      // races the partner toggling the same bill and throws a 23505.
+      const { error } = await supabase
         .from("bill_payments")
-        .select("id")
-        .eq("bill_id", billId)
-        .eq("month", month)
-        .maybeSingle();
-
-      if (existing) {
-        // Update
-        const { error } = await supabase
-          .from("bill_payments")
-          .update({
-            paid,
-            paid_at: paid ? new Date().toISOString() : null,
-            paid_by: paid ? profileId : null,
-          })
-          .eq("id", existing.id);
-
-        if (error) throw error;
-      } else {
-        // Insert
-        const { error } = await supabase
-          .from("bill_payments")
-          .insert({
+        .upsert(
+          {
             bill_id: billId,
             month,
             paid,
             paid_at: paid ? new Date().toISOString() : null,
             paid_by: paid ? profileId : null,
-          });
+          },
+          { onConflict: "bill_id,month" }
+        );
 
-        if (error) throw error;
-      }
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bills"] });

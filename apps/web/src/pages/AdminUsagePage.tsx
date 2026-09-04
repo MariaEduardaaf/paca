@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth, supabase } from "@paca/api";
+import { formatLocalDate } from "@paca/shared";
 import { isAdminEmail } from "@/lib/admin";
 import {
   Activity,
@@ -76,6 +77,10 @@ function daysAgo(n: number) {
   d.setDate(d.getDate() - n);
   return startOfDay(d);
 }
+
+// Local YYYY-MM-DD — toISOString() is the UTC day and shifts every bucket for
+// admins in UTC+ timezones.
+const localDayKey = formatLocalDate;
 
 // ---- Page ----
 
@@ -200,13 +205,13 @@ export function AdminUsagePage() {
       const d = daysAgo(i);
       days.push({
         date: d,
-        key: d.toISOString().split("T")[0],
+        key: localDayKey(d),
         count: 0,
       });
     }
     const dayMap = new Map(days.map((d) => [d.key, d]));
     for (const r of usage) {
-      const key = new Date(r.created_at).toISOString().split("T")[0];
+      const key = localDayKey(new Date(r.created_at));
       const day = dayMap.get(key);
       if (day) day.count += 1;
     }

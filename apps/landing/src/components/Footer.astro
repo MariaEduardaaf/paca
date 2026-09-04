@@ -1,0 +1,72 @@
+---
+import { SIGNUP_URL, LOGIN_URL, BLOG_URL, PRIVACY_URL, TERMS_URL, SUPPORT_URL } from "../consts";
+
+const year = new Date().getFullYear();
+
+/*
+ * O rodapé do desenho tinha um formulário "Android? Entre na lista". Saiu:
+ * não existe endpoint de lista de espera neste domínio, e apontar para a
+ * função `blog-subscribe` misturaria a base de leads do blog (que tem
+ * consentimento próprio, de marketing, exigido pelo CLAUDE.md) com quem só
+ * queria ser avisado de um app. Formulário que não guarda nada é pior do que
+ * não ter formulário: parece que funcionou.
+ *
+ * "Imprensa" também saiu — não existe página de imprensa.
+ */
+---
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-about">
+        <a class="logo" href="/">
+          <img src="/logo-icon-96.png" alt="" width="32" height="32" loading="lazy" />
+          <span>paca<span class="brand-2">finance</span></span>
+        </a>
+        <p>
+          Finanças do casal, sempre sincronizadas. Um app web para as duas pessoas verem os mesmos
+          números — gastos, orçamento e contas do mês.
+        </p>
+      </div>
+
+      <nav class="foot-col" aria-label="Produto">
+        <h2>Produto</h2>
+        <ul>
+          <li><a href={SIGNUP_URL}>Criar conta grátis</a></li>
+          <li><a href={LOGIN_URL}>Entrar</a></li>
+          <li><a href="#como-funciona">Como funciona</a></li>
+          <li><a href="#perguntas">Perguntas</a></li>
+        </ul>
+      </nav>
+
+      <nav class="foot-col" aria-label="Conteúdo">
+        <h2>Conteúdo</h2>
+        <ul>
+          <li><a href={BLOG_URL}>Blog</a></li>
+          <li><a href={SUPPORT_URL}>Suporte</a></li>
+        </ul>
+      </nav>
+
+      <nav class="foot-col" aria-label="Legal">
+        <h2>Legal</h2>
+        <ul>
+          <li><a href={PRIVACY_URL}>Privacidade</a></li>
+          <li><a href={TERMS_URL}>Termos de uso</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    {/*
+      Saiu o "Feito no Brasil". Nada no repositório sustenta origem brasileira —
+      não há CNPJ, razão social nem endereço em lugar nenhum —, e a única pista
+      de origem registrada aponta para o outro lado: o TODO.md diz que a conta
+      de monetização ficou na Espanha porque é onde a dona mora. Afirmação sobre
+      a empresa sem arquivo que prove é a mesma categoria dos "2.300 casais".
+      Quando existir a entidade, esta linha volta com o nome e o número dela.
+    */}
+    <div class="footer-bottom">
+      <p style="margin:0">&copy; {year} Paca Finance</p>
+      <p style="margin:0">Conteúdo em português, app em 4 idiomas</p>
+    </div>
+  </div>
+</footer>

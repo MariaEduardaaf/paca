@@ -1,5 +1,7 @@
 # Paca Finance — Plano Completo da Aplicacao
 
+> **Status (verificado 2026-06-27):** este é o documento de **planejamento original (pré-build)**. A maior parte já foi construída — o estado vivo está no `TODO.md` da raiz. Duas correções de fato: (1) a IA de scan/advisor usa **Google Gemini 2.5 Flash** (`generativelanguage.googleapis.com`), **não** "Claude Vision" (corrigido abaixo em §4.2 e §9.1); (2) as §8 (schema) e §9 (functions) são o plano original e estão **incompletas** — o schema real tem ~15 tabelas (inclui `bills`, `subscriptions`, `usage_stats`, `purchase_advice`, `partner_offers`, `push_tokens`) e existem **8** edge functions (a `monthly-summary` listada em §9.4 nunca foi criada). Ver `supabase/migrations/` e `supabase/functions/`.
+
 ## Visao Geral
 
 App de financas para casais. Dois parceiros compartilham o mesmo "casal" e gerenciam juntos: transacoes, orcamentos, metas e contas. Sincronizacao em tempo real — quando um adiciona uma despesa, o outro ve na hora.
@@ -123,7 +125,8 @@ App de financas para casais. Dois parceiros compartilham o mesmo "casal" e geren
   - Extrato bancario (Nubank, Inter, Itau, etc)
   - Comprovante de cartao
   - Cupom fiscal
-- Imagem enviada para Supabase Edge Function → Claude Vision API
+- Imagem enviada para Supabase Edge Function → **Google Gemini 2.5 Flash** (Vision) <!-- corrigido 2026-06-27: era "Claude Vision API"; o código usa Gemini via GEMINI_API_KEY -->
+
 - IA extrai automaticamente:
   - Valor
   - Descricao/estabelecimento
@@ -344,7 +347,8 @@ notifications
 
 ### 9.1 `scan-receipt`
 - Recebe imagem (base64 ou URL do Storage)
-- Envia para Claude Vision API (Haiku)
+- Envia para **Google Gemini 2.5 Flash** (Vision) <!-- corrigido 2026-06-27: era "Claude Vision API (Haiku)"; ver supabase/functions/scan-receipt/index.ts -->
+
 - Retorna JSON estruturado com dados da transacao
 - Salva imagem no Supabase Storage
 

@@ -1,5 +1,7 @@
 # Paca Finance — App Store & Play Store submission guide
 
+> **Status note (2026-06-27):** the readiness code is **merged to `main`** — the "PR #1 / branch `app-store-readiness`" reference just below is historical. Since then the **monetization/subscription code was also merged** (PR #2): the DB, paywall UI, quota gates and RevenueCat webhook exist, but billing is **not yet active** (no RevenueCat account/products, `apps/mobile/lib/billing.ts` is a stub, `react-native-purchases` not installed). So the **"Free / no IAP"** guidance in §Pricing holds **only if you ship v1 without activating subscriptions**; if you turn RevenueCat on before submitting, update §Pricing and the IAP answers accordingly.
+
 The app **code** is ready and on PR #1 (branch `app-store-readiness`). Everything left to publish is **operational**: store accounts, a couple of Supabase dashboard settings, store assets (screenshots/graphics), and the compliance forms. Work top to bottom.
 
 **Shortest path:** merge PR → deploy edge functions + confirm email-confirmation OFF (§Runbook 1) → create the store apps → build (§Runbook 5) → screenshots + listing copy + privacy forms → submit.
@@ -138,17 +140,17 @@ Start organizing your couple finances today — no spreadsheet, no end-of-month 
 
 | Field | URL |
 |-------|-----|
-| Support URL | `https://paca-web-twmh.vercel.app/support` |
-| Marketing URL | `https://paca-web-twmh.vercel.app` |
-| Privacy Policy URL | `https://paca-web-twmh.vercel.app/privacy` |
-| Terms of Use | `https://paca-web-twmh.vercel.app/terms` |
+| Support URL | `https://app.pacafinance.com.br/support` |
+| Marketing URL | `https://app.pacafinance.com.br` |
+| Privacy Policy URL | `https://app.pacafinance.com.br/privacy` |
+| Terms of Use | `https://app.pacafinance.com.br/terms` |
 | Support / developer contact email | `madualvesfr@gmail.com` |
 
 ---
 
 ## Privacy & data-safety forms
 
-These answers must match what the code actually does. Cross-reference: `apps/mobile/app.json` (privacyManifests), the three Gemini edge functions, and the live privacy policy at https://paca-web-twmh.vercel.app/privacy.
+These answers must match what the code actually does. Cross-reference: `apps/mobile/app.json` (privacyManifests), the three Gemini edge functions, and the live privacy policy at https://app.pacafinance.com.br/privacy.
 
 Two facts drive every answer below:
 
@@ -197,7 +199,7 @@ Critical points for the Play form:
 Both stores require this. It is already built and documented in the live privacy policy (Profile → Danger zone → Delete account).
 
 - **In-app path (required by Apple Guideline 5.1.1(v) and Play):** Profile → Danger zone → **Delete account**. Permanently deletes the account and the user's personal data.
-- **Public method (Play "Account deletion URL" field):** use the support page **https://paca-web-twmh.vercel.app/support** as the deletion URL, and list **madualvesfr@gmail.com** as the contact for deletion requests.
+- **Public method (Play "Account deletion URL" field):** use the support page **https://app.pacafinance.com.br/support** as the deletion URL, and list **madualvesfr@gmail.com** as the contact for deletion requests.
 - In the Play Data safety "Deletion" question, select **"App offers data deletion"** and provide the URL above. State that deletion is available **both** in-app and via email/support.
 
 ### 4. ⚠️ WARNING — CrashData inconsistency (fix before submitting)

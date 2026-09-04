@@ -88,6 +88,9 @@ export function useAddTransaction() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      // Budget "spent" totals are computed from transactions inside the
+      // ["budget"] queryFn, so they must be invalidated together.
+      queryClient.invalidateQueries({ queryKey: ["budget"] });
     },
   });
 }
@@ -109,6 +112,7 @@ export function useUpdateTransaction() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["budget"] });
     },
   });
 }
@@ -127,6 +131,7 @@ export function useDeleteTransaction() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["budget"] });
     },
   });
 }

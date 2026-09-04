@@ -26,6 +26,7 @@ export const pt: TranslationKeys = {
     tryAgain: "Tentar de novo",
     errorBoundaryMessage: "Algo deu errado. Tente de novo.",
     loadError: "Não foi possível carregar seus dados.",
+    actionError: "A ação falhou. Verifique sua conexão e tente novamente.",
   },
 
   nav: {
@@ -169,6 +170,7 @@ export const pt: TranslationKeys = {
     addFirstMonth: "Adicione sua primeira transação do mês",
     noResults: "Nenhum resultado",
     scan: "Foto / Print",
+    otherCurrenciesNote: "Outras moedas (fora dos totais):",
   },
 
   budget: {
@@ -285,7 +287,9 @@ export const pt: TranslationKeys = {
     joinCouple: "Entrar no casal",
     enterCode: "Digite o código que recebeu",
     enterCodeFromPartner: "Digite o código que seu parceiro(a) te enviou",
-    invalidCode: "Código inválido. Formato: PACA-XXXX",
+    invalidCode: "Código inválido. Confira o formato (PACA-...).",
+    coupleFull: "Esse casal já tem duas pessoas.",
+    alreadyInCouple: "Você já está em um casal.",
     codeNotFound: "Código não encontrado. Verifique com seu parceiro(a).",
     createError: "Erro ao criar casal. Tente novamente.",
     enter: "Entrar",
@@ -309,22 +313,36 @@ export const pt: TranslationKeys = {
     aiExtractingSingle: "da transação",
     aiExtractingMulti: "das transações",
     transactionsFound: "transação(ões) encontrada(s)",
+    foundOne: "{count} transação encontrada",
+    foundFew: "{count} transações encontradas",
+    foundMany: "{count} transações encontradas",
     reviewBeforeSave: "Revise antes de salvar",
     confidence: "confiança",
     scanAnother: "Escanear outra",
     saveCount: "Salvar",
     transaction: "transação",
+    transactionFew: "transações",
     transactions: "transações",
     imageError: "Erro ao analisar imagem. Tente novamente.",
     saveError: "Erro ao salvar transações",
+    partialSaveError:
+      "Algumas transações não foram salvas. As que salvaram foram removidas da lista — salve de novo para tentar as restantes.",
     takePhoto: "Tirar foto",
     chooseGallery: "Escolher da galeria",
     another: "Outra",
+    permissionError: "O acesso à câmera ou às fotos foi negado. Permita o acesso nos Ajustes para escanear comprovantes.",
+    openSettings: "Abrir ajustes",
   },
 
   format: {
     previousMonth: "Mês anterior",
     nextMonth: "Próximo mês",
+  },
+
+  pdf: {
+    monthlyReport: "Relatório Mensal",
+    type: "Tipo",
+    generatedAt: "Gerado em",
   },
 
   notifications: {

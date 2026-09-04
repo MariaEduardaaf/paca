@@ -8,11 +8,13 @@ async function getProfileContext(): Promise<{
 }> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { profileId: null, coupleId: null };
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from("profiles")
     .select("id, couple_id")
     .eq("user_id", user.id)
     .single();
+  // Throw so a transient failure doesn't cache the defaults-only list.
+  if (error) throw error;
   return {
     profileId: profile?.id ?? null,
     coupleId: profile?.couple_id ?? null,
@@ -21,11 +23,12 @@ async function getProfileContext(): Promise<{
 
 async function getHiddenCategoryIds(coupleId: string | null): Promise<string[]> {
   if (!coupleId) return [];
-  const { data: couple } = await supabase
+  const { data: couple, error } = await supabase
     .from("couples")
     .select("hidden_category_ids")
     .eq("id", coupleId)
     .single();
+  if (error) throw error;
   return (couple?.hidden_category_ids as string[]) ?? [];
 }
 
@@ -176,21 +179,24 @@ export function useDeleteCategory() {
       } else {
         // Reassign any transaction/budget using this category to the "Outros"
         // default, otherwise the FK blocks the delete with a 409.
-        const { data: fallback } = await supabase
+        const { data: fallback, error: fallbackError } = await supabase
           .from("categories")
           .select("id")
           .eq("is_default", true)
           .eq("name", "Outros")
           .maybeSingle();
+        if (fallbackError) throw fallbackError;
         if (fallback?.id) {
-          await supabase
+          const { error: reassignError } = await supabase
             .from("transactions")
             .update({ category_id: fallback.id })
             .eq("category_id", category.id);
-          await supabase
+          if (reassignError) throw reassignError;
+          const { error: budgetCatError } = await supabase
             .from("budget_categories")
             .delete()
             .eq("category_id", category.id);
+          if (budgetCatError) throw budgetCatError;
         }
         const { error } = await supabase
           .from("categories")
@@ -204,6 +210,10 @@ export function useDeleteCategory() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["couple"] });
+      // Deleting a custom category reassigns transactions and removes budget
+      // allocations, so those caches are stale too.
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["budget"] });
     },
   });
 }
