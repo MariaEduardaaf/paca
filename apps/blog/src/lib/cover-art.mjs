@@ -289,6 +289,10 @@ export const MOTIF_BY_SLUG = {
   "divida-escondida-do-parceiro": "bubble-dots",
   // dividir-contas
   "renda-extra-no-casal": "bars-rising",
+  // organizacao — dois patrimonios que se sobrepoem em grau diferente conforme
+  // o regime; sem esta linha o slug cai no motivo da categoria (stack-two), que
+  // ja e do "conta-conjunta-nubank", e as duas capas de ORGANIZACAO ficam iguais.
+  "regime-de-bens-antes-de-casar": "circles-overlap",
 };
 
 /**
@@ -569,6 +573,9 @@ export const THEME_BY_SLUG = {
   "quando-um-sustenta-o-outro": "rosa", // conversas-sobre-dinheiro
   "ajudar-os-pais-financeiramente-casal": "preto", // conversas-sobre-dinheiro
   "divida-escondida-do-parceiro": "creme", // conversas-sobre-dinheiro
+  // mesma busca, rodada de novo em 2026-09-15 com as datas de publicação reais:
+  // "rosa" era o ÚNICO fundo que fechava sem mexer em nenhum dos 22 acima.
+  "regime-de-bens-antes-de-casar": "rosa", // organizacao
   // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
   // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
   // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e

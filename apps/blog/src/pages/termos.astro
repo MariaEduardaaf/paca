@@ -1,0 +1,215 @@
+---
+// RASCUNHO PARA REVISÃO DA DONA — documento jurídico, mesmo estatuto da
+// política de privacidade ao lado.
+//
+// POR QUE ELE EXISTE. O checklist de política do AdSense pede quatro páginas
+// respondendo 200: Sobre, Privacidade, Contato e Termos de uso. As três
+// primeiras existiam; esta não. O rodapé mandava "Termos de uso" para
+// APP_URL/terms — que são os termos do APLICATIVO e falam de conta, assinatura
+// e dado financeiro. Quem analisa o blog cai numa página que descreve outro
+// produto, em outro domínio.
+//
+// A CLÁUSULA QUE MAIS IMPORTA aqui é a de "não é consultoria" (seção 2).
+// Finanças é YMYL, o blog fala de dívida, regime de bens e imposto, e a régua
+// que o Google aplica — e o risco real de quem lê — pedem que a fronteira
+// esteja escrita, não subentendida.
+//
+// ⚠️ FALTA A IDENTIFICAÇÃO JURÍDICA (CNPJ ou nome do titular). É o mesmo buraco
+// já anotado no TODO.md para a política de privacidade, e não dá para a IA
+// preencher: o texto abaixo fala em "equipe do Paca Finance" como a política
+// fala, e a linha com a identificação entra quando a dona decidir sob qual
+// titular a operação corre.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { APP_URL, SITE_URL } from "../consts";
+
+const atualizadoEm = "15 de setembro de 2026";
+---
+
+<BaseLayout
+  title="Termos de Uso"
+  description="As regras de uso do blog do Paca Finance: o que o conteúdo é e o que ele não é, uso dos textos, publicidade, newsletter e responsabilidade."
+>
+  <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <h1 class="font-display text-3xl font-bold text-gray-800 sm:text-4xl dark:text-white">
+      Termos de Uso
+    </h1>
+    <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+      Atualizados em {atualizadoEm} · Aplicam-se ao blog em {SITE_URL.replace("https://", "")}
+    </p>
+
+    <div class="prose-paca mt-8">
+      <p>
+        Estes termos valem para <strong>o blog</strong> — os artigos, a
+        calculadora, a newsletter e as demais páginas publicadas neste endereço.
+        O aplicativo Paca Finance tem os próprios termos, que tratam de conta,
+        assinatura e dos dados financeiros que você registra lá:
+        <a href={`${APP_URL}/terms`}>ver os termos do aplicativo</a>. Ler o blog
+        não cria conta nenhuma e não te vincula ao aplicativo.
+      </p>
+      <p>
+        Ao usar este site, você concorda com o que está escrito aqui. Se não
+        concordar com alguma parte, o caminho é simples e sem atrito: não use o
+        site.
+      </p>
+
+      <h2>Quem mantém este site</h2>
+      <p>
+        O blog é mantido pela equipe do Paca Finance. Para qualquer assunto —
+        dúvida, correção, pedido de remoção, imprensa — fale com a gente pelo
+        <a href="/contato">canal de contato do blog</a>. A gente responde no
+        mesmo lugar.
+      </p>
+
+      <h2>O que este conteúdo é, e o que ele não é</h2>
+      <p>
+        Esta é a seção mais importante da página, e ela é curta de propósito.
+      </p>
+      <p>
+        O que você lê aqui é <strong>conteúdo educativo</strong>: explicação de
+        regra, comparação de caminho, conta feita passo a passo com números
+        públicos. Serve para você entender o assunto e conversar melhor sobre
+        ele com quem divide a vida com você.
+      </p>
+      <p>
+        O que ele <strong>não é</strong>:
+      </p>
+      <ul>
+        <li>
+          <strong>Não é consultoria financeira, jurídica, contábil ou
+          tributária.</strong> Não somos escritório de advocacia, contabilidade
+          nem consultoria, e nada aqui foi escrito olhando a sua situação.
+        </li>
+        <li>
+          <strong>Não é recomendação de investimento.</strong> Não somos
+          instituição financeira, corretora nem agente autônomo, não indicamos
+          produto para você comprar e não opinamos sobre o que cabe no seu
+          bolso.
+        </li>
+        <li>
+          <strong>Não substitui profissional habilitado.</strong> Decisão sobre
+          dívida, regime de bens, imposto, financiamento ou qualquer coisa com
+          consequência real merece conversa com alguém que possa olhar o seu
+          caso — advogado, contador, defensoria, o Procon, o gerente do seu
+          banco.
+        </li>
+      </ul>
+      <p>
+        <strong>A decisão é sua, e o resultado dela também.</strong> Você
+        continua responsável pelo que faz com o que leu aqui.
+      </p>
+
+      <h2>Fontes, datas e erros</h2>
+      <p>
+        A gente cita a fonte do que afirma e põe a data em cada artigo, porque
+        lei muda, alíquota muda, preço de cartório muda e número de pesquisa
+        envelhece. Um texto correto no dia em que foi publicado pode estar
+        desatualizado quando você o encontrar.
+      </p>
+      <p>
+        Então, antes de agir com base em qualquer número daqui, confira na fonte
+        que está linkada no próprio artigo. E se encontrar um erro,
+        <a href="/contato">nos avise</a>: a gente corrige o texto e registra a
+        correção em vez de apagar o rastro.
+      </p>
+
+      <h2>Uso dos textos e das imagens</h2>
+      <p>
+        O conteúdo do blog — textos, capas, diagramas e a calculadora — é nosso
+        ou está aqui com autorização.
+      </p>
+      <p>
+        <strong>Você pode</strong> ler, imprimir para uso próprio, mandar o link
+        para quem quiser e citar um trecho em outro texto, desde que dê o
+        crédito ao Paca Finance e ponha o link para a página original.
+      </p>
+      <p>
+        <strong>Você não pode</strong> republicar o artigo inteiro em outro
+        site, revendê-lo, ou apresentá-lo como se fosse seu. Se quiser
+        reproduzir alguma coisa além de uma citação,
+        <a href="/contato">peça</a> — a resposta costuma ser sim.
+      </p>
+
+      <h2>Links para outros sites</h2>
+      <p>
+        A gente linka muita coisa que não é nossa: lei, pesquisa, portal de
+        órgão público, site de banco. Esses links existem para você conferir o
+        que afirmamos na fonte, e não são endosso. Não controlamos o que esses
+        sites publicam, o que eles mudam depois nem o que eles fazem com os
+        dados de quem os visita — quando você sai daqui, valem as regras de lá.
+      </p>
+
+      <h2>Publicidade</h2>
+      <p>
+        Este site pode exibir anúncios servidos por redes de publicidade de
+        terceiros. Quando isso acontece, <strong>o anúncio é escolhido pela
+        rede, não por nós</strong>: aparecer aqui não significa que a gente
+        recomenda, verificou ou se responsabiliza pelo que é anunciado. A
+        relação de compra é entre você e o anunciante.
+      </p>
+      <p>
+        O conteúdo editorial não é vendido. Quando um texto tiver qualquer
+        relação comercial, isso vem escrito no próprio texto.
+      </p>
+      <p>
+        O que essas redes coletam, e como você desliga a medição de audiência
+        direto nesta página, está na
+        <a href="/privacidade">política de privacidade</a>.
+      </p>
+
+      <h2>Newsletter</h2>
+      <p>
+        Assinar é opcional e depende de você marcar o consentimento. A gente
+        manda conteúdo do blog para o endereço informado, e nada mais: não
+        vendemos nem alugamos a lista.
+      </p>
+      <p>
+        Para sair, use o link de descadastro que vai em todo e-mail ou a
+        <a href="/descadastro">página de descadastro</a>. Não é preciso pedir
+        autorização a ninguém, nem justificar.
+      </p>
+
+      <h2>A calculadora</h2>
+      <p>
+        A calculadora de divisão de contas é uma <strong>estimativa</strong>
+        feita com os números que você digita, no seu navegador. Ela não guarda o
+        que você digitou, não vale como cálculo oficial e não considera a sua
+        situação inteira — serve para dar ponto de partida a uma conversa, não
+        para fechar acordo.
+      </p>
+
+      <h2>Disponibilidade do site</h2>
+      <p>
+        A gente cuida do site, mas não promete que ele vai estar no ar o tempo
+        todo nem livre de falhas. Podemos mudar, atualizar ou tirar do ar
+        qualquer conteúdo, e podemos suspender o site para manutenção, sem aviso
+        prévio.
+      </p>
+
+      <h2>Limitação de responsabilidade</h2>
+      <p>
+        Dentro do que a lei permite, não respondemos por prejuízo decorrente de
+        decisão tomada com base no conteúdo deste blog, de informação que tenha
+        ficado desatualizada, de indisponibilidade do site, nem do que
+        acontecer em sites de terceiros que linkamos.
+      </p>
+      <p>
+        Nada aqui afasta os direitos que o Código de Defesa do Consumidor e a
+        LGPD garantem a você.
+      </p>
+
+      <h2>Mudanças nestes termos</h2>
+      <p>
+        Se mudarmos alguma coisa relevante, atualizamos a data no topo desta
+        página. Vale a versão publicada aqui, e continuar usando o site depois
+        da mudança significa aceitar a versão nova.
+      </p>
+
+      <h2>Lei aplicável</h2>
+      <p>
+        Estes termos são regidos pela legislação brasileira. O conteúdo é
+        escrito em português para leitores no Brasil, e é a regra brasileira que
+        ele explica.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

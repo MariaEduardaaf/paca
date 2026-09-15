@@ -83,3 +83,22 @@ export const TRACKED_HOSTS = [
   "www.pacafinance.com.br",
   "app.pacafinance.com.br",
 ];
+
+/**
+ * Chave do opt-out da medição, em `localStorage`.
+ *
+ * POR QUE ELE EXISTE. A LGPD não exige banner de cookie como o GDPR exige: o
+ * padrão brasileiro é **declarar e permitir oposição**. Declarar a política já
+ * fazia; a oposição ela só oferecia FORA do site — "mude as preferências do
+ * Meta", "bloqueie cookie de terceiro", "instale uma extensão". Empurrar a
+ * saída para outro domínio é o ponto fraco mais comum desse arranjo, e o mais
+ * barato de consertar: quem quer sair da medição tem de conseguir sair AQUI.
+ *
+ * O LIMITE, dito na própria página: isto vale por navegador, porque é onde o
+ * dado mora. Limpar os dados do site apaga a escolha, e outro aparelho começa
+ * do zero. É a mesma natureza de qualquer opt-out por cookie — inclusive o do
+ * Google — e é honesto dizer em vez de prometer o que não dá.
+ *
+ * `paca_` prefixado para não colidir com o `paca_entry` do UTM de entrada.
+ */
+export const MEASUREMENT_OPT_OUT_KEY = "paca_sem_medicao";

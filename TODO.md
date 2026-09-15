@@ -8,11 +8,34 @@
 
 Três produtos, estados diferentes:
 
-- **Blog** — no ar em **blog.pacafinance.com.br** com 18 artigos, calculadora, captura de e-mail, SEO técnico completo e capas próprias. AdSense **em análise**. Não exibe anúncio ainda e **não mede nada**.
+- **Blog** — no ar em **blog.pacafinance.com.br** com 21 artigos, calculadora, captura de e-mail, SEO técnico completo e capas próprias. AdSense **em análise**. Não exibe anúncio ainda; mede entrada (Meta Pixel + UTM), não receita.
 - **App web** — no ar em **app.pacafinance.com.br**, domínio próprio com certificado válido. Backend saudável, migrations aplicadas.
 - **App mobile** — código pronto, faltam três integrações nativas e a submissão nas lojas.
 
-**O gargalo do momento:** o blog não tem **medição**. Sem Meta Pixel e sem analytics não existe como saber quanto rende uma sessão — que é a única regra de decisão da estratégia de arbitragem (`CPL ≤ RPS × 1,30`). Comprar mídia antes disso é gastar sem sinal de parada. O segundo gargalo é a **análise do AdSense**, que não depende de nós: enquanto ela não sai, receita é zero por definição.
+### Fila de publicação — dois artigos já prontos, cada um no seu dia
+
+Os três estão escritos, passaram no Guardião e têm capa gerada e commitada. O que falta em cada um é
+**uma linha** (`draft: true` → `false`) e um push. **Um por dia, nunca dois no mesmo dia:** o sistema
+de capas ordena a grade por `pubDate`, e com datas empatadas a ordem fica ambígua — foi medido, não
+existe atribuição de fundo que passe na auditoria com dois artigos na mesma data.
+
+| dia | artigo | o que fazer |
+|---|---|---|
+| ✅ 15/09 | `quando-um-sustenta-o-outro` | no ar |
+| **16/09** | `renda-extra-no-casal` | `draft: false`, `npm run capas && npm run og && npm run build`, commit, push |
+| **22/09** | `regime-de-bens-antes-de-casar` | idem — **e empurrar o commit que está segurado localmente** (ele traz os 2 links de entrada) |
+
+⚠️ **Enquanto `renda-extra` não subir (16/09), dois links apontam para 404**: um em
+`como-juntar-dinheiro-casal` (já estava no ar) e um no `quando-um-sustenta-o-outro` que acabou de
+entrar. O commit do `regime-de-bens` ficou **sem empurrar de propósito** justamente para não criar
+mais dois — ele só vai junto com o artigo, em 22/09.
+
+**O gargalo do momento:** a **análise do AdSense**, que não depende de nós — enquanto ela não sai,
+receita é zero por definição. (Enviada em 02/09; conferido em 15/09, ainda não saiu: em produção o
+carregador do AdSense está na página mas não há nenhuma unidade de anúncio, que é o passo do dia da
+aprovação.) A medição deixou de ser gargalo em 03/09, com o Meta Pixel no ar — mas ela mede
+**entrada**, não receita: a regra de parada da arbitragem (`CPL ≤ RPS × 1,30`) só fecha quando
+existir RPS, e RPS só existe depois da aprovação.
 
 ---
 
@@ -111,7 +134,7 @@ só com código — precisa de decisão de conteúdo ou de um dado que ainda nã
 ### Decisões que destravam a IA
 
 - [ ] **Autoria com pessoa real.** Hoje é "Equipe Paca Finance", sem nome nem rosto, e o schema declara autor como organização. Finanças é a categoria em que o Google aplica a régua mais dura, e essa é a lacuna mais visível do site. *A IA monta a estrutura inteira; você passa o texto sobre você e decide se topa assinar.*
-- [ ] **CNPJ ou razão social na política de privacidade** — não existe nenhuma identificação de quem é juridicamente o controlador dos dados. Custa uma linha de texto. Também importa no recebimento: o AdSense paga a um titular identificado.
+- [ ] **CNPJ ou razão social na política de privacidade _e nos termos de uso_** — não existe nenhuma identificação de quem é juridicamente o controlador dos dados. Os dois documentos dizem "a equipe do Paca Finance", que não identifica ninguém. Custa uma linha de texto em cada. Também importa no recebimento: o AdSense paga a um titular identificado. **É o único item das quatro páginas obrigatórias que continua aberto** — `/termos` foi ao ar em 15/09 e `/privacidade` ganhou o opt-out da medição no mesmo dia.
 - [ ] **Planilha de verdade no Google Sheets.** O artigo se chama "modelo grátis" e avisa que não há arquivo — quem busca essa palavra quer o arquivo. A IA entrega a estrutura pronta; você cria e torna público.
 - [ ] **Provedor de e-mail.** A captura grava no banco, mas **nada envia e-mail ainda**. Sem isso o multiplicador de sessões por lead fica travado em 1,0 — e é o reengajamento que fecha a margem na estratégia. É a diferença entre a operação empatar e lucrar.
 - [ ] **Double opt-in** (depende do provedor acima) — hoje o consentimento é um booleano vindo do navegador e ninguém confirma que o endereço é do titular. O risco real não é jurídico, é entregabilidade: com tráfego pago entrando num formulário assim, a lista acumula erro de digitação e endereço de terceiro, e o primeiro disparo — o que estabelece a reputação do domínio — sai com bounce alto.

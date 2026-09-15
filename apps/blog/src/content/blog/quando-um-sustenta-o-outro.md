@@ -1,11 +1,11 @@
 ---
 title: "Quando um sustenta a casa: o combinado que protege os dois"
 description: "Um traz a renda, o outro não. O que a lei diz sobre de quem é o patrimônio, por que quem parou precisa de dinheiro próprio, e como combinar isso sem ninguém virar dependente."
-pubDate: 2026-09-05
+pubDate: 2026-09-15
 category: "conversas-sobre-dinheiro"
 tags: ["um sustenta o outro", "dependência financeira", "autonomia", "meação", "combinados do casal"]
 author: "mary"
-draft: true
+draft: false
 ---
 
 O momento não é o boleto. É outro, bem menor, e é ele que fica na memória: precisar avisar que quer comprar uma coisa de vinte reais. Ou olhar o extrato de uma conta em que o dinheiro entra com o nome de outra pessoa. Ou ensaiar a frase antes de falar, porque pedir não é a mesma coisa que gastar.
