@@ -103,6 +103,23 @@ porque tudo fica no mesmo tamanho pequeno.
 A pergunta que resolve: *"quantas frases acima de 35 palavras este texto tem?"* Menos de uma dúzia
 num artigo de 2.000 palavras é o sintoma.
 
+### ⚠️ 6b. Duas coisas medidas sobre os agentes — para você não se assustar
+
+**O `/blog write` subestima o próprio tamanho, sempre para menos, sempre em torno de 25%.**
+Ele não tem como contar palavras: estima por amostragem, e a amostragem erra na mesma direção.
+
+| artigo | ele estimou | era |
+|---|---|---|
+| renda extra | ~2.300 | **2.974** (+29%) |
+| regime de bens | ~2.340 | **2.847** (+21%) |
+
+**O que fazer:** peça **uns 25% a menos** do que você quer, ou simplesmente meça depois e apare. Nunca
+aceite a estimativa dele como número.
+
+**E fonte que devolve `403` não é link morto — é site que bloqueia robô.**
+Aconteceu com a revista científica americana, com o STF e com o CNJ. Todos abrem normalmente num
+navegador de verdade. Antes de tirar uma fonte boa do texto por causa de um 403, abra no navegador.
+
 ### 7. Sua leitura
 
 Aqui é você. Reescreva o que soar genérico, corte o que não é seu, resolva o que ficou marcado.

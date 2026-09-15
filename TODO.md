@@ -8,11 +8,34 @@
 
 Três produtos, estados diferentes:
 
-- **Blog** — no ar em **blog.pacafinance.com.br** com 18 artigos, calculadora, captura de e-mail, SEO técnico completo e capas próprias. AdSense **em análise**. Não exibe anúncio ainda e **não mede nada**.
+- **Blog** — no ar em **blog.pacafinance.com.br** com 21 artigos, calculadora, captura de e-mail, SEO técnico completo e capas próprias. AdSense **em análise**. Não exibe anúncio ainda; mede entrada (Meta Pixel + UTM), não receita.
 - **App web** — no ar em **app.pacafinance.com.br**, domínio próprio com certificado válido. Backend saudável, migrations aplicadas.
 - **App mobile** — código pronto, faltam três integrações nativas e a submissão nas lojas.
 
-**O gargalo do momento:** o blog não tem **medição**. Sem Meta Pixel e sem analytics não existe como saber quanto rende uma sessão — que é a única regra de decisão da estratégia de arbitragem (`CPL ≤ RPS × 1,30`). Comprar mídia antes disso é gastar sem sinal de parada. O segundo gargalo é a **análise do AdSense**, que não depende de nós: enquanto ela não sai, receita é zero por definição.
+### Fila de publicação — dois artigos já prontos, cada um no seu dia
+
+Os três estão escritos, passaram no Guardião e têm capa gerada e commitada. O que falta em cada um é
+**uma linha** (`draft: true` → `false`) e um push. **Um por dia, nunca dois no mesmo dia:** o sistema
+de capas ordena a grade por `pubDate`, e com datas empatadas a ordem fica ambígua — foi medido, não
+existe atribuição de fundo que passe na auditoria com dois artigos na mesma data.
+
+| dia | artigo | o que fazer |
+|---|---|---|
+| ✅ 15/09 | `quando-um-sustenta-o-outro` | no ar |
+| **16/09** | `renda-extra-no-casal` | `draft: false`, `npm run capas && npm run og && npm run build`, commit, push |
+| **22/09** | `regime-de-bens-antes-de-casar` | idem — **e empurrar o commit que está segurado localmente** (ele traz os 2 links de entrada) |
+
+⚠️ **Enquanto `renda-extra` não subir (16/09), dois links apontam para 404**: um em
+`como-juntar-dinheiro-casal` (já estava no ar) e um no `quando-um-sustenta-o-outro` que acabou de
+entrar. O commit do `regime-de-bens` ficou **sem empurrar de propósito** justamente para não criar
+mais dois — ele só vai junto com o artigo, em 22/09.
+
+**O gargalo do momento:** a **análise do AdSense**, que não depende de nós — enquanto ela não sai,
+receita é zero por definição. (Enviada em 02/09; conferido em 15/09, ainda não saiu: em produção o
+carregador do AdSense está na página mas não há nenhuma unidade de anúncio, que é o passo do dia da
+aprovação.) A medição deixou de ser gargalo em 03/09, com o Meta Pixel no ar — mas ela mede
+**entrada**, não receita: a regra de parada da arbitragem (`CPL ≤ RPS × 1,30`) só fecha quando
+existir RPS, e RPS só existe depois da aprovação.
 
 ---
 
