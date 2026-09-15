@@ -13,6 +13,9 @@ O que resolve é o caminho contrário: descobrir quanto vocês conseguem juntar,
 
 Neste guia: a lista completa de itens, como montar o teto, o que custa financiar a festa com números do Banco Central, casar pequeno ou casar grande sem julgamento, e a conta que quase ninguém faz — o que o mesmo dinheiro faria como entrada de apartamento.
 
+
+E existe uma decisão que não custa quase nada e vale mais que metade da festa: [qual regime de bens escolher antes de casar](/blog/regime-de-bens-antes-de-casar) — porque, sem escolha, a lei escolhe por vocês.
+
 ## Não existe uma média nacional confiável
 
 Duas das maiores plataformas do setor publicam números bem diferentes para o mesmo país.
