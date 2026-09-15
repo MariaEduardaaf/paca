@@ -3,7 +3,7 @@ import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, APP_URL } from "../consts";
-import { ADSENSE_CLIENT, ADS_ENABLED, META_PIXEL_ID, TRACKED_HOSTS } from "../lib/monetization";
+import { ADSENSE_CLIENT, ADS_ENABLED, MEASUREMENT_OPT_OUT_KEY, META_PIXEL_ID, TRACKED_HOSTS } from "../lib/monetization";
 
 interface Props {
   /** Page title (the "| Paca Finance" suffix is appended only when it fits). */
@@ -102,8 +102,21 @@ const META_PIXEL_ENABLED = META_PIXEL_ID.length > 0;
  * 3. Vai por set:html, e não escrito como JS no template: dentro de uma
  *    expressão `{...}` o Astro leria as chaves do próprio snippet como
  *    expressão dele.
+ * 4. A SAÍDA DO LEITOR. Antes de tudo o snippet lê a chave de opt-out (ver
+ *    MEASUREMENT_OPT_OUT_KEY) e, se ela estiver marcada, não carrega nem o
+ *    fbevents.js — não adianta oferecer saída na política e disparar assim
+ *    mesmo. O acesso vai em try/catch porque `localStorage` LANÇA, e não
+ *    devolve null, quando o navegador está com dados de site bloqueados; sem a
+ *    guarda, o erro derrubaria o <head> inteiro para justamente quem mais se
+ *    protege. Nesse caso ele segue disparando, e é o certo: se o navegador não
+ *    deixa GRAVAR, essa pessoa nunca chegou a registrar escolha nenhuma aqui —
+ *    não existe opt-out para respeitar. Tratar "não consegui ler" como "saiu"
+ *    apagaria da medição todo mundo que navega com dados de site bloqueados, e
+ *    é essa medição que decide quanto gastar no Meta.
  */
-const metaPixelSnippet = `if (${JSON.stringify(TRACKED_HOSTS)}.indexOf(location.hostname) !== -1) {
+const metaPixelSnippet = `var pacaSemMedicao = false;
+try { pacaSemMedicao = localStorage.getItem(${JSON.stringify(MEASUREMENT_OPT_OUT_KEY)}) === '1'; } catch (e) {}
+if (!pacaSemMedicao && ${JSON.stringify(TRACKED_HOSTS)}.indexOf(location.hostname) !== -1) {
 !function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};

@@ -48,8 +48,15 @@ const year = new Date().getFullYear();
           <li>
             <a href="/privacidade" class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Privacidade</a>
           </li>
+          {/*
+            Aponta para os termos DO BLOG, e não mais para APP_URL/terms. Os do
+            app falam de conta, assinatura e dado financeiro — outro produto,
+            outro domínio. Quem chega por um artigo e clica aqui tem de achar as
+            regras da página em que está. Os termos do app seguem linkados de
+            dentro de /termos, para quem procura por eles.
+          */}
           <li>
-            <a href={`${APP_URL}/terms`} class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Termos de uso</a>
+            <a href="/termos" class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Termos de uso</a>
           </li>
           <li>
             <a href={`${APP_URL}/support`} class="rounded-lg text-gray-600 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300">Suporte</a>
