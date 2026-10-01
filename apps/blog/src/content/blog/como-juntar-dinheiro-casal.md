@@ -9,7 +9,7 @@ draft: false
 
 "Um dia a gente vai pro Nordeste." "Ano que vem a gente começa a guardar pro casamento." "Quando sobrar, entra pra entrada do apê." Se vocês já disseram alguma dessas frases — e o dinheiro nunca apareceu —, o problema quase nunca é falta de vontade. É falta de plano: sonho sem número, número sem prazo, prazo sem combinado de quem guarda quanto.
 
-E vale lembrar por que isso importa: [53% dos brasileiros apontam o dinheiro como o principal motivo de briga no relacionamento, segundo pesquisa da Serasa (2025)](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/). Uma meta clara, combinada a dois, faz o caminho contrário: transforma o dinheiro de fonte de tensão em projeto conjunto.
+Por que isso importa: [53% dos brasileiros apontam o dinheiro como o principal motivo de briga no relacionamento, segundo pesquisa da Serasa (2025)](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/). Uma meta clara, combinada a dois, faz o caminho contrário: transforma o dinheiro de fonte de tensão em projeto conjunto.
 
 Neste guia, vocês vão sair com um plano completo em 6 passos: transformar o sonho em valor mensal, mapear a renda, dividir a contribuição de forma justa, escolher onde guardar, cortar gastos sem virar um casal sem vida social — e o ritual mensal que mantém tudo de pé.
 
@@ -52,7 +52,7 @@ E se a meta de vocês for morar junto, cuidado com o valor total: além do prime
 Duas regras práticas:
 
 - **Uma meta principal por vez.** Guardar pra viagem, casamento e apartamento ao mesmo tempo dilui o dinheiro e a motivação. Elejam a prioridade; as outras entram na fila.
-- **Antes da meta dos sonhos, a reserva de emergência.** Se vocês ainda não têm um colchão pra imprevisto (consenso comum: alguns meses de custo de vida), ela vem primeiro — senão o primeiro pneu furado ou consulta de emergência saqueia a viagem.
+- **Antes da meta dos sonhos, a reserva de emergência.** Se vocês ainda não têm um colchão pra imprevisto (consenso comum: alguns meses de custo de vida), ela vem primeiro — senão o primeiro pneu furado ou consulta de emergência saqueia a viagem. Quanto guardar e onde deixar esse dinheiro estão no guia de [reserva de emergência para casal](/blog/reserva-de-emergencia-casal).
 
 ## Passo 2: raio-x da renda e dos gastos a dois
 

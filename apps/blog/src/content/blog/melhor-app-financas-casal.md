@@ -53,7 +53,7 @@ O plano grátis inclui 10 escaneamentos de nota e 3 consultas ao conselheiro por
 
 O Mobills é um dos apps de finanças pessoais mais conhecidos do Brasil, forte em gestão de cartões de crédito, relatórios e metas. A versão paga inclui compartilhamento de contas, o que permite usar em casal, e o plano PRO adiciona um assistente financeiro pelo WhatsApp. Não é, porém, um app *desenhado* para casal: a lógica é de finanças de uma pessoa que compartilha acesso, não de duas pessoas com divisão de despesas. Os preços mudam com promoções frequentes — confiram na [página oficial de planos](https://www.mobills.com.br/pricing/).
 
-**Melhor para:** quem já quer um controle financeiro pessoal robusto e aceita adaptar o uso a dois.
+**Melhor para:** quem já quer um controle financeiro pessoal detalhado e aceita adaptar o uso a dois.
 
 ### Organizze
 

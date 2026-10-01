@@ -13,6 +13,8 @@ A divisão proporcional resolve exatamente isso: cada um contribui com o mesmo *
 
 Neste artigo vocês vão ver a fórmula passo a passo, um exemplo completo com salários de R$ 3.000 e R$ 5.000, quais contas entram no cálculo (e quais ficam de fora), como propor a mudança sem transformar o assunto em briga — e como parar de refazer essa conta na mão todo mês.
 
+Se preferirem ver o resultado com os números de vocês antes da explicação, a [calculadora de divisão de contas](/calculadora-divisao-de-contas) faz a conta com os dois salários e o total da casa.
+
 ## Por que dividir 50/50 nem sempre é justo
 
 O 50/50 funciona bem quando os salários são parecidos. O problema aparece quando a diferença de renda é grande: quem ganha menos compromete uma fatia muito maior do salário só para manter a casa, e sobra quase nada para reserva de emergência, lazer ou objetivos próprios.

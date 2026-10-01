@@ -53,7 +53,7 @@ Exemplo com números redondos: A ganha R$ 6.000, B ganha R$ 4.000. Renda do casa
 | Pessoa A | 6.000 ÷ 10.000 = 60% × R$ 4.500 | R$ 2.700 | 45% |
 | Pessoa B | 4.000 ÷ 10.000 = 40% × R$ 4.500 | R$ 1.800 | 45% |
 
-Reparem na última coluna: os dois comprometem exatamente 45% do que ganham. O esforço fica igual, mesmo com valores diferentes — por isso esse método é o mais recomendado quando há diferença salarial relevante.
+Reparem na última coluna: os dois comprometem exatamente 45% do que ganham. O esforço fica igual, mesmo com valores diferentes — por isso esse método é o mais recomendado quando há diferença salarial relevante. Para ver quanto fica para cada um com os salários de vocês, a [calculadora de divisão de contas](/calculadora-divisao-de-contas) faz essa conta.
 
 O trade-off: exige transparência total de renda e recálculo sempre que algo muda — aumento, freela grande, 13º. Se vocês gostaram da lógica, o [guia completo da divisão proporcional ao salário](/blog/dividir-contas-proporcional-ao-salario) mostra variações (proporcional com teto, proporcional só nas contas fixas) e como recalcular sem drama.
 
@@ -149,7 +149,7 @@ O antídoto é um registro que os dois enxergam:
 - **App compartilhado.** É a dor que o Paca Finance resolve: cada um registra o gasto na hora (ou escaneia a notinha do mercado), e o app mostra quem pagou o quê e o saldo de cada um em tempo real. Qualquer que seja o método de vocês, a cobrança vira transparência — em vez de "você está me devendo", a conversa é olhar o número juntos no Paca. Mas sejamos honestos: app nenhum resolve sozinho — se um dos dois não registrar os gastos, ele morre como a planilha. Dá para [criar a conta do casal no plano gratuito](https://app.pacafinance.com.br/signup) e testar se o hábito pega antes de pagar qualquer coisa.
 - **Teto por categoria.** Acompanhar quem pagou é uma parte; a outra é saber se o total está saudável. A regra 50/30/20 dá uma referência rápida: até 50% da renda em essenciais, 30% em estilo de vida, 20% para objetivos.
 
-Por fim, combinem um **dia do acerto**: uma data fixa por mês (dia do pagamento funciona bem) em que eventuais diferenças se resolvem num único Pix. Acertar uma vez por mês, com número na frente, é infinitamente mais leve do que negociar boleto a boleto.
+Combinem também um **dia do acerto**: uma data fixa por mês (dia do pagamento funciona bem) em que eventuais diferenças se resolvem num único Pix. Acertar uma vez por mês, com número na frente, é infinitamente mais leve do que negociar boleto a boleto.
 
 ## Perguntas frequentes
 
