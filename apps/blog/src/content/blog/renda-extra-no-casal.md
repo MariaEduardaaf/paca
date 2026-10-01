@@ -1,11 +1,11 @@
 ---
 title: "Renda extra no casal: quando o segundo trabalho compensa"
 description: "45% dos brasileiros buscaram renda extra e 3,6% têm dois trabalhos. A conta por hora, o imposto que incide sobre a soma e o combinado que decide se o bico vale."
-pubDate: 2026-09-16
+pubDate: 2026-10-01
 category: "dividir-contas"
 tags: ["renda extra", "segundo trabalho", "MEI", "imposto de renda", "finanças do casal"]
 author: "mary"
-draft: true
+draft: false
 ---
 
 São nove e meia de uma terça-feira. A louça do jantar está na pia, a casa ficou quieta, e um de vocês abre o notebook de novo — não para ver série, e sim porque tem uma entrega para fechar até sexta. O outro vai para o quarto sozinho, como foi na quinta passada e como vai ser de novo no sábado de manhã.
