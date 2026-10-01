@@ -1,6 +1,7 @@
 ---
 import type { BlogPost } from "../lib/posts";
 import { readingTimeMinutes } from "../lib/posts";
+import { calculadoraPara } from "../lib/calculadoras";
 
 /**
  * Bloco de recirculação das páginas de artigo: a calculadora e outros guias.
@@ -34,9 +35,12 @@ interface Props {
   /** Já ordenados e sem o artigo atual — o layout decide a prioridade. */
   posts: BlogPost[];
   variant?: "sidebar" | "mid" | "inline";
+  /** O artigo atual — decide QUAL calculadora o bloco oferece. */
+  artigo?: string;
 }
 
-const { posts, variant = "sidebar" } = Astro.props;
+const { posts, variant = "sidebar", artigo } = Astro.props;
+const calc = calculadoraPara(artigo);
 
 const isSidebar = variant === "sidebar";
 const isMid = variant === "mid";
@@ -94,16 +98,14 @@ const linkMetaClass = "mt-1 block text-xs text-gray-600 dark:text-gray-400";
         </p>
         <h2 id={calcId} class={`mt-1.5 ${headingClass}`}>
           <a
-            href="/calculadora-divisao-de-contas"
+            href={calc.href}
             class="rounded transition-colors after:absolute after:inset-0 after:content-[''] hover:text-pink-800 dark:hover:text-pink-200"
           >
-            Calculadora de divisão de contas
+            {calc.titulo}
           </a>
         </h2>
         <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
-          Coloque as duas rendas e o total das contas do mês: ela mostra quanto
-          cada um paga na divisão proporcional ao salário, comparado com o meio
-          a meio.
+          {calc.resumo}
         </p>
         {/*
           Afordância visual, não um segundo link: quem usa leitor de tela já
@@ -133,8 +135,8 @@ const linkMetaClass = "mt-1 block text-xs text-gray-600 dark:text-gray-400";
           */}
           {isMid && (
             <li class={itemClass}>
-              <a href="/calculadora-divisao-de-contas" class={linkClass}>
-                <span class={linkTitleClass}>Calculadora de divisão de contas</span>
+              <a href={calc.href} class={linkClass}>
+                <span class={linkTitleClass}>{calc.titulo}</span>
                 <span class={linkMetaClass}>Ferramenta grátis</span>
               </a>
             </li>

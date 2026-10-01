@@ -510,7 +510,7 @@ const faqJsonLd =
               */}
               {part.after === "recirc" && (
                 <div class="my-10 border-y border-gray-100 py-5 min-[1152px]:hidden dark:border-gray-800">
-                  <RecirculationPanel posts={midPosts} variant="mid" />
+                  <RecirculationPanel posts={midPosts} variant="mid" artigo={post.id} />
                 </div>
               )}
             </>
@@ -553,7 +553,7 @@ const faqJsonLd =
         aria-label="Continue navegando no blog"
         class="mt-14 border-t border-gray-100 pt-10 min-[1152px]:hidden dark:border-gray-800"
       >
-        <RecirculationPanel posts={inlinePosts} variant="inline" />
+        <RecirculationPanel posts={inlinePosts} variant="inline" artigo={post.id} />
       </aside>
 
       {
@@ -596,7 +596,7 @@ const faqJsonLd =
     */}
     <aside aria-label="Continue navegando no blog" class="hidden w-[17.5rem] shrink-0 min-[1152px]:block">
       <div class="sticky top-8 -mx-1 max-h-[calc(100vh-4rem)] overflow-y-auto px-1 py-1">
-        <RecirculationPanel posts={sidebarPosts} variant="sidebar" />
+        <RecirculationPanel posts={sidebarPosts} variant="sidebar" artigo={post.id} />
       </div>
     </aside>
   </div>
