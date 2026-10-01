@@ -1,0 +1,995 @@
+---
+/**
+ * Calculadora do custo do casamento.
+ *
+ * Mesma conta do artigo /blog/quanto-custa-casar. Se um dos dois mudar, o
+ * outro precisa mudar junto:
+ *   itens      = a lista da seção "A lista completa: tudo que entra na conta".
+ *                O casal digita o valor de cada um; vazio conta como zero.
+ *                NENHUM valor vem preenchido: o artigo diz que não existe média
+ *                nacional confiável (R$ 50.073 de um lado, R$ 69 mil do outro),
+ *                então a ferramenta não chuta preço de mercado.
+ *   colchão    = 15% de folga para o que não foi orçado (seção "Montem o teto":
+ *                65% dos casais estouram o orçamento). Necessário = orçado × 1,15.
+ *   disponível = guardado + extras (13º etc.) + aporte mensal × meses até a data
+ *   teto       = disponível ÷ 1,15 (o "teto de contratação" do artigo)
+ *   por mês    = (necessário − guardado − extras) ÷ meses
+ *   financiar  = o que faltar no dia, em 24 parcelas fixas (tabela Price) a
+ *                6,42% ao mês, a taxa média do crédito pessoal não consignado
+ *                em julho de 2026 (série 25464 do Banco Central) — exatamente a
+ *                conta da seção "Financiar o casamento: a conta que dói".
+ *   por pessoa = a parcela mensal, dividida na proporção da renda (mesma lógica
+ *                da calculadora de divisão de contas)
+ *
+ * Tudo roda no navegador com JS inline (sem dependência, sem framework) e
+ * nada é enviado nem guardado: os valores existem só enquanto a aba estiver
+ * aberta. Por isso não há localStorage aqui — renda e patrimônio são dados
+ * sensíveis e a política de privacidade do blog diz que só o tema fica no
+ * navegador.
+ */
+
+// Itens do artigo, na ordem dele. `dica` só onde o artigo explica o item.
+const LEMBRADOS = [
+  { id: "buffet", label: "Buffet e bebidas" },
+  { id: "local", label: "Local da cerimônia e da recepção" },
+  { id: "decor", label: "Decoração e flores" },
+  { id: "trajes", label: "Vestido, terno, sapatos e alianças" },
+  { id: "foto", label: "Fotografia e vídeo" },
+  { id: "musica", label: "Música" },
+  { id: "cerimonial", label: "Cerimonial ou assessoria" },
+  { id: "convites", label: "Convites" },
+  { id: "bolo", label: "Bolo e doces" },
+  { id: "beleza", label: "Cabelo e maquiagem" },
+  { id: "cartorio", label: "Cartório" },
+];
+const DO_FIM = [
+  { id: "servico", label: "Taxa de serviço do buffet", dica: "Percentual sobre o contrato, cobrado à parte na maioria das casas." },
+  { id: "horaextra", label: "Hora extra", dica: "Cada hora além do horário, de espaço, buffet e DJ." },
+  { id: "rolha", label: "Taxa de rolha", dica: "Bebida própria: o espaço cobra por garrafa aberta." },
+  { id: "refeicao", label: "Refeição dos fornecedores", dica: "Fotógrafo, cinegrafista, DJ e equipe comem no evento." },
+  { id: "infra", label: "Infraestrutura do espaço", dica: "Gerador, ar-condicionado, banheiro químico, mesas, cadeiras e louça." },
+  { id: "frete", label: "Frete e deslocamento", dica: "Fornecedor de outra cidade cobra transporte e às vezes hospedagem." },
+  { id: "ecad", label: "ECAD e limpeza", dica: "Direito autoral da música e limpeza pós-evento." },
+  { id: "provas", label: "Ajustes e provas", dica: "Provas do vestido, prova de beleza, joias." },
+  { id: "chuva", label: "Plano B de chuva", dica: "Tenda contratada em cima da hora custa o dobro." },
+  { id: "docs", label: "Documentação", dica: "Habilitação, certidões, taxa de cerimônia fora do cartório." },
+  { id: "outros", label: "Outros itens", dica: "Qualquer coisa que a lista não cobre." },
+];
+
+const SELECT_CLASS =
+  "mt-1.5 w-full rounded-xl border border-gray-500 bg-white px-3 py-2.5 text-gray-900 dark:border-gray-500 dark:bg-gray-800 dark:text-white";
+const MONEY_INPUT_CLASS =
+  "w-full rounded-xl border border-gray-500 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400";
+const ITEM_INPUT_CLASS =
+  "w-full rounded-xl border border-gray-500 bg-white py-2 pl-10 pr-3 text-base tabular-nums text-gray-900 placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400";
+const PREFIX_CLASS =
+  "pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-gray-600 dark:text-gray-400";
+const HELP_CLASS = "mt-1.5 text-xs text-gray-600 dark:text-gray-400";
+const ERROR_CLASS = "mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300";
+const CARD_CLASS =
+  "rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900";
+const TEXT_INPUT_CLASS =
+  "mt-1.5 w-full rounded-xl border border-gray-500 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400";
+---
+
+<section
+  aria-labelledby="cas-titulo"
+  class="rounded-3xl border border-gray-200 bg-gray-50 p-5 sm:p-7 dark:border-gray-700 dark:bg-gray-800/60"
+>
+  <h2 id="cas-titulo" class="sr-only">Calculadora do custo do casamento</h2>
+
+  <div class="grid gap-6 lg:grid-cols-5 lg:gap-8">
+    <!-- ENTRADAS -->
+    <form id="cas-form" novalidate autocomplete="off" class="lg:col-span-2">
+      {
+        [
+          { grupo: "lembrados", titulo: "Os itens que todo mundo lembra", lista: LEMBRADOS },
+          { grupo: "fim", titulo: "Os itens que só aparecem no fim", lista: DO_FIM },
+        ].map((g, gi) => (
+          <fieldset class={`${gi ? "mt-4 " : ""}${CARD_CLASS} !p-4`}>
+            <legend class="px-1.5 font-display text-sm font-bold text-gray-800 dark:text-white">{g.titulo}</legend>
+            <p class={`${HELP_CLASS} !mt-0`}>
+              {gi === 0
+                ? "Digite o que já orçaram. Item sem valor conta como zero."
+                : "É aqui que o orçamento costuma estourar, porque ninguém orça o que não sabe que existe."}
+            </p>
+            <div class="mt-3 space-y-3">
+              {g.lista.map((it) => (
+                <div>
+                  <label for={`cas-i-${it.id}`} class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                    {it.label}
+                  </label>
+                  <div class="relative mt-1.5">
+                    <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+                    <input
+                      id={`cas-i-${it.id}`}
+                      type="text"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      placeholder="0,00"
+                      data-campo={it.id}
+                      data-item={g.grupo}
+                      data-label={it.label}
+                      aria-describedby={`${"dica" in it ? `cas-dica-${it.id} ` : ""}cas-erro-${it.id}`}
+                      class={ITEM_INPUT_CLASS}
+                    />
+                  </div>
+                  {"dica" in it && (
+                    <p id={`cas-dica-${it.id}`} class={HELP_CLASS}>{it.dica}</p>
+                  )}
+                  <p id={`cas-erro-${it.id}`} hidden aria-live="polite" class={ERROR_CLASS} />
+                </div>
+              ))}
+            </div>
+          </fieldset>
+        ))
+      }
+
+      <div class={`mt-4 ${CARD_CLASS}`}>
+        <label for="cas-total" class="block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Ainda não orçaram item por item?
+        </label>
+        <div class="relative mt-2">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="cas-total"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="0,00"
+            data-campo="total"
+            aria-describedby="cas-dica-total cas-erro-total"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="cas-dica-total" class={HELP_CLASS}>
+          Digitem o orçamento total que têm em mente. Só vale enquanto os itens acima estiverem vazios.
+        </p>
+        <p id="cas-erro-total" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+        <label for="cas-convidados" class="mt-5 block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Número de convidados <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <input
+          id="cas-convidados"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="120"
+          data-campo="convidados"
+          aria-describedby="cas-erro-convidados"
+          class={TEXT_INPUT_CLASS}
+        />
+        <p id="cas-erro-convidados" hidden aria-live="polite" class={ERROR_CLASS}></p>
+      </div>
+
+      <div class={`mt-4 ${CARD_CLASS}`}>
+        <label for="cas-guardado" class="block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Quanto já têm guardado para o casamento
+        </label>
+        <div class="relative mt-2">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="cas-guardado"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="0,00"
+            data-campo="guardado"
+            aria-describedby="cas-dica-guardado cas-erro-guardado"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="cas-dica-guardado" class={HELP_CLASS}>Em branco conta como zero.</p>
+        <p id="cas-erro-guardado" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+        <label for="cas-aporte" class="mt-5 block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Quanto guardam por mês, juntos
+        </label>
+        <div class="relative mt-2">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="cas-aporte"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="1.500,00"
+            data-campo="aporte"
+            aria-describedby="cas-erro-aporte"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="cas-erro-aporte" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+        <label for="cas-extras" class="mt-5 block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Dinheiro extra que vai entrar até a data <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <div class="relative mt-2">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="cas-extras"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="10.000,00"
+            data-campo="extras"
+            aria-describedby="cas-dica-extras cas-erro-extras"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="cas-dica-extras" class={HELP_CLASS}>
+          O total de 13º, bônus ou restituição que vocês decidiram destinar ao casamento. Presente de casamento não entra: chega depois do sinal.
+        </p>
+        <p id="cas-erro-extras" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+        <label for="cas-data" class="mt-5 block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Data do casamento
+        </label>
+        <input id="cas-data" type="date" aria-describedby="cas-dica-data" class={SELECT_CLASS} />
+        <p id="cas-dica-data" class={HELP_CLASS}>
+          Sem a data a calculadora mostra o orçamento, mas não o que guardar por mês.
+        </p>
+      </div>
+
+      <div class={`mt-4 ${CARD_CLASS} !p-4`}>
+        <label class="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-200">
+          <input id="cas-colchao" type="checkbox" checked class="mt-0.5 h-4 w-4 shrink-0 accent-[#E5647A]" />
+          <span>
+            Separar 15% de colchão para o que não foi orçado. O artigo parte disso porque 65% dos casais estouram o orçamento planejado.
+          </span>
+        </label>
+      </div>
+
+      <fieldset class={`mt-4 ${CARD_CLASS} !p-4`}>
+        <legend class="px-1.5 font-display text-sm font-bold text-gray-800 dark:text-white">
+          Divisão entre os dois <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </legend>
+
+        <label for="cas-nome1" class="mt-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          <span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-[#E5647A] align-middle"></span>
+          Primeira pessoa
+        </label>
+        <input id="cas-nome1" type="text" maxlength="24" placeholder="Pessoa 1" class={TEXT_INPUT_CLASS} />
+        <label for="cas-renda1" class="mt-3 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Renda líquida por mês
+        </label>
+        <div class="relative mt-1.5">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="cas-renda1"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="4.000,00"
+            data-campo="renda1"
+            aria-describedby="cas-erro-renda1"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="cas-erro-renda1" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+        <label for="cas-nome2" class="mt-5 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          <span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-[#2F8F7C] align-middle"></span>
+          Segunda pessoa
+        </label>
+        <input id="cas-nome2" type="text" maxlength="24" placeholder="Pessoa 2" class={TEXT_INPUT_CLASS} />
+        <label for="cas-renda2" class="mt-3 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Renda líquida por mês
+        </label>
+        <div class="relative mt-1.5">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="cas-renda2"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="6.000,00"
+            data-campo="renda2"
+            aria-describedby="cas-dica-renda2 cas-erro-renda2"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="cas-dica-renda2" class={HELP_CLASS}>
+          As rendas só servem para dividir o valor mensal na proporção de cada um.
+        </p>
+        <p id="cas-erro-renda2" hidden aria-live="polite" class={ERROR_CLASS}></p>
+      </fieldset>
+
+      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <button
+          type="button"
+          id="cas-btn-exemplo"
+          class="rounded-xl border border-gray-500 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-pink-300 hover:text-pink-700 dark:border-gray-500 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-500 dark:hover:text-pink-300"
+        >
+          Preencher com o exemplo
+        </button>
+        <button
+          type="button"
+          id="cas-btn-limpar"
+          class="rounded px-1 py-1 text-sm font-medium text-gray-600 underline underline-offset-2 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300"
+        >
+          Limpar
+        </button>
+      </div>
+      <p class="mt-3 text-xs text-gray-600 dark:text-gray-400">
+        O exemplo usa valores inventados só para mostrar a conta, não preços de mercado. A conta acontece no seu navegador: nada é enviado para a gente nem fica salvo.
+      </p>
+    </form>
+
+    <!-- SAÍDA -->
+    <div class="lg:col-span-3">
+      <div id="cas-saida" role="status" aria-live="polite">
+        <!-- vazio -->
+        <div
+          id="cas-estado-vazio"
+          class="flex min-h-[14rem] flex-col justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white/60 px-6 py-12 text-center lg:min-h-[28rem] dark:border-gray-600 dark:bg-gray-900/40"
+        >
+          <p class="font-display text-lg font-bold text-gray-800 dark:text-white">
+            Comece pelos itens que já orçaram
+          </p>
+          <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            O resultado aparece aqui na hora: o total, quanto falta, quanto guardar por mês até a data e o que custaria financiar a diferença.
+          </p>
+        </div>
+
+        <!-- resultado -->
+        <div id="cas-estado-resultado" hidden>
+          <div class={CARD_CLASS}>
+            <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Total orçado</p>
+            <p id="cas-orcado" class="mt-2 font-display text-3xl font-bold tabular-nums text-gray-900 dark:text-white">
+              R$ 0,00
+            </p>
+            <p id="cas-orcado-nota" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+          </div>
+
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <div class={CARD_CLASS}>
+              <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Falta hoje</p>
+              <p id="cas-falta" class="mt-2 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">
+                R$ 0,00
+              </p>
+              <p id="cas-falta-nota" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+            </div>
+            <div class={CARD_CLASS}>
+              <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Guardar por mês, sem dívida</p>
+              <p id="cas-pormes" class="mt-2 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">—</p>
+              <p id="cas-pormes-nota" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+            </div>
+          </div>
+
+          <div id="cas-teto-card" hidden class={`mt-3 ${CARD_CLASS}`}>
+            <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Teto de contratação no ritmo de vocês</p>
+            <p id="cas-teto" class="mt-2 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">R$ 0,00</p>
+            <p id="cas-teto-nota" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+          </div>
+
+          <div id="cas-financ" hidden class={`mt-3 ${CARD_CLASS}`}>
+            <p class="font-display text-sm font-bold text-gray-800 dark:text-white">
+              Simulação: se financiarem o que faltar
+            </p>
+            <p id="cas-financ-texto" class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200"></p>
+          </div>
+
+          <div id="cas-aportes" hidden class={`mt-3 ${CARD_CLASS}`}>
+            <p class="font-display text-sm font-bold text-gray-800 dark:text-white">
+              Valor mensal de cada um, na proporção da renda
+            </p>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+              <div>
+                <p class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  <span aria-hidden="true" class="h-2.5 w-2.5 shrink-0 rounded-full bg-[#E5647A]"></span>
+                  <span id="cas-nome1-out" class="truncate">Pessoa 1</span>
+                </p>
+                <p id="cas-aporte1" class="mt-1 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">R$ 0,00</p>
+                <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-300">
+                  <span id="cas-pct1" class="font-semibold text-gray-800 dark:text-gray-100">0%</span> do valor
+                </p>
+              </div>
+              <div>
+                <p class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  <span aria-hidden="true" class="h-2.5 w-2.5 shrink-0 rounded-full bg-[#2F8F7C]"></span>
+                  <span id="cas-nome2-out" class="truncate">Pessoa 2</span>
+                </p>
+                <p id="cas-aporte2" class="mt-1 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">R$ 0,00</p>
+                <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-300">
+                  <span id="cas-pct2" class="font-semibold text-gray-800 dark:text-gray-100">0%</span> do valor
+                </p>
+              </div>
+            </div>
+          </div>
+          <p id="cas-aportes-dica" hidden class="mt-3 rounded-2xl bg-white p-4 text-sm leading-relaxed text-gray-700 dark:bg-gray-900 dark:text-gray-200"></p>
+
+          <p id="cas-convidado" hidden class="mt-3 rounded-2xl bg-white p-4 text-sm leading-relaxed text-gray-700 dark:bg-gray-900 dark:text-gray-200"></p>
+          <p id="cas-insight" class="mt-3 rounded-2xl bg-white p-4 text-sm leading-relaxed text-gray-700 dark:bg-gray-900 dark:text-gray-200"></p>
+        </div>
+      </div>
+
+      <!-- Detalhe (fora da região aria-live: o resumo acima já foi anunciado) -->
+      <div id="cas-detalhe" hidden class="mt-3 space-y-3">
+        <div class={CARD_CLASS}>
+          <p class="font-display text-sm font-bold text-gray-800 dark:text-white">Soma por item</p>
+          <div class="mt-3 overflow-x-auto">
+            <table class="w-full min-w-[18rem] text-left text-sm tabular-nums text-gray-700 dark:text-gray-200">
+              <caption class="sr-only">Valor de cada item e total do casamento</caption>
+              <thead class="text-gray-900 dark:text-white">
+                <tr>
+                  <th scope="col" class="py-2 pr-3 font-semibold">Item</th>
+                  <th scope="col" class="py-2 text-right font-semibold">Valor</th>
+                </tr>
+              </thead>
+              <tbody id="cas-tabela" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class={CARD_CLASS}>
+          <p class="font-display text-sm font-bold text-gray-800 dark:text-white">A conta, passo a passo</p>
+          <ol class="mt-3 space-y-2 text-sm leading-relaxed text-gray-700 tabular-nums dark:text-gray-200">
+            <li id="cas-passo1"></li>
+            <li id="cas-passo2"></li>
+            <li id="cas-passo3"></li>
+            <li id="cas-passo4"></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+   * O atributo `hidden` precisa vencer as utilitárias de display do Tailwind
+   * (`flex`, `grid`) — sem isso, um painel escondido continua aparecendo.
+   */
+  [hidden] {
+    display: none !important;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var byId = function (id) {
+      return document.getElementById(id);
+    };
+
+    // <calc-core> — função pura, sem DOM. O teste em scratchpad extrai este
+    // trecho do arquivo e roda em Node: não renomeie os marcadores.
+    function cents(n) {
+      return Math.round(n * 100) / 100;
+    }
+
+    // Colchão do artigo: 15% sobre o que foi orçado (R$ 40.000 → R$ 46.000).
+    var COLCHAO = 0.15;
+    // Financiamento do artigo: crédito pessoal não consignado, 6,42% ao mês
+    // (julho de 2026, série 25464 do Banco Central), 24 parcelas fixas (Price).
+    var TAXA_MES = 0.0642;
+    var PARCELAS = 24;
+
+    /**
+     * Meses COMPLETOS entre hoje e a data do casamento. Data passada ou o
+     * próprio dia dão 0; 24 meses exatos dão 24, e um dia a menos dá 23.
+     * Recebe Date locais (sem fuso: o <input type="date"> não tem hora).
+     */
+    function mesesAte(hoje, alvo) {
+      var m = (alvo.getFullYear() - hoje.getFullYear()) * 12 + (alvo.getMonth() - hoje.getMonth());
+      if (alvo.getDate() < hoje.getDate()) m -= 1;
+      return Math.max(0, m);
+    }
+
+    /**
+     * o = { itens: [n...], total, colchao, guardado, aporte, extras,
+     *       meses (null = sem data), convidados, r1, r2 }
+     * Item vazio entra como 0. `total` só vale se a soma dos itens for 0.
+     * r1/r2 podem ser null (renda não informada).
+     */
+    function plano(o) {
+      var soma = cents(o.itens.reduce(function (s, v) { return s + v; }, 0));
+      var usaTotal = soma === 0 && o.total > 0;
+      var orcado = usaTotal ? cents(o.total) : soma;
+      var fator = o.colchao ? 1 + COLCHAO : 1;
+      var necessario = cents(orcado * fator);
+
+      var datado = o.meses !== null;
+      var meses = datado ? o.meses : 0;
+      var disponivel = cents(o.guardado + o.extras + o.aporte * meses);
+      // Teto de contratação: tudo que vão ter, descontado o colchão (passo 3 do artigo).
+      var teto = datado ? cents(disponivel / fator) : null;
+
+      var faltaHoje = Math.max(0, cents(necessario - o.guardado));
+      var faltaNoDia = datado ? Math.max(0, cents(necessario - disponivel)) : null;
+
+      // Quanto guardar por mês para fechar sem dívida: o que falta depois do
+      // guardado e dos extras, dividido pelos meses. Arredonda o centavo para
+      // cima — arredondar para baixo deixaria a conta um centavo curta.
+      var restante = Math.max(0, cents(necessario - o.guardado - o.extras));
+      var semPrazo = datado && meses === 0 && restante > 0;
+      var porMes = null;
+      if (datado) {
+        if (restante === 0) porMes = 0;
+        else if (meses > 0) porMes = Math.ceil((restante * 100) / meses - 1e-9) / 100;
+      }
+
+      // Financiar o que faltar no dia (Price): parcela = F·i / (1 − (1+i)^−n).
+      var financ = null;
+      if (faltaNoDia > 0) {
+        var pmt = (faltaNoDia * TAXA_MES) / (1 - Math.pow(1 + TAXA_MES, -PARCELAS));
+        var totalPago = cents(pmt * PARCELAS);
+        financ = {
+          valor: faltaNoDia,
+          parcela: cents(pmt),
+          total: totalPago,
+          juros: cents(totalPago - faltaNoDia),
+        };
+      }
+
+      var divisao = null;
+      var rendaTotal = cents((o.r1 || 0) + (o.r2 || 0));
+      if (porMes > 0 && rendaTotal > 0) {
+        var p1 = (o.r1 || 0) / rendaTotal;
+        // Primeira parte arredondada, segunda por diferença: a soma sempre
+        // bate com o valor, sem centavo perdido.
+        var a1 = cents(porMes * p1);
+        divisao = { a1: a1, a2: cents(porMes - a1), p1: p1 * 100, p2: 100 - p1 * 100 };
+      }
+
+      return {
+        soma: soma,
+        usaTotal: usaTotal,
+        orcado: orcado,
+        necessario: necessario,
+        disponivel: disponivel,
+        teto: teto,
+        faltaHoje: faltaHoje,
+        faltaNoDia: faltaNoDia,
+        porMes: porMes,
+        semPrazo: semPrazo,
+        financ: financ,
+        divisao: divisao,
+        // Convidado é unidade de custo (artigo): orçamento e teto ÷ nomes na lista.
+        porConvidado: o.convidados > 0 && orcado > 0 ? cents(orcado / o.convidados) : null,
+        tetoPorConvidado: o.convidados > 0 && teto !== null ? cents(teto / o.convidados) : null,
+      };
+    }
+    // </calc-core>
+
+    var campos = {};
+    var erro = {};
+    var itens = [];
+    Array.prototype.forEach.call(document.querySelectorAll("[data-campo]"), function (el) {
+      var k = el.getAttribute("data-campo");
+      campos[k] = el;
+      erro[k] = byId("cas-erro-" + k);
+      if (el.hasAttribute("data-item")) itens.push(k);
+    });
+    if (!campos.total || !campos.aporte) return;
+
+    var vazio = byId("cas-estado-vazio");
+    var res = byId("cas-estado-resultado");
+    var detalhe = byId("cas-detalhe");
+
+    var brl = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    var pctFmt = new Intl.NumberFormat("pt-BR", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    });
+
+    function money(n) {
+      return brl.format(n);
+    }
+    function pct(n) {
+      return pctFmt.format(n) + "%";
+    }
+    function meses(n) {
+      return n + (n === 1 ? " mês" : " meses");
+    }
+
+    /**
+     * Aceita como a pessoa escreve no Brasil: "1.234,56", "1234,56",
+     * "1234.56", "R$ 3.000" e "3000". Um único ponto com 3 casas depois
+     * (3.000) é separador de milhar, não decimal.
+     */
+    function parseBR(bruto) {
+      var raw = String(bruto == null ? "" : bruto).trim();
+      if (!raw) return null; // vazio: campo ainda não preenchido
+      var s = raw.replace(/[^\d.,-]/g, "");
+      if (!/\d/.test(s)) return NaN; // escreveu alguma coisa, mas não é número
+      var negativo = s.indexOf("-") !== -1;
+      s = s.replace(/-/g, "");
+      if (!s) return NaN;
+      if (s.indexOf(",") !== -1) {
+        var partes = s.split(",");
+        var dec = partes.pop();
+        s = partes.join("").replace(/\./g, "") + "." + dec.replace(/\./g, "");
+      } else if (s.indexOf(".") !== -1) {
+        var pontos = s.split(".").length - 1;
+        var casas = s.length - s.lastIndexOf(".") - 1;
+        if (pontos > 1 || casas === 3) s = s.replace(/\./g, "");
+      }
+      var n = parseFloat(s);
+      if (!isFinite(n)) return NaN;
+      return negativo ? -n : n;
+    }
+
+    function nomeDe(id, padrao) {
+      var el = byId(id);
+      var v = el && el.value ? el.value.trim() : "";
+      return v || padrao;
+    }
+
+    function marcarErro(campo, mensagem) {
+      var input = campos[campo];
+      var alvo = erro[campo];
+      if (mensagem) {
+        // Mostra ANTES de escrever: uma região viva escondida não anuncia o
+        // que já está escrita nela quando reaparece. Revelar vazia e só então
+        // preencher é o que faz o leitor de tela falar o erro sem a pessoa
+        // precisar sair do campo.
+        alvo.hidden = false;
+        alvo.textContent = mensagem;
+        input.setAttribute("aria-invalid", "true");
+        input.classList.add("border-pink-600", "dark:border-pink-400");
+      } else {
+        alvo.textContent = "";
+        alvo.hidden = true;
+        input.removeAttribute("aria-invalid");
+        input.classList.remove("border-pink-600", "dark:border-pink-400");
+      }
+    }
+
+    /** null = vazio, NaN = inválido, número = ok. */
+    function lerCampo(campo) {
+      var v = parseBR(campos[campo].value);
+      if (v === null) {
+        marcarErro(campo, "");
+        return null;
+      }
+      if (isNaN(v)) {
+        marcarErro(campo, "Use só números — por exemplo 3.000 ou 3000,50.");
+        return NaN;
+      }
+      if (v < 0) {
+        marcarErro(campo, "Use um valor positivo.");
+        return NaN;
+      }
+      if (campo === "convidados" && Math.floor(v) !== v) {
+        marcarErro(campo, "Use um número inteiro de convidados.");
+        return NaN;
+      }
+      marcarErro(campo, "");
+      return v;
+    }
+
+    function mostrar(qual) {
+      vazio.hidden = qual !== "vazio";
+      res.hidden = qual !== "resultado";
+      detalhe.hidden = qual !== "resultado";
+    }
+
+    /** Data do campo (yyyy-mm-dd) como Date local; null se vazia ou inválida. */
+    function lerData() {
+      var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(byId("cas-data").value);
+      if (!m) return null;
+      return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    }
+
+    function linha(tbody, rotulo, valor, forte) {
+      var tr = document.createElement("tr");
+      var th = document.createElement("th");
+      th.scope = "row";
+      th.className = "py-2 pr-3 " + (forte ? "font-semibold text-gray-900 dark:text-white" : "font-normal");
+      th.textContent = rotulo;
+      var td = document.createElement("td");
+      td.className = "py-2 text-right " + (forte ? "font-semibold text-gray-900 dark:text-white" : "");
+      td.textContent = money(valor);
+      tr.appendChild(th);
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
+
+    function calcular() {
+      // Lê todos antes de decidir, para marcar o erro de cada campo de uma vez.
+      var lidos = {};
+      var invalido = false;
+      Object.keys(campos).forEach(function (k) {
+        lidos[k] = lerCampo(k);
+        if (typeof lidos[k] === "number" && isNaN(lidos[k])) invalido = true;
+      });
+      if (invalido) {
+        mostrar("vazio");
+        return;
+      }
+
+      var valores = itens.map(function (k) {
+        return lidos[k] || 0;
+      });
+      var temItem = valores.some(function (v) {
+        return v > 0;
+      });
+      var tudoVazio = !temItem && !lidos.total && !lidos.guardado && !lidos.aporte && !lidos.extras;
+      if (tudoVazio) {
+        mostrar("vazio");
+        return;
+      }
+
+      var data = lerData();
+      var o = {
+        itens: valores,
+        total: lidos.total || 0,
+        colchao: byId("cas-colchao").checked,
+        guardado: lidos.guardado || 0,
+        aporte: lidos.aporte || 0,
+        extras: lidos.extras || 0,
+        meses: data ? mesesAte(new Date(), data) : null,
+        convidados: lidos.convidados || 0,
+        r1: lidos.renda1,
+        r2: lidos.renda2,
+      };
+      var p = plano(o);
+      var n1 = nomeDe("cas-nome1", "Pessoa 1");
+      var n2 = nomeDe("cas-nome2", "Pessoa 2");
+
+      // --- total
+      byId("cas-orcado").textContent = money(p.orcado);
+      var orcadoNota;
+      if (p.orcado === 0) {
+        orcadoNota = "Nenhum item preenchido ainda.";
+      } else if (p.usaTotal) {
+        orcadoNota = "O total que vocês informaram, sem item por item.";
+      } else {
+        var n = valores.filter(function (v) { return v > 0; }).length;
+        orcadoNota = "Soma de " + n + (n === 1 ? " item." : " itens.");
+      }
+      if (o.colchao && p.orcado > 0) {
+        orcadoNota += " Com 15% de colchão: " + money(p.necessario) + ".";
+      }
+      byId("cas-orcado-nota").textContent = orcadoNota;
+
+      // --- falta hoje
+      byId("cas-falta").textContent = p.orcado === 0 ? "—" : money(p.faltaHoje);
+      var faltaNota;
+      if (p.orcado === 0) {
+        faltaNota = "Preencham os itens para comparar com o que têm.";
+      } else if (p.faltaHoje === 0) {
+        faltaNota = "O guardado de hoje já cobre " + (o.colchao ? "o orçamento com o colchão." : "o orçamento.");
+      } else {
+        faltaNota =
+          "Necessário " + money(p.necessario) + " menos " + money(o.guardado) + " guardados" +
+          (o.colchao ? " (já com o colchão)." : ".");
+      }
+      byId("cas-falta-nota").textContent = faltaNota;
+
+      // --- guardar por mês
+      var pormes = byId("cas-pormes");
+      var pormesNota = byId("cas-pormes-nota");
+      if (p.orcado === 0) {
+        pormes.textContent = "—";
+        pormesNota.textContent = "Sem orçamento não há o que dividir pelos meses.";
+      } else if (o.meses === null) {
+        pormes.textContent = "—";
+        pormesNota.textContent = "Informe a data do casamento.";
+      } else if (p.semPrazo) {
+        pormes.textContent = "—";
+        pormesNota.textContent = "A data é hoje ou já passou: não sobra mês para guardar.";
+      } else if (p.porMes === 0) {
+        pormes.textContent = money(0);
+        pormesNota.textContent = "O guardado e os extras já cobrem o orçamento.";
+      } else {
+        pormes.textContent = money(p.porMes);
+        pormesNota.textContent =
+          "Em " + meses(o.meses) + ", depois de descontar " + money(o.guardado + o.extras) + " já guardados e extras.";
+      }
+
+      // --- teto de contratação
+      var tetoCard = byId("cas-teto-card");
+      if (p.teto !== null && p.disponivel > 0) {
+        byId("cas-teto").textContent = money(p.teto);
+        byId("cas-teto-nota").textContent =
+          "Guardado, extras e " + meses(o.meses) + " de " + money(o.aporte) + " somam " + money(p.disponivel) +
+          (o.colchao ? "; tirando os 15% de colchão, sobram " + money(p.teto) + " para contratar." : ".");
+        tetoCard.hidden = false;
+      } else {
+        tetoCard.hidden = true;
+      }
+
+      // --- financiar a diferença (simulação do artigo)
+      var fin = byId("cas-financ");
+      if (p.financ) {
+        byId("cas-financ-texto").textContent =
+          "No ritmo informado, no dia do casamento ainda faltam " + money(p.financ.valor) +
+          ". Financiar essa diferença em " + PARCELAS + " parcelas, à taxa média do crédito pessoal não consignado (6,42% ao mês, Banco Central, julho de 2026), daria parcelas de " +
+          money(p.financ.parcela) + " e " + money(p.financ.total) + " no total, dos quais " + money(p.financ.juros) +
+          " são juros. É uma simulação com a taxa média do mercado: a taxa que o banco oferece a vocês pode ser outra. Guardar um pouco mais por mês, ou mover a data, evita esse custo.";
+        fin.hidden = false;
+      } else {
+        fin.hidden = true;
+      }
+
+      // --- divisão entre os dois
+      var painel = byId("cas-aportes");
+      var dica = byId("cas-aportes-dica");
+      if (p.divisao) {
+        byId("cas-nome1-out").textContent = n1;
+        byId("cas-nome2-out").textContent = n2;
+        byId("cas-aporte1").textContent = money(p.divisao.a1);
+        byId("cas-aporte2").textContent = money(p.divisao.a2);
+        byId("cas-pct1").textContent = pct(p.divisao.p1);
+        byId("cas-pct2").textContent = pct(p.divisao.p2);
+        painel.hidden = false;
+        dica.hidden = true;
+        dica.textContent = "";
+      } else {
+        painel.hidden = true;
+        if (p.porMes > 0) {
+          dica.textContent = "Informe a renda de cada um para ver quanto cada um guarda por mês na proporção.";
+          dica.hidden = false;
+        } else {
+          dica.hidden = true;
+          dica.textContent = "";
+        }
+      }
+
+      // --- por convidado
+      var conv = byId("cas-convidado");
+      if (p.porConvidado !== null) {
+        conv.textContent =
+          "Com " + o.convidados + " convidados, cada pessoa custa " + money(p.porConvidado) + " do orçamento" +
+          (p.tetoPorConvidado !== null
+            ? " e " + money(p.tetoPorConvidado) + " do teto de contratação"
+            : "") +
+          ". Convidado é a unidade de custo que mais pesa na conversa de lista.";
+        conv.hidden = false;
+      } else {
+        conv.hidden = true;
+        conv.textContent = "";
+      }
+
+      // --- frase de leitura
+      var insight;
+      var fimSomado = 0;
+      var lembradoSomado = 0;
+      itens.forEach(function (k, i) {
+        if (campos[k].getAttribute("data-item") === "fim") fimSomado += valores[i];
+        else lembradoSomado += valores[i];
+      });
+      if (p.orcado === 0) {
+        insight = "Sem orçamento ainda, a calculadora mostra só quanto cabe. Preencham os itens para ver quanto falta.";
+      } else if (o.meses === null) {
+        insight = "Falta a data para a conta de prazo: com ela a calculadora mostra quanto guardar por mês e se sobra ou falta no dia.";
+      } else if (p.faltaNoDia === 0) {
+        insight =
+          "No ritmo informado, vocês chegam à data com " + money(p.disponivel) + ", o que cobre " +
+          money(p.necessario) + (o.colchao ? " com o colchão" : "") + ". Sobram " + money(cents(p.disponivel - p.necessario)) + ".";
+      } else {
+        insight =
+          "Para fechar sem dívida, o caminho é guardar " +
+          (p.porMes === null ? "mais do que o prazo permite" : money(p.porMes) + " por mês") +
+          ", ou ajustar a data ou o tamanho da festa. O artigo compara as duas saídas: esticar o prazo custa zero de juros.";
+      }
+      if (lembradoSomado > 0 && fimSomado === 0) {
+        insight += " Os itens da segunda lista estão em zero: o artigo aponta que é neles que o orçamento costuma estourar.";
+      }
+      byId("cas-insight").textContent = insight;
+
+      // --- detalhe: soma por item
+      var tbody = byId("cas-tabela");
+      tbody.textContent = "";
+      var grupos = { lembrados: 0, fim: 0 };
+      var rotulos = { lembrados: "Os que todo mundo lembra", fim: "Os que só aparecem no fim" };
+      ["lembrados", "fim"].forEach(function (g) {
+        var sub = 0;
+        var linhas = [];
+        itens.forEach(function (k, i) {
+          if (campos[k].getAttribute("data-item") === g && valores[i] > 0) {
+            linhas.push([campos[k].getAttribute("data-label"), valores[i]]);
+            sub += valores[i];
+          }
+        });
+        grupos[g] = cents(sub);
+        linhas.forEach(function (l) {
+          linha(tbody, l[0], l[1], false);
+        });
+        if (linhas.length) linha(tbody, "Subtotal: " + rotulos[g].toLowerCase(), grupos[g], true);
+      });
+      if (p.usaTotal) linha(tbody, "Total informado, sem itens", p.orcado, false);
+      linha(tbody, "Total orçado", p.orcado, true);
+      if (o.colchao) linha(tbody, "Total com 15% de colchão", p.necessario, true);
+
+      // --- detalhe: passo a passo
+      byId("cas-passo1").textContent =
+        "1. Orçado: " + money(p.orcado) + (p.usaTotal ? " (total informado)" : " (soma dos itens)") + ".";
+      byId("cas-passo2").textContent = o.colchao
+        ? "2. Colchão: " + money(p.orcado) + " × 1,15 = " + money(p.necessario) + "."
+        : "2. Colchão: desligado. O necessário é o próprio orçado, " + money(p.necessario) + ".";
+      byId("cas-passo3").textContent =
+        o.meses === null
+          ? "3. Prazo: sem data, o cálculo mensal fica de fora."
+          : "3. Disponível na data: " + money(o.guardado) + " + " + money(o.extras) + " + " + meses(o.meses) + " × " + money(o.aporte) + " = " + money(p.disponivel) + ".";
+      byId("cas-passo4").textContent =
+        o.meses === null || p.porMes === null
+          ? "4. Por mês: precisa de data futura."
+          : "4. Por mês: (" + money(p.necessario) + " − " + money(o.guardado) + " − " + money(o.extras) + ") ÷ " + meses(o.meses) + " = " + money(p.porMes) + ".";
+
+      mostrar("resultado");
+    }
+
+    var timer = null;
+    function agendar() {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(calcular, 250);
+    }
+
+    ["cas-nome1", "cas-nome2", "cas-data", "cas-colchao"].forEach(function (id) {
+      var el = byId(id);
+      el.addEventListener("input", agendar);
+      el.addEventListener("change", agendar);
+    });
+    Object.keys(campos).forEach(function (k) {
+      campos[k].addEventListener("input", agendar);
+      campos[k].addEventListener("change", agendar);
+    });
+
+    // Não há botão "calcular" — se alguém apertar Enter, só recalcula.
+    var form = byId("cas-form");
+    if (form) {
+      form.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        calcular();
+      });
+    }
+
+    function dataEmMeses(n) {
+      var d = new Date();
+      d.setMonth(d.getMonth() + n);
+      var mm = String(d.getMonth() + 1).padStart(2, "0");
+      var dd = String(d.getDate()).padStart(2, "0");
+      return d.getFullYear() + "-" + mm + "-" + dd;
+    }
+
+    var btnExemplo = byId("cas-btn-exemplo");
+    if (btnExemplo) {
+      btnExemplo.addEventListener("click", function () {
+        // Valores inventados só para mostrar a conta — não são preço de mercado.
+        var ex = {
+          buffet: "18.000", local: "10.000", decor: "9.000", trajes: "7.000", foto: "5.000",
+          musica: "3.000", cerimonial: "3.000", convites: "1.000", bolo: "2.000", beleza: "1.500",
+          cartorio: "500", servico: "1.800", horaextra: "600", rolha: "", refeicao: "1.000",
+          infra: "2.000", frete: "800", ecad: "500", provas: "800", chuva: "1.000", docs: "500",
+          outros: "1.000", total: "", convidados: "120", guardado: "0", aporte: "1.500",
+          extras: "10.000", renda1: "4.000", renda2: "6.000",
+        };
+        Object.keys(campos).forEach(function (k) {
+          campos[k].value = ex[k] || "";
+        });
+        byId("cas-nome1").value = "Ana";
+        byId("cas-nome2").value = "Bruno";
+        byId("cas-colchao").checked = true;
+        byId("cas-data").value = dataEmMeses(24);
+        calcular();
+      });
+    }
+
+    var btnLimpar = byId("cas-btn-limpar");
+    if (btnLimpar) {
+      btnLimpar.addEventListener("click", function () {
+        ["cas-nome1", "cas-nome2", "cas-data"].forEach(function (id) {
+          byId(id).value = "";
+        });
+        byId("cas-colchao").checked = true;
+        Object.keys(campos).forEach(function (k) {
+          campos[k].value = "";
+          marcarErro(k, "");
+        });
+        mostrar("vazio");
+        campos[itens[0]].focus();
+      });
+    }
+
+    // Reidrata o que o navegador restaurou (voltar/atualizar).
+    calcular();
+  })();
+</script>
