@@ -1,0 +1,180 @@
+---
+/**
+ * Ferramenta: calculadora de meta a dois (viagem, casa, carro, casamento).
+ *
+ * Mira as buscas "calculadora de meta financeira casal" e "quanto guardar por
+ * mês para viagem/casamento/casa". A conta é a mesma do artigo
+ * /blog/como-juntar-dinheiro-casal — se um dos dois mudar, o outro precisa
+ * mudar junto.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CalculadoraMeta from "../components/CalculadoraMeta.astro";
+import AdSlot from "../components/AdSlot.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
+import { SITE_URL, APP_URL, SITE_TITLE } from "../consts";
+
+const title = "Calculadora de meta a dois: quanto guardar por mês";
+// Máximo ~155 caracteres, para o Google não cortar a frase no meio.
+const description =
+  "Calculadora grátis de meta para casal: veja quanto guardar por mês, quanto cada um põe pela renda e se a parcela cabe nos 20% do orçamento.";
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: SITE_TITLE,
+      item: SITE_URL,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: title,
+      item: new URL("/calculadora-meta-a-dois", SITE_URL).href,
+    },
+  ],
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  </Fragment>
+
+  <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+    <nav aria-label="Você está aqui" class="text-sm text-gray-600 dark:text-gray-400">
+      <a
+        href="/"
+        class="rounded font-medium text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+        >Início</a
+      >
+      <span aria-hidden="true" class="px-1.5">/</span>
+      <span>Calculadora de meta a dois</span>
+    </nav>
+
+    <header class="mt-4 max-w-3xl">
+      <p class="text-xs font-semibold uppercase tracking-wider text-pink-700 dark:text-pink-300">
+        Ferramenta grátis
+      </p>
+      <h1 class="mt-2 font-display text-3xl font-bold leading-tight text-gray-900 sm:text-4xl dark:text-white">
+        Calculadora de meta a dois
+      </h1>
+      <p class="mt-4 text-base leading-relaxed text-gray-700 sm:text-lg dark:text-gray-200">
+        Meta de casal tem três partes:
+        <strong class="font-semibold text-gray-900 dark:text-white">valor, prazo e parcela mensal</strong>.
+        Coloquem o que a viagem, o casamento, o carro ou a entrada da casa custa, em
+        quantos meses querem chegar e a renda de cada um. A calculadora mostra a parcela,
+        a parte de cada um e quanto isso pesa no orçamento.
+      </p>
+    </header>
+
+    <div class="mt-8">
+      <CalculadoraMeta />
+    </div>
+
+    {/*
+      O anúncio entra DEPOIS da ferramenta, pelo mesmo motivo das outras
+      calculadoras: quem chega aqui veio calcular, e um bloco antes dos campos
+      empurraria o formulário para fora da primeira dobra no celular.
+      Usa `first-fold` porque só existem duas unidades hoje (lib/monetization.ts).
+    */}
+    <AdSlot placement="first-fold" />
+
+    <section aria-labelledby="como-conta" class="mt-14 max-w-3xl">
+      <h2 id="como-conta" class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+        Como a conta é feita
+      </h2>
+      <p class="mt-3 leading-relaxed text-gray-700 dark:text-gray-200">
+        É o método do guia
+        <a
+          href="/blog/como-juntar-dinheiro-casal"
+          class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+          >como juntar dinheiro em casal</a
+        >, em três contas:
+      </p>
+
+      <ol class="mt-4 list-decimal space-y-2 pl-6 leading-relaxed text-gray-700 dark:text-gray-200">
+        <li>
+          <strong class="font-semibold text-gray-900 dark:text-white">Parcela:</strong> o valor da meta, menos o
+          que já está guardado, dividido pelos meses. Uma viagem de R$ 12.000 em 18 meses pede cerca de R$ 667 por mês.
+        </li>
+        <li>
+          <strong class="font-semibold text-gray-900 dark:text-white">Divisão:</strong> cada um põe a mesma
+          porcentagem da renda, não o mesmo valor. Com rendas de R$ 4.000 e R$ 6.000, a parte é de 40% e 60%. A lógica é a da
+          <a
+            href="/calculadora-divisao-de-contas"
+            class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+            >calculadora de divisão de contas</a
+          >.
+        </li>
+        <li>
+          <strong class="font-semibold text-gray-900 dark:text-white">Referência:</strong> a regra 50/30/20 sugere
+          cerca de 20% da renda para metas <em>e</em> reserva. Se a parcela passa disso, a calculadora mostra o prazo
+          que caberia nos 20%.
+        </li>
+      </ol>
+
+      <p class="mt-6 leading-relaxed text-gray-700 dark:text-gray-200">
+        Se a parcela não cabe, o guia sugere mexer em uma de três variáveis: esticar o prazo, reduzir o valor do
+        sonho ou aumentar a renda. Onde deixar o dinheiro da meta também está lá, em
+        <a
+          href="/blog/como-juntar-dinheiro-casal#passo-4-onde-guardar-o-dinheiro-da-meta"
+          class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+          >passo 4</a
+        >.
+      </p>
+
+      <div
+        class="mt-8 rounded-2xl border-l-4 border-pink-300 bg-pink-50 py-4 pl-5 pr-4 dark:border-pink-600 dark:bg-gray-800"
+      >
+        <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          <strong class="font-semibold text-gray-900 dark:text-white">O que a calculadora não faz:</strong>
+          ela não calcula rendimento nem juros, não indica onde guardar e não conhece a vida de
+          vocês além do que foi digitado. A parcela é uma conta de aporte constante, sem
+          contar 13º, bônus ou imprevistos. Antes de decidir onde aplicar, vale conferir as condições atuais
+          ou falar com um profissional certificado.
+        </p>
+      </div>
+    </section>
+
+    {/* Fim da página na mesma ordem do fim do artigo: conteúdo, anúncio, e-mail, app. */}
+    <AdSlot placement="in-content" />
+
+    <p class="mt-14 max-w-3xl leading-relaxed text-gray-700 dark:text-gray-200">
+      Com a parcela definida, o que mantém a meta de pé é o Pix agendado logo depois
+      de os salários caírem e uma conversa mensal curta sobre quanto já têm e quanto falta.
+    </p>
+
+    {/* `source` = a página, para separar o lead da calculadora do lead de artigo (ESTRATEGIA §6). */}
+    <NewsletterForm source="calculadora-meta-a-dois" class="mt-6" />
+
+    <!-- Convite discreto ao app — uma vez só, sem promessa inflada. -->
+    <aside
+      aria-label="Sobre o Paca Finance"
+      class="mt-12 max-w-3xl rounded-2xl border border-gray-200 bg-gray-50 p-5 sm:p-6 dark:border-gray-700 dark:bg-gray-800/60"
+    >
+      <div class="flex items-start gap-4">
+        <img
+          src="/logo-icon-96.png"
+          alt=""
+          width="40"
+          height="40"
+          loading="lazy"
+          class="mt-0.5 h-10 w-10 shrink-0 rounded-xl"
+        />
+        <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          No
+          <a
+            href={`${APP_URL}/signup`}
+            class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+            >Paca Finance</a
+          >
+          a meta vira um objetivo compartilhado, com a barra de progresso à vista dos
+          dois. Uma planilha que vocês já revisam todo mês resolve do mesmo jeito.
+        </p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
