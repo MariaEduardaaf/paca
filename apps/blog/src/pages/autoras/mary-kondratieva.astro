@@ -15,9 +15,10 @@
  * do que em qualquer outro tema. O que está escrito abaixo é o que se sabe:
  * ela escreve, ela edita, e é ela quem decide o que vai ao ar.
  *
- * ⚠️ O bloco marcado NA VOZ DELA está proposital e deliberadamente vazio de
- * biografia. Quem preenche é a Mary — texto sobre uma pessoa, escrito por
- * outra, é exatamente o que esta página existe para não ser.
+ * Sem biografia, por decisão de 2026-10-01: a seção "Em primeira pessoa"
+ * mostrava "entra em breve" no ar, e placeholder na página que prova quem
+ * escreve é sinal de site em construção. Se a Mary um dia quiser escrever
+ * sobre si, entra aqui com as palavras dela — nunca escrita por outra pessoa.
  */
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
@@ -83,17 +84,6 @@ const artigos = (await getCollection("blog", ({ data }) => !data.draft && data.a
           algo mudou, o texto muda — e a data de atualização aparece nele.
         </li>
       </ul>
-
-      {/*
-        ⚠️ MARY: esta seção é sua. Escreva com suas palavras — de onde vem seu
-        interesse pelo assunto, o que te fez começar, o que você já viu de perto.
-        Duas ou três frases bastam, e vale muito mais que qualquer título.
-        Enquanto estiver assim, ela mostra o texto abaixo.
-      */}
-      <h2 id="na-voz-dela">Em primeira pessoa</h2>
-      <p>
-        <em>Esta parte está sendo escrita pela própria Mary e entra em breve.</em>
-      </p>
 
       <h2 id="falar-com-ela">Falar com a Mary</h2>
       <p>

@@ -62,10 +62,9 @@ O aviso pede três coisas. Este plano ataca cada uma:
 
 ## Fase 1 — Tirar os sinais de "site em construção" (semana 1)
 
-- [ ] **Página da autora:** hoje mostra no ar *"Esta parte está sendo escrita pela própria Mary e
-      entra em breve"*. Ou a Mary escreve a bio em primeira pessoa (com foto e experiência real com o
-      tema), ou o bloco sai. "Em breve" na página que prova quem escreve é o pior lugar possível.
-      ⚠️ A pessoa tem que ser **real**; persona inventada é um problema que o Google cita por nome nas diretrizes.
+- [x] **Página da autora:** decidido em 01/10, sem biografia. O bloco "entra em breve" saiu, e o resumo
+      passou a dizer "Copywriter" (fato confirmado). A Mary é real; não é contadora formada, então
+      a palavra não aparece.
 - [ ] **"Bem-vindos ao blog do Paca"** (365 palavras): incorporar ao `/sobre` e redirecionar (301).
       É a página mais fina do site.
 - [ ] **Varredura técnica:** links quebrados, 404, menu funcionando no celular, todas as categorias
@@ -159,7 +158,7 @@ seguir o assunto.
 Só quando **tudo** abaixo for verdade:
 
 - [x] `http://pacafinance.com.br/` e `https://pacafinance.com.br/` redirecionam (301) para o blog.
-- [ ] Nenhuma página com "em breve" ou placeholder.
+- [x] Nenhuma página com "em breve" ou placeholder. *(01/10, falta publicar)*
 - [ ] `bem-vindos` incorporado ao `/sobre`, com 301.
 - [ ] Pelo menos 3 ferramentas interativas no ar. *(4 construídas em 01/10; falta publicar)*
 - [ ] Artigos-pilar com bloco de experiência própria.

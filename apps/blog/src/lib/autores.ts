@@ -53,7 +53,7 @@ export const AUTORAS: Record<string, Autora> = {
   mary: {
     nome: "Mary Kondratieva",
     url: "/autoras/mary-kondratieva",
-    resumo: "Escreve e edita os guias de finanças para casais do Paca Finance.",
+    resumo: "Copywriter. Escreve e edita os guias de finanças para casais do Paca Finance.",
   },
 };
 
