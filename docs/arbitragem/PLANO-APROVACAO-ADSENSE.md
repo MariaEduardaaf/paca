@@ -124,6 +124,9 @@ seguir o assunto.
    - calculadora de quanto custa casar (já tem artigo com os números);
    - simulador de "quanto cada um põe" para uma meta (viagem, casa).
    Cada artigo relacionado passa a terminar na ferramenta.
+   - [x] **Reserva de emergência:** `/calculadora-reserva-de-emergencia` construída em 01/10 (local, sem deploy); regras tiradas do artigo, 5 testes de cálculo + teste no navegador ok.
+   - [x] Custo do casamento (`/calculadora-custo-do-casamento`) · [x] Meta a dois (`/calculadora-meta-a-dois`) · [x] Menu "Calculadoras" + página `/calculadoras`; o cartão de cada artigo oferece a calculadora do assunto dele (`src/lib/calculadoras.ts`). Feito em 01/10, local; 23 testes de cálculo + navegador ok.
+   - [x] Roteiro da Mary: [`ROTEIRO-MARY.md`](ROTEIRO-MARY.md).
 2. **Experiência própria.** Bloco em primeira pessoa da Mary (ou de casais reais, com permissão)
    em cada artigo-pilar: o que vocês viram construindo o app e conversando com casais. Esse tipo de
    conteúdo não dá para copiar de outro site.
@@ -158,7 +161,7 @@ Só quando **tudo** abaixo for verdade:
 - [x] `http://pacafinance.com.br/` e `https://pacafinance.com.br/` redirecionam (301) para o blog.
 - [ ] Nenhuma página com "em breve" ou placeholder.
 - [ ] `bem-vindos` incorporado ao `/sobre`, com 301.
-- [ ] Pelo menos 3 ferramentas interativas no ar.
+- [ ] Pelo menos 3 ferramentas interativas no ar. *(4 construídas em 01/10; falta publicar)*
 - [ ] Artigos-pilar com bloco de experiência própria.
 - [ ] Publicação regular há pelo menos 4 semanas seguidas.
 - [ ] Search Console mostrando indexação e tráfego orgânico.
