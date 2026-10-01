@@ -1,0 +1,177 @@
+---
+/**
+ * Ferramenta: calculadora do custo do casamento.
+ *
+ * Mira as buscas "calculadora custo do casamento" e "quanto guardar por mês
+ * para o casamento". A conta é a do artigo /blog/quanto-custa-casar — se um
+ * dos dois mudar, o outro precisa mudar junto. Nenhum preço vem preenchido:
+ * o artigo mostra que não existe média nacional confiável.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CalculadoraCasamento from "../components/CalculadoraCasamento.astro";
+import AdSlot from "../components/AdSlot.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
+import { SITE_URL, APP_URL, SITE_TITLE } from "../consts";
+
+const title = "Calculadora do custo do casamento";
+// Máximo ~155 caracteres, para o Google não cortar a frase no meio.
+const description =
+  "Calculadora grátis do custo do casamento: somem os itens, vejam quanto falta, quanto guardar por mês até a data e o custo de financiar a diferença.";
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: SITE_TITLE,
+      item: SITE_URL,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: title,
+      item: new URL("/calculadora-custo-do-casamento", SITE_URL).href,
+    },
+  ],
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  </Fragment>
+
+  <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+    <nav aria-label="Você está aqui" class="text-sm text-gray-600 dark:text-gray-400">
+      <a
+        href="/"
+        class="rounded font-medium text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+        >Início</a
+      >
+      <span aria-hidden="true" class="px-1.5">/</span>
+      <span>Calculadora do casamento</span>
+    </nav>
+
+    <header class="mt-4 max-w-3xl">
+      <p class="text-xs font-semibold uppercase tracking-wider text-pink-700 dark:text-pink-300">
+        Ferramenta grátis
+      </p>
+      <h1 class="mt-2 font-display text-3xl font-bold leading-tight text-gray-900 sm:text-4xl dark:text-white">
+        Calculadora do custo do casamento
+      </h1>
+      <p class="mt-4 text-base leading-relaxed text-gray-700 sm:text-lg dark:text-gray-200">
+        Não existe uma média nacional confiável de quanto custa casar, então esta
+        calculadora não traz preço nenhum. Vocês digitam o que já orçaram em cada
+        item da lista do
+        <a href="/blog/quanto-custa-casar" class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200">guia de quanto custa casar</a>
+        e ela soma, compara com o que têm guardado e mostra quanto falta e quanto
+        guardar por mês até a data.
+      </p>
+    </header>
+
+    <div class="mt-8">
+      <CalculadoraCasamento />
+    </div>
+
+    {/*
+      O anúncio entra DEPOIS da ferramenta, pelo mesmo motivo das outras
+      calculadoras: quem chega aqui veio calcular, e um bloco antes dos campos
+      empurraria o formulário para fora da primeira dobra no celular.
+      Usa `first-fold` porque só existem duas unidades hoje (lib/monetization.ts).
+    */}
+    <AdSlot placement="first-fold" />
+
+    <section aria-labelledby="como-conta" class="mt-14 max-w-3xl">
+      <h2 id="como-conta" class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+        Como a conta é feita
+      </h2>
+      <ol class="mt-3 list-decimal space-y-3 pl-5 leading-relaxed text-gray-700 dark:text-gray-200">
+        <li>
+          <strong class="font-semibold text-gray-900 dark:text-white">Total e colchão.</strong>
+          Soma dos itens, mais 15% para o que ninguém orçou. É o que o guia
+          propõe porque, segundo o Informe do Setor Nupcial, 65% dos casais
+          estouram o orçamento. O colchão pode ser desligado.
+        </li>
+        <li>
+          <strong class="font-semibold text-gray-900 dark:text-white">Teto de contratação.</strong>
+          Guardado, extras (13º, por exemplo) e o aporte mensal vezes os meses até
+          a data, divididos por 1,15. Com R$ 1.500 por mês, 24 meses e R$ 10.000
+          de extras, o teto do exemplo do guia dá R$ 40.000.
+        </li>
+        <li>
+          <strong class="font-semibold text-gray-900 dark:text-white">Guardar por mês.</strong>
+          O que falta depois do guardado e dos extras, dividido pelos meses
+          inteiros até a data.
+        </li>
+        <li>
+          <strong class="font-semibold text-gray-900 dark:text-white">Financiar a diferença.</strong>
+          Se o ritmo não fecha a conta, a calculadora simula 24 parcelas fixas a
+          6,42% ao mês, a taxa média do crédito pessoal não consignado em julho
+          de 2026 (série 25464 do Banco Central), a mesma do guia. R$ 30.000 viram
+          cerca de R$ 59.600 pagos. É uma simulação com a média do mercado: o
+          banco de vocês pode oferecer outra taxa.
+        </li>
+      </ol>
+
+      <p class="mt-6 leading-relaxed text-gray-700 dark:text-gray-200">
+        O valor mensal é dividido na proporção da renda de cada um, a mesma lógica
+        da <a href="/calculadora-divisao-de-contas" class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200">calculadora de divisão de contas</a>.
+        Se o casamento é só uma das metas de vocês, a
+        <a href="/calculadora-reserva-de-emergencia" class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200">calculadora de reserva de emergência</a>
+        mostra o que precisa ficar guardado antes dela.
+      </p>
+
+      <div
+        class="mt-8 rounded-2xl border-l-4 border-pink-300 bg-pink-50 py-4 pl-5 pr-4 dark:border-pink-600 dark:bg-gray-800"
+      >
+        <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          <strong class="font-semibold text-gray-900 dark:text-white">O que a calculadora não faz:</strong>
+          ela não diz qual tamanho de festa é o certo, não estima preço de
+          fornecedor e não calcula rendimento do que está guardado. A conta de
+          prazo supõe aporte constante, e a de financiamento é uma simulação, não
+          uma oferta de crédito.
+        </p>
+      </div>
+    </section>
+
+    {/* Fim da página na mesma ordem do fim do artigo: conteúdo, anúncio, e-mail, app. */}
+    <AdSlot placement="in-content" />
+
+    <p class="mt-14 max-w-3xl leading-relaxed text-gray-700 dark:text-gray-200">
+      Com o teto na mão, o próximo passo é levar esse número para a primeira
+      conversa com fornecedor, e não o contrário.
+    </p>
+
+    {/* `source` = a página, para separar o lead da calculadora do lead de artigo (ESTRATEGIA §6). */}
+    <NewsletterForm source="calculadora-custo-do-casamento" class="mt-6" />
+
+    <!-- Convite discreto ao app — uma vez só, sem promessa inflada. -->
+    <aside
+      aria-label="Sobre o Paca Finance"
+      class="mt-12 max-w-3xl rounded-2xl border border-gray-200 bg-gray-50 p-5 sm:p-6 dark:border-gray-700 dark:bg-gray-800/60"
+    >
+      <div class="flex items-start gap-4">
+        <img
+          src="/logo-icon-96.png"
+          alt=""
+          width="40"
+          height="40"
+          loading="lazy"
+          class="mt-0.5 h-10 w-10 shrink-0 rounded-xl"
+        />
+        <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          No
+          <a
+            href={`${APP_URL}/signup`}
+            class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+            >Paca Finance</a
+          >
+          o casamento vira uma meta compartilhada, com o saldo à vista dos dois.
+          Uma planilha que vocês já revisam todo mês resolve do mesmo jeito.
+        </p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

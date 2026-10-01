@@ -63,6 +63,8 @@ O teto não sai de um catálogo — sai da renda de vocês. Casal de exemplo: um
 
 Esse R$ 40.000 é o número que vocês levam pra reunião com fornecedor. E é o número que vocês não passam pra ele.
 
+Se quiserem ver esses passos com os números de vocês, a [calculadora do custo do casamento](/calculadora-custo-do-casamento) soma os itens da lista, compara com o que já têm guardado e mostra quanto guardar por mês até a data.
+
 O passo a passo de transformar meta em aporte mensal e dividir a contribuição entre os dois está em [como juntar dinheiro em casal](/blog/como-juntar-dinheiro-casal); se as rendas de vocês forem bem diferentes, a [calculadora de divisão de contas](/calculadora-divisao-de-contas) faz o rateio proporcional em segundos.
 
 ### Convidado é unidade de custo
