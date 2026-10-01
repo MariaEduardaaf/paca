@@ -1,0 +1,196 @@
+---
+/**
+ * Ferramenta: calculadora de reserva de emergência do casal.
+ *
+ * Mira as buscas "calculadora reserva de emergência casal" e "quanto o casal
+ * precisa de reserva de emergência". A conta é a mesma do artigo
+ * /blog/reserva-de-emergencia-casal — se um dos dois mudar, o outro precisa
+ * mudar junto.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CalculadoraReserva from "../components/CalculadoraReserva.astro";
+import AdSlot from "../components/AdSlot.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
+import { SITE_URL, APP_URL, SITE_TITLE } from "../consts";
+
+const title = "Calculadora de reserva de emergência do casal";
+// Máximo ~155 caracteres, para o Google não cortar a frase no meio.
+const description =
+  "Calculadora grátis de reserva de emergência para casal: veja o valor-alvo, quanto falta, em quantos meses chegam e quanto cada um aporta.";
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: SITE_TITLE,
+      item: SITE_URL,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: title,
+      item: new URL("/calculadora-reserva-de-emergencia", SITE_URL).href,
+    },
+  ],
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  </Fragment>
+
+  <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+    <nav aria-label="Você está aqui" class="text-sm text-gray-600 dark:text-gray-400">
+      <a
+        href="/"
+        class="rounded font-medium text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+        >Início</a
+      >
+      <span aria-hidden="true" class="px-1.5">/</span>
+      <span>Calculadora de reserva</span>
+    </nav>
+
+    <header class="mt-4 max-w-3xl">
+      <p class="text-xs font-semibold uppercase tracking-wider text-pink-700 dark:text-pink-300">
+        Ferramenta grátis
+      </p>
+      <h1 class="mt-2 font-display text-3xl font-bold leading-tight text-gray-900 sm:text-4xl dark:text-white">
+        Calculadora de reserva de emergência do casal
+      </h1>
+      <p class="mt-4 text-base leading-relaxed text-gray-700 sm:text-lg dark:text-gray-200">
+        A reserva do casal parte do
+        <strong class="font-semibold text-gray-900 dark:text-white">custo de vida mensal</strong>,
+        não do salário, e o número de meses depende de quão estável e quão
+        parecida é a renda dos dois. Coloquem o custo enxuto da casa, a situação de
+        cada um e quanto dá para guardar por mês: a calculadora mostra o alvo, o que
+        falta, o prazo e a parte de cada um.
+      </p>
+    </header>
+
+    <div class="mt-8">
+      <CalculadoraReserva />
+    </div>
+
+    {/*
+      O anúncio entra DEPOIS da ferramenta, pelo mesmo motivo da calculadora de
+      divisão de contas: quem chega aqui veio calcular, e um bloco antes dos
+      campos empurraria o formulário para fora da primeira dobra no celular.
+      Usa `first-fold` porque só existem duas unidades hoje (lib/monetization.ts).
+    */}
+    <AdSlot placement="first-fold" />
+
+    <section aria-labelledby="como-conta" class="mt-14 max-w-3xl">
+      <h2 id="como-conta" class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+        Como a conta é feita
+      </h2>
+      <p class="mt-3 leading-relaxed text-gray-700 dark:text-gray-200">
+        O valor-alvo é o custo enxuto multiplicado por um número de meses. Esse
+        número sobe com a instabilidade e com a correlação das duas rendas:
+      </p>
+
+      <div class="mt-6 overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700">
+        <table class="w-full min-w-[28rem] text-left text-sm text-gray-700 dark:text-gray-200">
+          <caption class="sr-only">Meses de reserva por situação do casal</caption>
+          <thead class="bg-gray-50 text-gray-900 dark:bg-gray-800 dark:text-white">
+            <tr>
+              <th scope="col" class="px-4 py-3 font-semibold">Situação do casal</th>
+              <th scope="col" class="px-4 py-3 font-semibold">Meses de custo</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tr>
+              <th scope="row" class="px-4 py-3 font-normal">Dois com renda estável, em setores diferentes</th>
+              <td class="px-4 py-3 tabular-nums">3 a 4</td>
+            </tr>
+            <tr>
+              <th scope="row" class="px-4 py-3 font-normal">Um com renda estável e um com renda variável</th>
+              <td class="px-4 py-3 tabular-nums">6</td>
+            </tr>
+            <tr>
+              <th scope="row" class="px-4 py-3 font-normal">Os dois com renda variável</th>
+              <td class="px-4 py-3 tabular-nums">9 a 12</td>
+            </tr>
+            <tr>
+              <th scope="row" class="px-4 py-3 font-normal">Mesma empresa, setor ou cliente</th>
+              <td class="px-4 py-3 tabular-nums">+3</td>
+            </tr>
+            <tr>
+              <th scope="row" class="px-4 py-3 font-normal">Filhos, dependentes ou financiamento imobiliário</th>
+              <td class="px-4 py-3 tabular-nums">+3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-6 leading-relaxed text-gray-700 dark:text-gray-200">
+        O aporte mensal é dividido na proporção da renda de cada um, a mesma lógica
+        da <a
+          href="/calculadora-divisao-de-contas"
+          class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+          >calculadora de divisão de contas</a
+        >: os dois sentem o mesmo esforço relativo. O guia
+        <a
+          href="/blog/reserva-de-emergencia-casal"
+          class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+          >reserva de emergência para casal</a
+        >
+        explica o porquê de cada número, se vale uma reserva ou duas e o que olhar na hora de escolher onde guardar.
+      </p>
+
+      <div
+        class="mt-8 rounded-2xl border-l-4 border-pink-300 bg-pink-50 py-4 pl-5 pr-4 dark:border-pink-600 dark:bg-gray-800"
+      >
+        <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          <strong class="font-semibold text-gray-900 dark:text-white">O que a calculadora não faz:</strong>
+          ela não indica onde guardar, não estima rendimento e não conhece a vida de
+          vocês além do que foi digitado. O prazo é uma conta de aporte constante;
+          renda, custo e imprevistos mudam o caminho. Se há dívida cara rodando,
+          o guia sugere montar só o primeiro degrau (meio mês de custo) antes de
+          mirar o alvo inteiro.
+        </p>
+      </div>
+    </section>
+
+    {/* Fim da página na mesma ordem do fim do artigo: conteúdo, anúncio, e-mail, app. */}
+    <AdSlot placement="in-content" />
+
+    <p class="mt-14 max-w-3xl leading-relaxed text-gray-700 dark:text-gray-200">
+      Com o alvo na mão, o que sustenta a reserva é o aporte automático e um
+      combinado sobre quando ela pode ser usada.
+    </p>
+
+    {/* `source` = a página, para separar o lead da calculadora do lead de artigo (ESTRATEGIA §6). */}
+    <NewsletterForm source="calculadora-reserva-de-emergencia" class="mt-6" />
+
+    <!-- Convite discreto ao app — uma vez só, sem promessa inflada. -->
+    <aside
+      aria-label="Sobre o Paca Finance"
+      class="mt-12 max-w-3xl rounded-2xl border border-gray-200 bg-gray-50 p-5 sm:p-6 dark:border-gray-700 dark:bg-gray-800/60"
+    >
+      <div class="flex items-start gap-4">
+        <img
+          src="/logo-icon-96.png"
+          alt=""
+          width="40"
+          height="40"
+          loading="lazy"
+          class="mt-0.5 h-10 w-10 shrink-0 rounded-xl"
+        />
+        <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          No
+          <a
+            href={`${APP_URL}/signup`}
+            class="rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200"
+            >Paca Finance</a
+          >
+          a reserva vira uma meta compartilhada, com a barra de progresso à vista dos
+          dois. Uma planilha que vocês já revisam todo mês resolve do mesmo jeito.
+        </p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
