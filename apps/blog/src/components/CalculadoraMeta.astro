@@ -1,0 +1,731 @@
+---
+/**
+ * Calculadora de meta a dois (viagem, casa, carro, casamento).
+ *
+ * Mesma conta do artigo /blog/como-juntar-dinheiro-casal. Se um dos dois
+ * mudar, o outro precisa mudar junto:
+ *   passo 1  = valor ÷ meses = quanto sai da renda por mês (aqui, descontado
+ *              o que o casal já tem guardado para a meta)
+ *   passo 3  = a parcela é dividida na proporção da renda de cada um
+ *   FAQ      = referência de ~20% da renda do casal (regra 50/30/20) para
+ *              metas E reserva; se a parcela passa disso, mostra o prazo que
+ *              caberia nos 20%
+ *   regras do passo 1 = a reserva de emergência vem antes da meta dos sonhos
+ *
+ * Sem rendimento nem juros: o artigo não recomenda produto e não promete
+ * rentabilidade, então a conta é aporte constante, valor ÷ prazo.
+ *
+ * Tudo roda no navegador com JS inline (sem dependência, sem framework) e
+ * nada é enviado nem guardado: os valores existem só enquanto a aba estiver
+ * aberta. Por isso não há localStorage aqui — renda e patrimônio são dados
+ * sensíveis e a política de privacidade do blog diz que só o tema fica no
+ * navegador.
+ */
+const MONEY_INPUT_CLASS =
+  "w-full rounded-xl border border-gray-500 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400";
+const TEXT_INPUT_CLASS =
+  "mt-1.5 w-full rounded-xl border border-gray-500 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400";
+const PREFIX_CLASS =
+  "pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-gray-600 dark:text-gray-400";
+const HELP_CLASS = "mt-1.5 text-xs text-gray-600 dark:text-gray-400";
+const ERROR_CLASS = "mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300";
+const CARD_CLASS =
+  "rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900";
+const LINK_CLASS =
+  "rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200";
+---
+
+<section
+  aria-labelledby="meta-titulo"
+  class="rounded-3xl border border-gray-200 bg-gray-50 p-5 sm:p-7 dark:border-gray-700 dark:bg-gray-800/60"
+>
+  <h2 id="meta-titulo" class="sr-only">Calculadora de meta a dois</h2>
+
+  <div class="grid gap-6 lg:grid-cols-5 lg:gap-8">
+    <!-- ENTRADAS -->
+    <form id="meta-form" novalidate autocomplete="off" class="lg:col-span-2">
+      <div class={CARD_CLASS}>
+        <label for="meta-nome" class="block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Nome da meta <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <input
+          id="meta-nome"
+          type="text"
+          maxlength="40"
+          placeholder="Viagem para o Nordeste"
+          class={TEXT_INPUT_CLASS}
+        />
+
+        <label for="meta-valor" class="mt-5 block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Quanto custa a meta
+        </label>
+        <div class="relative mt-2">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="meta-valor"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="12.000,00"
+            aria-describedby="meta-dica-valor meta-erro-valor"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="meta-dica-valor" class={HELP_CLASS}>
+          O número real, não o chute: viagem, entrada, casamento. Para morar junto, some caução, mudança e a casa montada.
+        </p>
+        <p id="meta-erro-valor" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+        <label for="meta-prazo" class="mt-5 block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Em quantos meses
+        </label>
+        <div class="relative mt-2">
+          <span aria-hidden="true" class={PREFIX_CLASS}>meses</span>
+          <input
+            id="meta-prazo"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="18"
+            aria-describedby="meta-dica-prazo meta-erro-prazo"
+            class={`${MONEY_INPUT_CLASS} !pl-16`}
+          />
+        </div>
+        <p id="meta-dica-prazo" class={HELP_CLASS}>
+          Sem prazo a calculadora não divide o valor, mas ainda mostra em quanto tempo a meta cabe na renda.
+        </p>
+        <p id="meta-erro-prazo" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+        <label for="meta-guardado" class="mt-5 block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Quanto já têm guardado para essa meta
+        </label>
+        <div class="relative mt-2">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="meta-guardado"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="0,00"
+            aria-describedby="meta-dica-guardado meta-erro-guardado"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="meta-dica-guardado" class={HELP_CLASS}>Em branco conta como zero. Não conte a reserva de emergência.</p>
+        <p id="meta-erro-guardado" hidden aria-live="polite" class={ERROR_CLASS}></p>
+      </div>
+
+      <fieldset class={`mt-4 ${CARD_CLASS} !p-4`}>
+        <legend class="px-1.5 font-display text-sm font-bold text-gray-800 dark:text-white">
+          <span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-[#E5647A] align-middle"></span>
+          Primeira pessoa
+        </legend>
+
+        <label for="meta-nome1" class="mt-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Nome <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <input id="meta-nome1" type="text" maxlength="24" placeholder="Pessoa 1" class={TEXT_INPUT_CLASS} />
+
+        <label for="meta-renda1" class="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Quanto ganha por mês (líquido) <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <div class="relative mt-1.5">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="meta-renda1"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="4.000,00"
+            aria-describedby="meta-erro-renda1"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="meta-erro-renda1" hidden aria-live="polite" class={ERROR_CLASS}></p>
+      </fieldset>
+
+      <fieldset class={`mt-4 ${CARD_CLASS} !p-4`}>
+        <legend class="px-1.5 font-display text-sm font-bold text-gray-800 dark:text-white">
+          <span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-[#2F8F7C] align-middle"></span>
+          Segunda pessoa
+        </legend>
+
+        <label for="meta-nome2" class="mt-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Nome <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <input id="meta-nome2" type="text" maxlength="24" placeholder="Pessoa 2" class={TEXT_INPUT_CLASS} />
+
+        <label for="meta-renda2" class="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Quanto ganha por mês (líquido) <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <div class="relative mt-1.5">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="meta-renda2"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="6.000,00"
+            aria-describedby="meta-dica-renda2 meta-erro-renda2"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="meta-dica-renda2" class={HELP_CLASS}>
+          As rendas servem para dividir a parcela na proporção de cada um e para comparar com a referência de 20%.
+        </p>
+        <p id="meta-erro-renda2" hidden aria-live="polite" class={ERROR_CLASS}></p>
+      </fieldset>
+
+      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <button
+          type="button"
+          id="meta-btn-exemplo"
+          class="rounded-xl border border-gray-500 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-pink-300 hover:text-pink-700 dark:border-gray-500 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-500 dark:hover:text-pink-300"
+        >
+          Preencher com o exemplo
+        </button>
+        <button
+          type="button"
+          id="meta-btn-limpar"
+          class="rounded px-1 py-1 text-sm font-medium text-gray-600 underline underline-offset-2 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300"
+        >
+          Limpar
+        </button>
+      </div>
+      <p class="mt-3 text-xs text-gray-600 dark:text-gray-400">
+        A conta acontece no seu navegador. Nada é enviado para a gente nem fica salvo.
+      </p>
+    </form>
+
+    <!-- SAÍDA -->
+    <div class="lg:col-span-3">
+      <div id="meta-saida" role="status" aria-live="polite">
+        <!-- vazio -->
+        <div
+          id="meta-estado-vazio"
+          class="flex min-h-[14rem] flex-col justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white/60 px-6 py-12 text-center lg:min-h-[28rem] dark:border-gray-600 dark:bg-gray-900/40"
+        >
+          <p class="font-display text-lg font-bold text-gray-800 dark:text-white">
+            Comece pelo valor da meta
+          </p>
+          <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            O resultado aparece aqui na hora: quanto guardar por mês, quanto cada um
+            põe e quanto isso pesa na renda de vocês.
+          </p>
+        </div>
+
+        <!-- aviso: valor zero -->
+        <div
+          id="meta-estado-zero"
+          hidden
+          class="rounded-2xl border border-pink-200 bg-pink-50 p-6 dark:border-pink-800/60 dark:bg-pink-900/20"
+        >
+          <p class="font-display text-lg font-bold text-gray-800 dark:text-white">
+            Com meta zero, não há o que dividir
+          </p>
+          <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+            Coloque quanto a meta custa. A conta é o valor, menos o que já está
+            guardado, dividido pelos meses.
+          </p>
+        </div>
+
+        <!-- resultado -->
+        <div id="meta-estado-resultado" hidden>
+          <div class={CARD_CLASS}>
+            <p id="meta-titulo-saida" class="text-sm font-semibold text-gray-600 dark:text-gray-300">Guardar por mês, juntos</p>
+            <p id="meta-mensal" class="mt-2 font-display text-3xl font-bold tabular-nums text-gray-900 dark:text-white">
+              R$ 0,00
+            </p>
+            <p id="meta-mensal-nota" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+          </div>
+
+          <div id="meta-aportes" hidden class={`mt-3 ${CARD_CLASS}`}>
+            <p class="font-display text-sm font-bold text-gray-800 dark:text-white">
+              Quanto cada um põe, na proporção da renda
+            </p>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+              <div>
+                <p class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  <span aria-hidden="true" class="h-2.5 w-2.5 shrink-0 rounded-full bg-[#E5647A]"></span>
+                  <span id="meta-nome1-out" class="truncate">Pessoa 1</span>
+                </p>
+                <p id="meta-aporte1" class="mt-1 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">R$ 0,00</p>
+                <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-300">
+                  <span id="meta-pct1" class="font-semibold text-gray-800 dark:text-gray-100">0%</span> da parcela
+                </p>
+              </div>
+              <div>
+                <p class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  <span aria-hidden="true" class="h-2.5 w-2.5 shrink-0 rounded-full bg-[#2F8F7C]"></span>
+                  <span id="meta-nome2-out" class="truncate">Pessoa 2</span>
+                </p>
+                <p id="meta-aporte2" class="mt-1 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">R$ 0,00</p>
+                <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-300">
+                  <span id="meta-pct2" class="font-semibold text-gray-800 dark:text-gray-100">0%</span> da parcela
+                </p>
+              </div>
+            </div>
+          </div>
+          <p id="meta-aportes-dica" hidden class="mt-3 rounded-2xl bg-white p-4 text-sm leading-relaxed text-gray-700 dark:bg-gray-900 dark:text-gray-200"></p>
+
+          <div id="meta-peso" hidden class={`mt-3 ${CARD_CLASS}`}>
+            <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Peso na renda do casal</p>
+            <p id="meta-peso-valor" class="mt-2 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">0%</p>
+            <p id="meta-peso-nota" class="mt-1 text-sm leading-relaxed text-gray-700 dark:text-gray-200"></p>
+            <p class="mt-2 text-xs leading-relaxed text-gray-600 dark:text-gray-400">
+              A referência de 20% (regra 50/30/20) cobre metas <strong class="font-semibold">e</strong> reserva
+              de emergência. Se já guardam para a reserva, a fatia da meta é menor que isso.
+            </p>
+          </div>
+
+          <p id="meta-insight" class="mt-3 rounded-2xl bg-white p-4 text-sm leading-relaxed text-gray-700 dark:bg-gray-900 dark:text-gray-200"></p>
+        </div>
+      </div>
+
+      <!-- Reserva primeiro: aviso fixo, fora da região aria-live -->
+      <div
+        class="mt-3 rounded-2xl border-l-4 border-pink-300 bg-pink-50 py-4 pl-5 pr-4 dark:border-pink-600 dark:bg-gray-800"
+      >
+        <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          <strong class="font-semibold text-gray-900 dark:text-white">A reserva vem antes da meta.</strong>
+          Sem um colchão para imprevisto, o primeiro pneu furado ou a primeira consulta de
+          emergência sai da viagem. Calculem o valor na
+          <a href="/calculadora-reserva-de-emergencia" class={LINK_CLASS}>calculadora de reserva de emergência</a>.
+        </p>
+      </div>
+
+      <!-- Detalhe (fora da região aria-live: o resumo acima já foi anunciado) -->
+      <div id="meta-detalhe" hidden class="mt-3">
+        <div class={CARD_CLASS}>
+          <p class="font-display text-sm font-bold text-gray-800 dark:text-white">A conta, passo a passo</p>
+          <ol class="mt-3 space-y-2 text-sm leading-relaxed text-gray-700 tabular-nums dark:text-gray-200">
+            <li id="meta-passo1"></li>
+            <li id="meta-passo2"></li>
+            <li id="meta-passo3"></li>
+            <li id="meta-passo4"></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+   * O atributo `hidden` precisa vencer as utilitárias de display do Tailwind
+   * (`flex`, `grid`) — sem isso, um painel escondido continua aparecendo.
+   */
+  [hidden] {
+    display: none !important;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var byId = function (id) {
+      return document.getElementById(id);
+    };
+
+    // <calc-core> — função pura, sem DOM. O teste em scratchpad extrai este
+    // trecho do arquivo e roda em Node: não renomeie os marcadores.
+    function cents(n) {
+      return Math.round(n * 100) / 100;
+    }
+    // Arredonda PARA CIMA no centavo: 18 parcelas de R$ 666,67 cobrem os
+    // R$ 12.000; 18 de R$ 666,66 deixariam 12 centavos de fora. O round
+    // interno tira o ruído de ponto flutuante antes do teto.
+    function ceilCents(n) {
+      return Math.ceil(Math.round(n * 100 * 1e4) / 1e4) / 100;
+    }
+
+    /**
+     * Passo 1 do artigo (valor ÷ prazo), passo 3 (divisão proporcional) e a
+     * referência de ~20% da renda do FAQ. Sem rendimento.
+     * o = { valor, prazo (meses inteiros; 0 = sem prazo), guardado, r1, r2 }
+     * r1/r2 podem ser null (renda não informada).
+     */
+    function plano(o) {
+      var REF = 0.2;
+      var falta = Math.max(0, cents(o.valor - o.guardado));
+      var atingida = falta === 0;
+      var feito = o.valor > 0 ? Math.min(100, (o.guardado / o.valor) * 100) : 0;
+
+      // Sem prazo (0) não há parcela: dividir por zero não é "infinito", é
+      // uma pergunta sem resposta.
+      var mensal = atingida ? 0 : o.prazo >= 1 ? ceilCents(falta / o.prazo) : null;
+
+      var rendaTotal = cents((o.r1 || 0) + (o.r2 || 0));
+      var ref = rendaTotal > 0 ? cents(rendaTotal * REF) : null;
+
+      var pctRenda = null;
+      var cabe = null;
+      var prazoRef = null;
+      if (ref !== null && !atingida) {
+        if (mensal !== null) {
+          pctRenda = (mensal / rendaTotal) * 100;
+          cabe = mensal <= ref;
+        }
+        // Prazo que cabe nos 20% da renda: arredonda para cima (mês
+        // incompleto não fecha a meta).
+        prazoRef = Math.ceil(falta / ref);
+      } else if (ref !== null && atingida) {
+        pctRenda = 0;
+        cabe = true;
+      }
+
+      var divisao = null;
+      if (mensal !== null && !atingida && rendaTotal > 0) {
+        var p1 = (o.r1 || 0) / rendaTotal;
+        // Primeira parte arredondada, segunda por diferença: a soma sempre
+        // bate com a parcela, sem centavo perdido.
+        var a1 = cents(mensal * p1);
+        divisao = { a1: a1, a2: cents(mensal - a1), p1: p1 * 100, p2: 100 - p1 * 100 };
+      }
+
+      return {
+        falta: falta,
+        atingida: atingida,
+        feito: feito,
+        mensal: mensal,
+        rendaTotal: rendaTotal,
+        ref: ref,
+        pctRenda: pctRenda,
+        cabe: cabe,
+        prazoRef: prazoRef,
+        divisao: divisao,
+      };
+    }
+    // </calc-core>
+
+    var f = {
+      valor: byId("meta-valor"),
+      prazo: byId("meta-prazo"),
+      guardado: byId("meta-guardado"),
+      renda1: byId("meta-renda1"),
+      renda2: byId("meta-renda2"),
+    };
+    if (!f.valor || !f.prazo) return;
+
+    var erro = {
+      valor: byId("meta-erro-valor"),
+      prazo: byId("meta-erro-prazo"),
+      guardado: byId("meta-erro-guardado"),
+      renda1: byId("meta-erro-renda1"),
+      renda2: byId("meta-erro-renda2"),
+    };
+
+    var vazio = byId("meta-estado-vazio");
+    var zero = byId("meta-estado-zero");
+    var res = byId("meta-estado-resultado");
+    var detalhe = byId("meta-detalhe");
+
+    var brl = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    var pctFmt = new Intl.NumberFormat("pt-BR", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    });
+
+    function money(n) {
+      return brl.format(n);
+    }
+    function pct(n) {
+      return pctFmt.format(n) + "%";
+    }
+    function meses(n) {
+      return n + (n === 1 ? " mês" : " meses");
+    }
+    /** "30 meses (2 anos e 6 meses)" — só acrescenta o parêntese a partir de 12. */
+    function duracao(n) {
+      if (n < 12) return meses(n);
+      var a = Math.floor(n / 12);
+      var m = n % 12;
+      var anos = a + (a === 1 ? " ano" : " anos");
+      return meses(n) + " (" + anos + (m ? " e " + meses(m) : "") + ")";
+    }
+
+    /**
+     * Aceita como a pessoa escreve no Brasil: "1.234,56", "1234,56",
+     * "1234.56", "R$ 3.000" e "3000". Um único ponto com 3 casas depois
+     * (3.000) é separador de milhar, não decimal.
+     */
+    function parseBR(bruto) {
+      var raw = String(bruto == null ? "" : bruto).trim();
+      if (!raw) return null; // vazio: campo ainda não preenchido
+      var s = raw.replace(/[^\d.,-]/g, "");
+      if (!/\d/.test(s)) return NaN; // escreveu alguma coisa, mas não é número
+      var negativo = s.indexOf("-") !== -1;
+      s = s.replace(/-/g, "");
+      if (!s) return NaN;
+      if (s.indexOf(",") !== -1) {
+        var partes = s.split(",");
+        var dec = partes.pop();
+        s = partes.join("").replace(/\./g, "") + "." + dec.replace(/\./g, "");
+      } else if (s.indexOf(".") !== -1) {
+        var pontos = s.split(".").length - 1;
+        var casas = s.length - s.lastIndexOf(".") - 1;
+        if (pontos > 1 || casas === 3) s = s.replace(/\./g, "");
+      }
+      var n = parseFloat(s);
+      if (!isFinite(n)) return NaN;
+      return negativo ? -n : n;
+    }
+
+    function nomeDe(id, padrao) {
+      var el = byId(id);
+      var v = el && el.value ? el.value.trim() : "";
+      return v || padrao;
+    }
+
+    function marcarErro(campo, mensagem) {
+      var input = f[campo];
+      var alvo = erro[campo];
+      if (mensagem) {
+        // Mostra ANTES de escrever: uma região viva escondida não anuncia o
+        // que já está escrita nela quando reaparece. Revelar vazia e só então
+        // preencher é o que faz o leitor de tela falar o erro sem a pessoa
+        // precisar sair do campo.
+        alvo.hidden = false;
+        alvo.textContent = mensagem;
+        input.setAttribute("aria-invalid", "true");
+        input.classList.add("border-pink-600", "dark:border-pink-400");
+      } else {
+        alvo.textContent = "";
+        alvo.hidden = true;
+        input.removeAttribute("aria-invalid");
+        input.classList.remove("border-pink-600", "dark:border-pink-400");
+      }
+    }
+
+    /** null = vazio, NaN = inválido, número = ok. */
+    function lerCampo(campo) {
+      var v = parseBR(f[campo].value);
+      if (v === null) {
+        marcarErro(campo, "");
+        return null;
+      }
+      if (isNaN(v)) {
+        marcarErro(campo, "Use só números — por exemplo 3.000 ou 3000,50.");
+        return NaN;
+      }
+      if (v < 0) {
+        marcarErro(campo, "Use um valor positivo.");
+        return NaN;
+      }
+      marcarErro(campo, "");
+      return v;
+    }
+
+    /** Meses inteiros, de 0 a 600 (50 anos). null = vazio, NaN = inválido. */
+    function lerPrazo() {
+      var v = parseBR(f.prazo.value);
+      if (v === null) {
+        marcarErro("prazo", "");
+        return null;
+      }
+      if (isNaN(v) || v < 0) {
+        marcarErro("prazo", "Use um número inteiro de meses, como 18.");
+        return NaN;
+      }
+      if (v !== Math.floor(v)) {
+        marcarErro("prazo", "Use meses inteiros: para 1 ano e meio, escreva 18.");
+        return NaN;
+      }
+      if (v > 600) {
+        marcarErro("prazo", "O prazo máximo é de 600 meses (50 anos).");
+        return NaN;
+      }
+      marcarErro("prazo", "");
+      return v;
+    }
+
+    function mostrar(qual) {
+      vazio.hidden = qual !== "vazio";
+      zero.hidden = qual !== "zero";
+      res.hidden = qual !== "resultado";
+      detalhe.hidden = qual !== "resultado";
+    }
+
+    function calcular() {
+      // Lê todos antes de decidir, para marcar o erro de cada campo de uma vez.
+      var valor = lerCampo("valor");
+      var prazo = lerPrazo();
+      var guardado = lerCampo("guardado");
+      var r1 = lerCampo("renda1");
+      var r2 = lerCampo("renda2");
+
+      if (valor === null || [valor, prazo, guardado, r1, r2].some(isNaN)) {
+        mostrar("vazio");
+        return;
+      }
+      if (valor === 0) {
+        mostrar("zero");
+        return;
+      }
+
+      var o = { valor: valor, prazo: prazo || 0, guardado: guardado || 0, r1: r1, r2: r2 };
+      var p = plano(o);
+      var n1 = nomeDe("meta-nome1", "Pessoa 1");
+      var n2 = nomeDe("meta-nome2", "Pessoa 2");
+      var meta = nomeDe("meta-nome", "");
+
+      // --- cartão principal
+      var tituloSaida = byId("meta-titulo-saida");
+      var mensalEl = byId("meta-mensal");
+      var mensalNota = byId("meta-mensal-nota");
+      tituloSaida.textContent = meta ? "Guardar por mês para: " + meta : "Guardar por mês, juntos";
+      if (p.atingida) {
+        mensalEl.textContent = "Meta atingida";
+        mensalNota.textContent = "Os " + money(o.guardado) + " guardados já cobrem os " + money(o.valor) + ".";
+      } else if (p.mensal === null) {
+        mensalEl.textContent = "—";
+        mensalNota.textContent = "Sem prazo não há parcela. Faltam " + money(p.falta) + "; informe em quantos meses querem chegar.";
+      } else {
+        mensalEl.textContent = money(p.mensal);
+        mensalNota.textContent =
+          money(p.falta) + " ÷ " + meses(o.prazo) + (o.guardado > 0 ? ", já descontados os " + money(o.guardado) + " guardados." : ".");
+      }
+
+      // --- parcela de cada um
+      var painel = byId("meta-aportes");
+      var dica = byId("meta-aportes-dica");
+      if (p.divisao) {
+        byId("meta-nome1-out").textContent = n1;
+        byId("meta-nome2-out").textContent = n2;
+        byId("meta-aporte1").textContent = money(p.divisao.a1);
+        byId("meta-aporte2").textContent = money(p.divisao.a2);
+        byId("meta-pct1").textContent = pct(p.divisao.p1);
+        byId("meta-pct2").textContent = pct(p.divisao.p2);
+        painel.hidden = false;
+        dica.hidden = true;
+        dica.textContent = "";
+      } else {
+        painel.hidden = true;
+        if (p.atingida || p.mensal === null) {
+          dica.textContent = "";
+          dica.hidden = true;
+        } else {
+          dica.textContent = "Informe a renda de cada um para ver quanto cada um põe na proporção.";
+          dica.hidden = false;
+        }
+      }
+
+      // --- peso na renda × referência de 20%
+      var peso = byId("meta-peso");
+      var pesoNota = byId("meta-peso-nota");
+      if (p.ref === null || p.atingida) {
+        peso.hidden = true;
+      } else {
+        peso.hidden = false;
+        if (p.mensal === null) {
+          byId("meta-peso-valor").textContent = "—";
+          pesoNota.textContent =
+            "Sem prazo não há parcela para comparar. Na referência de 20% (" +
+            money(p.ref) + " por mês), a meta fecha em " + duracao(p.prazoRef) + ".";
+        } else {
+          byId("meta-peso-valor").textContent = pct(p.pctRenda) + " da renda de " + money(p.rendaTotal);
+          pesoNota.textContent = p.cabe
+            ? "Está dentro da referência de 20% (" + money(p.ref) + " por mês)."
+            : "Passa da referência de 20% (" + money(p.ref) + " por mês). Nessa referência a meta fecha em " +
+              duracao(p.prazoRef) + ", ou vocês reduzem o valor, ou ampliam a renda.";
+        }
+      }
+
+      // --- frase de leitura
+      var insight;
+      if (p.atingida) {
+        insight = "A meta já está paga. O próximo passo é combinar quando e como o dinheiro sai da caixinha.";
+      } else if (p.mensal === null) {
+        insight = "Sem prazo, a meta é desejo. Escolham uma data e a parcela aparece.";
+      } else if (p.cabe === false) {
+        insight =
+          "Parcela acima da referência não é motivo para desistir: o artigo manda ajustar uma das três variáveis, prazo, valor ou renda. O prazo acima é o caminho que não mexe no sonho.";
+      } else if (p.cabe === true) {
+        insight = "A parcela cabe na referência. Combinem a data do Pix agendado, logo depois de os salários caírem.";
+      } else {
+        insight = "Informe a renda dos dois para ver quanto esta parcela pesa no orçamento.";
+      }
+      byId("meta-insight").textContent = insight;
+
+      // --- detalhe
+      byId("meta-passo1").textContent =
+        "1. Meta: " + money(o.valor) + (meta ? " (" + meta + ")" : "") + ". Já guardado: " + money(o.guardado) + ". Falta: " + money(p.falta) + ".";
+      byId("meta-passo2").textContent =
+        p.mensal === null
+          ? "2. Parcela: sem prazo, não há divisão."
+          : p.atingida
+            ? "2. Parcela: nada a guardar."
+            : "2. Parcela: " + money(p.falta) + " ÷ " + meses(o.prazo) + " = " + money(p.mensal) + " por mês (arredondado para cima, no centavo).";
+      byId("meta-passo3").textContent = p.divisao
+        ? "3. Divisão: " + n1 + " " + pct(p.divisao.p1) + " = " + money(p.divisao.a1) + " · " + n2 + " " + pct(p.divisao.p2) + " = " + money(p.divisao.a2) + "."
+        : "3. Divisão: precisa da parcela e da renda de cada um.";
+      byId("meta-passo4").textContent =
+        p.ref === null
+          ? "4. Referência: informe a renda para comparar com os 20% (metas e reserva)."
+          : "4. Referência: 20% de " + money(p.rendaTotal) + " = " + money(p.ref) + " por mês" +
+            (p.pctRenda !== null && !p.atingida ? "; a parcela é " + pct(p.pctRenda) + " da renda." : ".");
+
+      mostrar("resultado");
+    }
+
+    var timer = null;
+    function agendar() {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(calcular, 250);
+    }
+
+    ["meta-nome", "meta-nome1", "meta-nome2"].forEach(function (id) {
+      byId(id).addEventListener("input", agendar);
+    });
+    Object.keys(f).forEach(function (k) {
+      f[k].addEventListener("input", agendar);
+      f[k].addEventListener("change", agendar);
+    });
+
+    // Não há botão "calcular" — se alguém apertar Enter, só recalcula.
+    var form = byId("meta-form");
+    if (form) {
+      form.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        calcular();
+      });
+    }
+
+    var btnExemplo = byId("meta-btn-exemplo");
+    if (btnExemplo) {
+      btnExemplo.addEventListener("click", function () {
+        byId("meta-nome").value = "Viagem de 10 dias";
+        byId("meta-nome1").value = "Ana";
+        byId("meta-nome2").value = "Bruno";
+        f.valor.value = "12.000";
+        f.prazo.value = "18";
+        f.guardado.value = "0";
+        f.renda1.value = "4.000";
+        f.renda2.value = "6.000";
+        calcular();
+      });
+    }
+
+    var btnLimpar = byId("meta-btn-limpar");
+    if (btnLimpar) {
+      btnLimpar.addEventListener("click", function () {
+        ["meta-nome", "meta-nome1", "meta-nome2"].forEach(function (id) {
+          byId(id).value = "";
+        });
+        Object.keys(f).forEach(function (k) {
+          f[k].value = "";
+          marcarErro(k, "");
+        });
+        mostrar("vazio");
+        f.valor.focus();
+      });
+    }
+
+    // Reidrata o que o navegador restaurou (voltar/atualizar).
+    calcular();
+  })();
+</script>

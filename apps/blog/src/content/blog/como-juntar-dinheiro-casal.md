@@ -15,7 +15,7 @@ Neste guia, vocês vão sair com um plano completo em 6 passos: transformar o so
 
 ## Passo 1: transformem o sonho em número e prazo
 
-"Juntar dinheiro" não é meta — é desejo. Meta tem três partes: **valor total, prazo e valor mensal**. A conta é simples: valor total ÷ número de meses = quanto sai da renda de vocês todo mês.
+"Juntar dinheiro" não é meta — é desejo. Meta tem três partes: **valor total, prazo e valor mensal**. A conta é simples: valor total ÷ número de meses = quanto sai da renda de vocês todo mês (a [calculadora de meta a dois](/calculadora-meta-a-dois) faz essa conta e já divide a parcela pela renda de cada um).
 
 | Sonho | Valor total | Prazo | Por mês (conta) |
 |---|---|---|---|
