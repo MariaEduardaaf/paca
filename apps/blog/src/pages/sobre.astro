@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import CTABox from "../components/CTABox.astro";
 import NewsletterForm from "../components/NewsletterForm.astro";
 import { APP_URL, SIGNUP_URL } from "../consts";
+import { CATEGORIES } from "../lib/categories";
 ---
 
 <BaseLayout
@@ -32,9 +33,26 @@ import { APP_URL, SIGNUP_URL } from "../consts";
         brasileiro criado para casais organizarem o dinheiro juntos. A gente
         passa o dia pensando em finanças a dois — gastos compartilhados,
         divisão de contas, orçamento e metas — e traz para cá o que aprendemos
-        construindo o produto e conversando com casais de verdade. Se você
-        chegou agora, o <a href="/blog/bem-vindos-ao-blog-do-paca">post de
-        boas-vindas</a> conta em dois minutos o que esperar daqui.
+        construindo o produto e conversando com casais de verdade.
+      </p>
+
+      {/*
+        Esta seção era o post "Bem-vindos ao blog do Paca" (304 palavras), que
+        o Google tratava como página rasa. Foi incorporada aqui em 2026-10-01;
+        a URL antiga redireciona para cá (vercel.json).
+      */}
+      <h2 id="o-que-tem-aqui">O que você encontra aqui</h2>
+      <ul>
+        {Object.entries(CATEGORIES).map(([id, cat]) => (
+          <li>
+            <a href={`/categorias/${id}`}><strong>{cat.label}</strong></a>: {cat.description}
+          </li>
+        ))}
+      </ul>
+      <p>
+        Tem uma dúvida que virou briga em casa e ainda não está aqui? Mande pelo
+        <a href="/contato">contato</a>. As próximas pautas saem das perguntas de
+        quem lê.
       </p>
 
       <h2 id="politica-editorial">Política editorial</h2>

@@ -4,6 +4,9 @@
   "installCommand": "cd ../.. && npm install",
   "framework": null,
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/blog/bem-vindos-ao-blog-do-paca", "destination": "/sobre", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/_astro/(.*)",
