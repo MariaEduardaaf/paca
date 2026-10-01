@@ -1,11 +1,11 @@
 ---
 title: "Regime de bens: como escolher antes de casar, e como mudar depois"
 description: "Os quatro regimes do Código Civil comparados, o que acontece com a dívida de um, quanto custa o pacto antenupcial e por que dá para mudar de regime mesmo depois de casado."
-pubDate: 2026-09-22
+pubDate: 2026-10-01
 category: "organizacao"
 tags: ["regime de bens", "pacto antenupcial", "comunhão parcial", "casamento", "finanças do casal"]
 author: "mary"
-draft: true
+draft: false
 ---
 
 Vocês estão no balcão do cartório com a papelada da habilitação quase toda entregue, a data já marcada, as testemunhas confirmadas, e a pessoa do outro lado pergunta, sem levantar os olhos do formulário: "regime de bens, comunhão parcial?". Um de vocês olha para o outro, alguém diz que sim, e a caneta continua andando.
