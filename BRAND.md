@@ -86,7 +86,11 @@
 - **Partial scope**: finanças pessoais individuais **quando afetam o casal** (desemprego de um,
   score de crédito de um, cartão adicional). Crédito e financiamento **na ótica dos dois titulares**
 - **Out of scope**: recomendação de investimento específico · criptomoeda especulativa · crédito
-  predatório e consignado agressivo · **listas de bico e "trabalhe de casa"** · qualquer coisa que
+  predatório e consignado agressivo · **listas de bico e "trabalhe de casa"** · **tema jurídico
+  como assunto principal** (regime de bens, divórcio, partilha, herança, união estável, pensão —
+  decidido pela Duda em 2026-10-01: ninguém do time é da área, e erro jurídico em site de finanças
+  custa confiança e aprovação de anúncio; **única exceção mantida no ar, por decisão dela:**
+  `regime-de-bens-antes-de-casar`, publicado no mesmo dia — não abre precedente para pauta nova) · qualquer coisa que
   não passe pela pergunta *"isso muda o combinado de dois adultos?"*
 
   ⚠️ **A linha acima dizia só "renda extra", e isso estava errado — corrigido em 2026-09-04.**

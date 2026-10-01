@@ -43,7 +43,7 @@ O aviso pede três coisas. Este plano ataca cada uma:
       | Rastreada, mas não indexada | 1 | leu e achou que não valia indexar; candidata a juntar na Fase 2 |
       | Erro no servidor (5xx) | 1 | hoje todas as 36 URLs do sitemap respondem 200 (medido em 01/10); provavelmente foi falha passageira |
       | Bloqueada pelo robots.txt | 1 | é do `app.`, bloqueado **de propósito** (SPA com login). Não é defeito |
-- [x] ✅ **CONSERTADO em 01/10** ("Sempre usar HTTPS" no Cloudflare; medido: `http://` → 301 → `https://blog.` 200, inclusive em subpáginas). Falta só **Validar correção** no Search Console. Era: **`http://pacafinance.com.br/` respondia 522** (medido em 01/10; é a URL do 5xx
+- [x] ✅ **CONSERTADO em 01/10** ("Sempre usar HTTPS" no Cloudflare; medido: `http://` → 301 → `https://blog.` 200, inclusive em subpáginas). **Validação iniciada no Search Console em 01/10** (o Google leva de dias a ~2 semanas para concluir). Era: **`http://pacafinance.com.br/` respondia 522** (medido em 01/10; é a URL do 5xx
       no Search Console). O `https://` redireciona certo para o `blog.`; o `http://` cai na origem
       e dá timeout. **É o endereço que você cadastrou no AdSense**, e o revisor pode chegar por ele.
       **Conserto (Cloudflare → pacafinance.com.br → SSL/TLS → Certificados de borda):** ligar
@@ -56,6 +56,7 @@ O aviso pede três coisas. Este plano ataca cada uma:
         duas páginas que mais provam valor próprio, e o Google ainda não as buscou.
       - **8 páginas de apoio:** `/categorias` + 4 categorias, `/contato`, `/descadastro`,
         `/privacidade`. Ficar fora do índice é normal para elas; `/descadastro` deveria ter `noindex`.
+- [x] **Indexação de `/calculadoras` solicitada em 01/10** (fila prioritária; não repetir, não acelera).
 - [ ] Levar link interno forte para a calculadora: menu já tem; colocar também no topo dos artigos de
       dividir contas e na home. **Não** pedir indexação manual de uma por uma: isso não muda o julgamento
       de qualidade.
