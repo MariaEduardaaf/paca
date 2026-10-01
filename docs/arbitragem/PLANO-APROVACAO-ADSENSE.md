@@ -166,6 +166,7 @@ Só quando **tudo** abaixo for verdade:
 - [ ] Publicação regular há pelo menos 4 semanas seguidas.
 - [ ] Search Console mostrando indexação e tráfego orgânico.
 - [ ] `/guardiao` sem alerta nos artigos publicados.
+- [x] **Leitura humana do que foi ao ar em 01/10:** a Mary aprovou as 3 calculadoras novas, renda extra e regime de bens.
 
 **Data-alvo:** não antes de **meados de novembro de 2026**. Ao pedir, marcar "Confirmo que corrigi
 os problemas" só com esta lista inteira marcada.
