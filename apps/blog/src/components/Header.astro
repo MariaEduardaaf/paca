@@ -4,7 +4,8 @@ import { SIGNUP_URL } from "../consts";
 /*
  * Short nav labels for the category hubs (full labels live in lib/categories).
  *
- * A calculadora abre a lista, e "Contato" saiu daqui para abrir a vaga. O
+ * As calculadoras abrem a lista (desde 2026-10-01 são quatro, e o item leva à
+ * página-índice /calculadoras), e "Contato" saiu daqui para abrir a vaga. O
  * porquê das duas decisões:
  *  - a calculadora é a única página que a mesma pessoa reabre, e estava fora do
  *    menu e de todos os hubs — sem link fixo, ela só existia para quem lia um
@@ -17,7 +18,7 @@ import { SIGNUP_URL } from "../consts";
  * para baixo do CTA.
  */
 const NAV = [
-  { href: "/calculadora-divisao-de-contas", label: "Calculadora" },
+  { href: "/calculadoras", label: "Calculadoras" },
   { href: "/categorias/dividir-contas", label: "Dividir contas" },
   { href: "/categorias/organizacao", label: "Organização" },
   { href: "/categorias/conversas-sobre-dinheiro", label: "Conversas" },
