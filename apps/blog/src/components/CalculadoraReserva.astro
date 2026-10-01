@@ -1,0 +1,791 @@
+---
+/**
+ * Calculadora de reserva de emergência do casal.
+ *
+ * Mesma conta do artigo /blog/reserva-de-emergencia-casal (seção "Quanto o
+ * casal precisa"). Se um dos dois mudar, o outro precisa mudar junto:
+ *   base       = custo de vida ENXUGADO do mês (não a renda)
+ *   múltiplo   = 3 a 4 meses (dois estáveis) · 6 (um estável + um variável)
+ *                · 9 a 12 (dois variáveis)
+ *   ajustes    = +3 meses se os dois dependem da mesma empresa/setor
+ *                +3 meses se há filhos, dependentes ou financiamento imobiliário
+ *   alvo       = custo × múltiplo (uma faixa; só a linha do meio é um número)
+ *   aporte     = dividido na proporção da renda de cada um (mesma lógica da
+ *                calculadora de divisão de contas)
+ *
+ * Tudo roda no navegador com JS inline (sem dependência, sem framework) e
+ * nada é enviado nem guardado: os valores existem só enquanto a aba estiver
+ * aberta. Por isso não há localStorage aqui — renda e patrimônio são dados
+ * sensíveis e a política de privacidade do blog diz que só o tema fica no
+ * navegador.
+ */
+const SELECT_CLASS =
+  "mt-1.5 w-full rounded-xl border border-gray-500 bg-white px-3 py-2.5 text-gray-900 dark:border-gray-500 dark:bg-gray-800 dark:text-white";
+const MONEY_INPUT_CLASS =
+  "w-full rounded-xl border border-gray-500 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400";
+const PREFIX_CLASS =
+  "pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-gray-600 dark:text-gray-400";
+const HELP_CLASS = "mt-1.5 text-xs text-gray-600 dark:text-gray-400";
+const ERROR_CLASS = "mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300";
+const CARD_CLASS =
+  "rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900";
+---
+
+<section
+  aria-labelledby="res-titulo"
+  class="rounded-3xl border border-gray-200 bg-gray-50 p-5 sm:p-7 dark:border-gray-700 dark:bg-gray-800/60"
+>
+  <h2 id="res-titulo" class="sr-only">Calculadora de reserva de emergência do casal</h2>
+
+  <div class="grid gap-6 lg:grid-cols-5 lg:gap-8">
+    <!-- ENTRADAS -->
+    <form id="res-form" novalidate autocomplete="off" class="lg:col-span-2">
+      <div class={CARD_CLASS}>
+        <label for="res-custo" class="block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Custo de vida enxuto do casal, por mês
+        </label>
+        <div class="relative mt-2">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="res-custo"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="6.500,00"
+            aria-describedby="res-dica-custo res-erro-custo"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="res-dica-custo" class={HELP_CLASS}>
+          O que a casa custa sem delivery, streaming, bar e academia. Não é o salário.
+        </p>
+        <p id="res-erro-custo" hidden aria-live="polite" class={ERROR_CLASS}></p>
+      </div>
+
+      <fieldset class={`mt-4 ${CARD_CLASS} !p-4`}>
+        <legend class="px-1.5 font-display text-sm font-bold text-gray-800 dark:text-white">
+          <span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-[#E5647A] align-middle"></span>
+          Primeira pessoa
+        </legend>
+
+        <label for="res-nome1" class="mt-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Nome <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <input
+          id="res-nome1"
+          type="text"
+          maxlength="24"
+          placeholder="Pessoa 1"
+          class="mt-1.5 w-full rounded-xl border border-gray-500 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+        />
+
+        <label for="res-sit1" class="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Como é a renda
+        </label>
+        <select id="res-sit1" class={SELECT_CLASS}>
+          <option value="e">Estável (carteira assinada, servidor)</option>
+          <option value="v">Variável (autônomo, PJ, freelancer, comissão)</option>
+        </select>
+
+        <label for="res-renda1" class="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Quanto ganha por mês (líquido) <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <div class="relative mt-1.5">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="res-renda1"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="4.000,00"
+            aria-describedby="res-erro-renda1"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="res-erro-renda1" hidden aria-live="polite" class={ERROR_CLASS}></p>
+      </fieldset>
+
+      <fieldset class={`mt-4 ${CARD_CLASS} !p-4`}>
+        <legend class="px-1.5 font-display text-sm font-bold text-gray-800 dark:text-white">
+          <span class="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-[#2F8F7C] align-middle"></span>
+          Segunda pessoa
+        </legend>
+
+        <label for="res-nome2" class="mt-2 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Nome <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <input
+          id="res-nome2"
+          type="text"
+          maxlength="24"
+          placeholder="Pessoa 2"
+          class="mt-1.5 w-full rounded-xl border border-gray-500 bg-white px-3 py-2.5 text-gray-900 placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400"
+        />
+
+        <label for="res-sit2" class="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Como é a renda
+        </label>
+        <select id="res-sit2" class={SELECT_CLASS}>
+          <option value="e">Estável (carteira assinada, servidor)</option>
+          <option value="v">Variável (autônomo, PJ, freelancer, comissão)</option>
+        </select>
+
+        <label for="res-renda2" class="mt-4 block text-sm font-medium text-gray-700 dark:text-gray-200">
+          Quanto ganha por mês (líquido) <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+        </label>
+        <div class="relative mt-1.5">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="res-renda2"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="6.000,00"
+            aria-describedby="res-dica-renda2 res-erro-renda2"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="res-dica-renda2" class={HELP_CLASS}>
+          As rendas só servem para dividir o aporte na proporção de cada um.
+        </p>
+        <p id="res-erro-renda2" hidden aria-live="polite" class={ERROR_CLASS}></p>
+      </fieldset>
+
+      <fieldset class={`mt-4 ${CARD_CLASS} !p-4`}>
+        <legend class="px-1.5 font-display text-sm font-bold text-gray-800 dark:text-white">
+          O que aumenta o risco
+        </legend>
+        <label class="mt-2 flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-200">
+          <input id="res-mesma" type="checkbox" class="mt-0.5 h-4 w-4 shrink-0 accent-[#E5647A]" />
+          <span>Os dois trabalham na mesma empresa, no mesmo setor ou para o mesmo cliente grande</span>
+        </label>
+        <label class="mt-3 flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-200">
+          <input id="res-dep" type="checkbox" class="mt-0.5 h-4 w-4 shrink-0 accent-[#E5647A]" />
+          <span>Têm filhos, dependentes ou financiamento imobiliário</span>
+        </label>
+      </fieldset>
+
+      <div class={`mt-4 ${CARD_CLASS}`}>
+        <label for="res-guardado" class="block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Quanto já têm guardado para a reserva
+        </label>
+        <div class="relative mt-2">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="res-guardado"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="0,00"
+            aria-describedby="res-dica-guardado res-erro-guardado"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="res-dica-guardado" class={HELP_CLASS}>Em branco conta como zero.</p>
+        <p id="res-erro-guardado" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+        <label for="res-aporte" class="mt-5 block font-display text-sm font-bold text-gray-800 dark:text-white">
+          Quanto conseguem guardar por mês, juntos
+        </label>
+        <div class="relative mt-2">
+          <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+          <input
+            id="res-aporte"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="1.300,00"
+            aria-describedby="res-dica-aporte res-erro-aporte"
+            class={MONEY_INPUT_CLASS}
+          />
+        </div>
+        <p id="res-dica-aporte" class={HELP_CLASS}>
+          Sem esse número a calculadora mostra o alvo, mas não o prazo.
+        </p>
+        <p id="res-erro-aporte" hidden aria-live="polite" class={ERROR_CLASS}></p>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <button
+          type="button"
+          id="res-btn-exemplo"
+          class="rounded-xl border border-gray-500 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-pink-300 hover:text-pink-700 dark:border-gray-500 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-500 dark:hover:text-pink-300"
+        >
+          Preencher com o exemplo
+        </button>
+        <button
+          type="button"
+          id="res-btn-limpar"
+          class="rounded px-1 py-1 text-sm font-medium text-gray-600 underline underline-offset-2 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300"
+        >
+          Limpar
+        </button>
+      </div>
+      <p class="mt-3 text-xs text-gray-600 dark:text-gray-400">
+        A conta acontece no seu navegador. Nada é enviado para a gente nem fica salvo.
+      </p>
+    </form>
+
+    <!-- SAÍDA -->
+    <div class="lg:col-span-3">
+      <div id="res-saida" role="status" aria-live="polite">
+        <!-- vazio -->
+        <div
+          id="res-estado-vazio"
+          class="flex min-h-[14rem] flex-col justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white/60 px-6 py-12 text-center lg:min-h-[28rem] dark:border-gray-600 dark:bg-gray-900/40"
+        >
+          <p class="font-display text-lg font-bold text-gray-800 dark:text-white">
+            Comece pelo custo de vida enxuto
+          </p>
+          <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            O resultado aparece aqui na hora: o valor-alvo da reserva, quanto falta,
+            em quantos meses vocês chegam e quanto cada um aporta.
+          </p>
+        </div>
+
+        <!-- aviso: custo zero -->
+        <div
+          id="res-estado-zero"
+          hidden
+          class="rounded-2xl border border-pink-200 bg-pink-50 p-6 dark:border-pink-800/60 dark:bg-pink-900/20"
+        >
+          <p class="font-display text-lg font-bold text-gray-800 dark:text-white">
+            Com custo zero, a reserva também dá zero
+          </p>
+          <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+            A conta multiplica o custo mensal pelo número de meses. Coloque quanto a
+            casa gasta por mês, já sem os supérfluos.
+          </p>
+        </div>
+
+        <!-- resultado -->
+        <div id="res-estado-resultado" hidden>
+          <div class={CARD_CLASS}>
+            <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Valor-alvo da reserva</p>
+            <p id="res-alvo" class="mt-2 font-display text-3xl font-bold tabular-nums text-gray-900 dark:text-white">
+              R$ 0,00
+            </p>
+            <p id="res-alvo-meses" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+          </div>
+
+          <div class="mt-3 grid gap-3 sm:grid-cols-2">
+            <div class={CARD_CLASS}>
+              <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Quanto falta</p>
+              <p id="res-falta" class="mt-2 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">
+                R$ 0,00
+              </p>
+              <p id="res-falta-nota" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+            </div>
+            <div class={CARD_CLASS}>
+              <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Prazo no ritmo de vocês</p>
+              <p id="res-prazo" class="mt-2 font-display text-2xl font-bold text-gray-900 dark:text-white">—</p>
+              <p id="res-prazo-nota" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+            </div>
+          </div>
+
+          <div id="res-aportes" hidden class={`mt-3 ${CARD_CLASS}`}>
+            <p class="font-display text-sm font-bold text-gray-800 dark:text-white">
+              Aporte de cada um, na proporção da renda
+            </p>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+              <div>
+                <p class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  <span aria-hidden="true" class="h-2.5 w-2.5 shrink-0 rounded-full bg-[#E5647A]"></span>
+                  <span id="res-nome1-out" class="truncate">Pessoa 1</span>
+                </p>
+                <p id="res-aporte1" class="mt-1 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">R$ 0,00</p>
+                <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-300">
+                  <span id="res-pct1" class="font-semibold text-gray-800 dark:text-gray-100">0%</span> do aporte
+                </p>
+              </div>
+              <div>
+                <p class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  <span aria-hidden="true" class="h-2.5 w-2.5 shrink-0 rounded-full bg-[#2F8F7C]"></span>
+                  <span id="res-nome2-out" class="truncate">Pessoa 2</span>
+                </p>
+                <p id="res-aporte2" class="mt-1 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white">R$ 0,00</p>
+                <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-300">
+                  <span id="res-pct2" class="font-semibold text-gray-800 dark:text-gray-100">0%</span> do aporte
+                </p>
+              </div>
+            </div>
+          </div>
+          <p id="res-aportes-dica" hidden class="mt-3 rounded-2xl bg-white p-4 text-sm leading-relaxed text-gray-700 dark:bg-gray-900 dark:text-gray-200"></p>
+
+          <p id="res-insight" class="mt-3 rounded-2xl bg-white p-4 text-sm leading-relaxed text-gray-700 dark:bg-gray-900 dark:text-gray-200"></p>
+        </div>
+      </div>
+
+      <!-- Detalhe (fora da região aria-live: o resumo acima já foi anunciado) -->
+      <div id="res-detalhe" hidden class="mt-3 space-y-3">
+        <div class={CARD_CLASS}>
+          <p class="font-display text-sm font-bold text-gray-800 dark:text-white">A conta, passo a passo</p>
+          <ol class="mt-3 space-y-2 text-sm leading-relaxed text-gray-700 tabular-nums dark:text-gray-200">
+            <li id="res-passo1"></li>
+            <li id="res-passo2"></li>
+            <li id="res-passo3"></li>
+            <li id="res-passo4"></li>
+          </ol>
+        </div>
+
+        <div class={CARD_CLASS}>
+          <p class="font-display text-sm font-bold text-gray-800 dark:text-white">
+            Primeiro degrau: meio mês de custo
+          </p>
+          <p id="res-degrau" class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+   * O atributo `hidden` precisa vencer as utilitárias de display do Tailwind
+   * (`flex`, `grid`) — sem isso, um painel escondido continua aparecendo.
+   */
+  [hidden] {
+    display: none !important;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var byId = function (id) {
+      return document.getElementById(id);
+    };
+
+    // <calc-core> — função pura, sem DOM. O teste em scratchpad extrai este
+    // trecho do arquivo e roda em Node: não renomeie os marcadores.
+    function cents(n) {
+      return Math.round(n * 100) / 100;
+    }
+
+    /**
+     * Múltiplo de meses do artigo: 3–4 (dois estáveis), 6 (um estável e um
+     * variável), 9–12 (dois variáveis); +3 para a mesma empresa/setor e +3
+     * para filhos, dependentes ou financiamento.
+     * o = { custo, a, b ("e"|"v"), mesma, dep, guardado, aporte, r1, r2 }
+     * r1/r2 podem ser null (renda não informada).
+     */
+    function plano(o) {
+      var variaveis = (o.a === "v" ? 1 : 0) + (o.b === "v" ? 1 : 0);
+      var faixa = variaveis === 0 ? [3, 4] : variaveis === 1 ? [6, 6] : [9, 12];
+      var extra = (o.mesma ? 3 : 0) + (o.dep ? 3 : 0);
+      var mMin = faixa[0] + extra;
+      var mMax = faixa[1] + extra;
+
+      var alvoMin = cents(o.custo * mMin);
+      var alvoMax = cents(o.custo * mMax);
+      var faltaMin = Math.max(0, cents(alvoMin - o.guardado));
+      var faltaMax = Math.max(0, cents(alvoMax - o.guardado));
+      var degrau = cents(o.custo / 2);
+      var faltaDegrau = Math.max(0, cents(degrau - o.guardado));
+
+      // Meses até cobrir o valor: arredonda para cima (mês incompleto não
+      // fecha a meta). null = sem aporte, não há prazo.
+      function prazo(falta) {
+        if (falta === 0) return 0;
+        return o.aporte > 0 ? Math.ceil(falta / o.aporte) : null;
+      }
+
+      var divisao = null;
+      var rendaTotal = cents((o.r1 || 0) + (o.r2 || 0));
+      if (o.aporte > 0 && rendaTotal > 0) {
+        var p1 = (o.r1 || 0) / rendaTotal;
+        // Primeira parte arredondada, segunda por diferença: a soma sempre
+        // bate com o aporte, sem centavo perdido.
+        var a1 = cents(o.aporte * p1);
+        divisao = { a1: a1, a2: cents(o.aporte - a1), p1: p1 * 100, p2: 100 - p1 * 100 };
+      }
+
+      return {
+        mMin: mMin,
+        mMax: mMax,
+        alvoMin: alvoMin,
+        alvoMax: alvoMax,
+        faltaMin: faltaMin,
+        faltaMax: faltaMax,
+        mesesMin: prazo(faltaMin),
+        mesesMax: prazo(faltaMax),
+        degrau: degrau,
+        faltaDegrau: faltaDegrau,
+        mesesDegrau: prazo(faltaDegrau),
+        divisao: divisao,
+      };
+    }
+    // </calc-core>
+
+    var f = {
+      custo: byId("res-custo"),
+      renda1: byId("res-renda1"),
+      renda2: byId("res-renda2"),
+      guardado: byId("res-guardado"),
+      aporte: byId("res-aporte"),
+    };
+    if (!f.custo || !f.aporte) return;
+
+    var erro = {
+      custo: byId("res-erro-custo"),
+      renda1: byId("res-erro-renda1"),
+      renda2: byId("res-erro-renda2"),
+      guardado: byId("res-erro-guardado"),
+      aporte: byId("res-erro-aporte"),
+    };
+
+    var vazio = byId("res-estado-vazio");
+    var zero = byId("res-estado-zero");
+    var res = byId("res-estado-resultado");
+    var detalhe = byId("res-detalhe");
+
+    var brl = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    var pctFmt = new Intl.NumberFormat("pt-BR", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    });
+
+    function money(n) {
+      return brl.format(n);
+    }
+    function pct(n) {
+      return pctFmt.format(n) + "%";
+    }
+    function meses(n) {
+      return n + (n === 1 ? " mês" : " meses");
+    }
+    /** "30 meses (2 anos e 6 meses)" — só acrescenta o parêntese a partir de 12. */
+    function duracao(n) {
+      if (n < 12) return meses(n);
+      var a = Math.floor(n / 12);
+      var m = n % 12;
+      var anos = a + (a === 1 ? " ano" : " anos");
+      return meses(n) + " (" + anos + (m ? " e " + meses(m) : "") + ")";
+    }
+    function faixaMoney(a, b) {
+      return a === b ? money(a) : money(a) + " a " + money(b);
+    }
+    function faixaMeses(a, b) {
+      return a === b ? meses(a) : a + " a " + meses(b);
+    }
+
+    /**
+     * Aceita como a pessoa escreve no Brasil: "1.234,56", "1234,56",
+     * "1234.56", "R$ 3.000" e "3000". Um único ponto com 3 casas depois
+     * (3.000) é separador de milhar, não decimal.
+     */
+    function parseBR(bruto) {
+      var raw = String(bruto == null ? "" : bruto).trim();
+      if (!raw) return null; // vazio: campo ainda não preenchido
+      var s = raw.replace(/[^\d.,-]/g, "");
+      if (!/\d/.test(s)) return NaN; // escreveu alguma coisa, mas não é número
+      var negativo = s.indexOf("-") !== -1;
+      s = s.replace(/-/g, "");
+      if (!s) return NaN;
+      if (s.indexOf(",") !== -1) {
+        var partes = s.split(",");
+        var dec = partes.pop();
+        s = partes.join("").replace(/\./g, "") + "." + dec.replace(/\./g, "");
+      } else if (s.indexOf(".") !== -1) {
+        var pontos = s.split(".").length - 1;
+        var casas = s.length - s.lastIndexOf(".") - 1;
+        if (pontos > 1 || casas === 3) s = s.replace(/\./g, "");
+      }
+      var n = parseFloat(s);
+      if (!isFinite(n)) return NaN;
+      return negativo ? -n : n;
+    }
+
+    function nomeDe(id, padrao) {
+      var el = byId(id);
+      var v = el && el.value ? el.value.trim() : "";
+      return v || padrao;
+    }
+
+    function marcarErro(campo, mensagem) {
+      var input = f[campo];
+      var alvo = erro[campo];
+      if (mensagem) {
+        // Mostra ANTES de escrever: uma região viva escondida não anuncia o
+        // que já está escrita nela quando reaparece. Revelar vazia e só então
+        // preencher é o que faz o leitor de tela falar o erro sem a pessoa
+        // precisar sair do campo.
+        alvo.hidden = false;
+        alvo.textContent = mensagem;
+        input.setAttribute("aria-invalid", "true");
+        input.classList.add("border-pink-600", "dark:border-pink-400");
+      } else {
+        alvo.textContent = "";
+        alvo.hidden = true;
+        input.removeAttribute("aria-invalid");
+        input.classList.remove("border-pink-600", "dark:border-pink-400");
+      }
+    }
+
+    /** null = vazio, NaN = inválido, número = ok. */
+    function lerCampo(campo) {
+      var v = parseBR(f[campo].value);
+      if (v === null) {
+        marcarErro(campo, "");
+        return null;
+      }
+      if (isNaN(v)) {
+        marcarErro(campo, "Use só números — por exemplo 3.000 ou 3000,50.");
+        return NaN;
+      }
+      if (v < 0) {
+        marcarErro(campo, "Use um valor positivo.");
+        return NaN;
+      }
+      marcarErro(campo, "");
+      return v;
+    }
+
+    function mostrar(qual) {
+      vazio.hidden = qual !== "vazio";
+      zero.hidden = qual !== "zero";
+      res.hidden = qual !== "resultado";
+      detalhe.hidden = qual !== "resultado";
+    }
+
+    function calcular() {
+      // Lê todos antes de decidir, para marcar o erro de cada campo de uma vez.
+      var custo = lerCampo("custo");
+      var r1 = lerCampo("renda1");
+      var r2 = lerCampo("renda2");
+      var guardado = lerCampo("guardado");
+      var aporte = lerCampo("aporte");
+
+      if (custo === null || [custo, r1, r2, guardado, aporte].some(isNaN)) {
+        mostrar("vazio");
+        return;
+      }
+      if (custo === 0) {
+        mostrar("zero");
+        return;
+      }
+
+      var o = {
+        custo: custo,
+        a: byId("res-sit1").value,
+        b: byId("res-sit2").value,
+        mesma: byId("res-mesma").checked,
+        dep: byId("res-dep").checked,
+        guardado: guardado || 0,
+        aporte: aporte || 0,
+        r1: r1,
+        r2: r2,
+      };
+      var p = plano(o);
+      var n1 = nomeDe("res-nome1", "Pessoa 1");
+      var n2 = nomeDe("res-nome2", "Pessoa 2");
+
+      // --- cartões principais
+      byId("res-alvo").textContent = faixaMoney(p.alvoMin, p.alvoMax);
+      byId("res-alvo-meses").textContent =
+        faixaMeses(p.mMin, p.mMax) + " de " + money(custo) + " por mês";
+
+      byId("res-falta").textContent = faixaMoney(p.faltaMin, p.faltaMax);
+      var faltaNota;
+      if (p.faltaMax === 0) {
+        faltaNota = "Reserva completa, até no teto da faixa.";
+      } else if (p.faltaMin === 0) {
+        faltaNota = "O piso da faixa já está coberto; o teto ainda não.";
+      } else {
+        var feito = (o.guardado / p.alvoMin) * 100;
+        faltaNota = "Vocês já têm " + pct(Math.min(100, feito)) + " do piso da faixa.";
+      }
+      byId("res-falta-nota").textContent = faltaNota;
+
+      var prazoEl = byId("res-prazo");
+      var prazoNota = byId("res-prazo-nota");
+      if (p.faltaMax === 0) {
+        prazoEl.textContent = "Já chegaram";
+        prazoNota.textContent = "Sem aporte novo para a reserva.";
+      } else if (p.mesesMax === null) {
+        prazoEl.textContent = "—";
+        prazoNota.textContent = "Sem aporte mensal não há prazo. Informe quanto dá para guardar.";
+      } else if (p.faltaMin === 0) {
+        prazoEl.textContent = "Até " + duracao(p.mesesMax);
+        prazoNota.textContent = "Para o teto da faixa, aportando " + money(o.aporte) + " por mês.";
+      } else if (p.mesesMin === p.mesesMax) {
+        prazoEl.textContent = duracao(p.mesesMax);
+        prazoNota.textContent = "Aportando " + money(o.aporte) + " por mês.";
+      } else {
+        prazoEl.textContent = p.mesesMin + " a " + meses(p.mesesMax);
+        prazoNota.textContent =
+          "Do piso ao teto da faixa, aportando " + money(o.aporte) + " por mês.";
+      }
+
+      // --- aporte de cada um
+      var painel = byId("res-aportes");
+      var dica = byId("res-aportes-dica");
+      if (p.divisao) {
+        byId("res-nome1-out").textContent = n1;
+        byId("res-nome2-out").textContent = n2;
+        byId("res-aporte1").textContent = money(p.divisao.a1);
+        byId("res-aporte2").textContent = money(p.divisao.a2);
+        byId("res-pct1").textContent = pct(p.divisao.p1);
+        byId("res-pct2").textContent = pct(p.divisao.p2);
+        painel.hidden = false;
+        dica.hidden = true;
+        dica.textContent = "";
+      } else {
+        painel.hidden = true;
+        dica.textContent =
+          o.aporte > 0
+            ? "Informe a renda de cada um para ver quanto cada um aporta na proporção."
+            : "Informe o aporte mensal e a renda de cada um para ver a divisão entre os dois.";
+        dica.hidden = false;
+      }
+
+      // --- frase de leitura
+      var insight;
+      if (p.faltaMax === 0) {
+        insight =
+          "Vocês já têm mais do que o teto da faixa. O próximo passo é combinar onde ela fica e a regra de uso — e revisar o múltiplo uma vez por ano, ou quando a vida de vocês mudar.";
+      } else if (p.mesesMax === null) {
+        insight =
+          "O alvo é " +
+          faixaMoney(p.alvoMin, p.alvoMax) +
+          ". Para sair do papel, comecem pelo primeiro degrau (" +
+          money(p.degrau) +
+          ") e definam um aporte automático, mesmo pequeno.";
+      } else {
+        insight =
+          "No ritmo de " +
+          money(o.aporte) +
+          " por mês, " +
+          (p.mesesMin === p.mesesMax
+            ? "vocês chegam em " + duracao(p.mesesMax)
+            : "vocês cobrem o piso em " + duracao(p.mesesMin) + " e o teto em " + duracao(p.mesesMax)) +
+          ". É um prazo, não uma promessa: renda, custo e imprevistos mudam o caminho.";
+      }
+      byId("res-insight").textContent = insight;
+
+      // --- detalhe
+      byId("res-passo1").textContent =
+        "1. Custo enxuto: " + money(custo) + " por mês (a base é o custo, não a renda).";
+      var vars = (o.a === "v" ? 1 : 0) + (o.b === "v" ? 1 : 0);
+      var situacao =
+        vars === 0
+          ? "dois com renda estável"
+          : vars === 1
+            ? "um com renda estável e um com renda variável"
+            : "os dois com renda variável";
+      byId("res-passo2").textContent =
+        "2. Múltiplo-base: " +
+        situacao +
+        " = " +
+        (vars === 0 ? "3 a 4" : vars === 1 ? "6" : "9 a 12") +
+        " meses.";
+      var ajustes = [];
+      if (o.mesma) ajustes.push("mesma empresa ou setor (+3)");
+      if (o.dep) ajustes.push("filhos, dependentes ou financiamento (+3)");
+      byId("res-passo3").textContent =
+        "3. Ajustes: " + (ajustes.length ? ajustes.join(" e ") : "nenhum") + " → " + faixaMeses(p.mMin, p.mMax) + ".";
+      byId("res-passo4").textContent =
+        "4. Alvo: " +
+        money(custo) +
+        " × " +
+        (p.mMin === p.mMax ? p.mMin : p.mMin + " a " + p.mMax) +
+        " = " +
+        faixaMoney(p.alvoMin, p.alvoMax) +
+        ". Falta: alvo − " +
+        money(o.guardado) +
+        " = " +
+        faixaMoney(p.faltaMin, p.faltaMax) +
+        ".";
+
+      var degrau;
+      if (p.faltaDegrau === 0) {
+        degrau = "Já passaram dele: " + money(p.degrau) + " cobrem o pneu, o dentista e a geladeira sem cartão.";
+      } else if (p.mesesDegrau === null) {
+        degrau = "São " + money(p.degrau) + " — falta " + money(p.faltaDegrau) + ". Com um aporte mensal, a calculadora mostra em quanto tempo.";
+      } else {
+        degrau =
+          "São " +
+          money(p.degrau) +
+          " — falta " +
+          money(p.faltaDegrau) +
+          ", o que leva " +
+          meses(p.mesesDegrau) +
+          " no ritmo de " +
+          money(o.aporte) +
+          ". É o degrau que mais muda a vida: o imprevisto pequeno deixa de virar parcela.";
+      }
+      byId("res-degrau").textContent = degrau;
+
+      mostrar("resultado");
+    }
+
+    var timer = null;
+    function agendar() {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(calcular, 250);
+    }
+
+    ["res-nome1", "res-nome2", "res-sit1", "res-sit2", "res-mesma", "res-dep"].forEach(function (id) {
+      var el = byId(id);
+      el.addEventListener("input", agendar);
+      el.addEventListener("change", agendar);
+    });
+    Object.keys(f).forEach(function (k) {
+      f[k].addEventListener("input", agendar);
+      f[k].addEventListener("change", agendar);
+    });
+
+    // Não há botão "calcular" — se alguém apertar Enter, só recalcula.
+    var form = byId("res-form");
+    if (form) {
+      form.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        calcular();
+      });
+    }
+
+    var btnExemplo = byId("res-btn-exemplo");
+    if (btnExemplo) {
+      btnExemplo.addEventListener("click", function () {
+        byId("res-nome1").value = "Ana";
+        byId("res-nome2").value = "Bruno";
+        byId("res-sit1").value = "e";
+        byId("res-sit2").value = "v";
+        byId("res-mesma").checked = false;
+        byId("res-dep").checked = false;
+        f.custo.value = "6.500";
+        f.renda1.value = "4.000";
+        f.renda2.value = "6.000";
+        f.guardado.value = "0";
+        f.aporte.value = "1.300";
+        calcular();
+      });
+    }
+
+    var btnLimpar = byId("res-btn-limpar");
+    if (btnLimpar) {
+      btnLimpar.addEventListener("click", function () {
+        ["res-nome1", "res-nome2"].forEach(function (id) {
+          byId(id).value = "";
+        });
+        byId("res-sit1").value = "e";
+        byId("res-sit2").value = "e";
+        byId("res-mesma").checked = false;
+        byId("res-dep").checked = false;
+        Object.keys(f).forEach(function (k) {
+          f[k].value = "";
+          marcarErro(k, "");
+        });
+        mostrar("vazio");
+        f.custo.focus();
+      });
+    }
+
+    // Reidrata o que o navegador restaurou (voltar/atualizar).
+    calcular();
+  })();
+</script>
