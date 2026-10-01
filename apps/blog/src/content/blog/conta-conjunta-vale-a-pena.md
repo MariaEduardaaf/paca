@@ -32,7 +32,7 @@ A conta conjunta brilha na logística da casa:
 
 - **Acaba o pinga-pinga de Pix.** Aluguel, luz, internet, mercado do mês, tudo sai de um lugar só. Ninguém precisa cobrar ninguém, ninguém fica devendo "aquela metade" de três semanas atrás.
 - **Débito automático sem dono.** As contas fixas da casa ficam vinculadas à conta do casal, não ao CPF de um dos dois.
-- **Transparência sem esforço.** O extrato é um só. Não existe "não sabia que você tinha gastado isso" para os gastos da casa.
+- **Transparência automática.** O extrato é um só. Não existe "não sabia que você tinha gastado isso" para os gastos da casa.
 - **Planejar fica mais simples.** Um saldo, um orçamento, uma visão.
 
 Um exemplo com números: imaginem que as despesas da casa somam **R$ 4.200/mês** — aluguel R$ 1.800, mercado R$ 1.300, contas de consumo R$ 600, internet e streamings R$ 500. Cada um transfere **R$ 2.100** para a conta conjunta no dia do pagamento (1.800 + 1.300 + 600 + 500 = 4.200 ÷ 2 = 2.100) e o mês está resolvido — uma transferência cada, em vez de uma dúzia de acertos espalhados pelo mês.
