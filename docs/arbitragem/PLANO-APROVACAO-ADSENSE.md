@@ -153,6 +153,7 @@ seguir o assunto.
   A política do AdSense diz literalmente para não pôr anúncio em conteúdo automático
   "sem revisão manual ou curadoria".
 - Publicar os 2 rascunhos aqui, já no padrão novo.
+- [ ] **13/10:** 2 rascunhos novos, temas escolhidos pela Duda, já com guardião ok: `dinheiro-pessoal-no-casal` e `namorados-dividem-a-conta` (sem FAQ, tamanhos diferentes). Decidido em 13/10: **sem relato pessoal**; no lugar, exemplo com números e casos reais citados com fonte. Faltam a leitura final humana, a capa e os links de entrada (no mesmo commit da publicação). Publicar em dias diferentes.
 
 ## Fase 6 — Pedir a revisão
 
