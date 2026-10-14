@@ -85,7 +85,7 @@ Descobrir a dívida resolve o passado. O que impede a repetição é um combinad
 
 Três acordos, e eles valem para qualquer casal — inclusive para os que nunca esconderam nada:
 
-**O valor livre.** Cada um tem um valor por mês que pode gastar sem prestar contas de nada a ninguém, e pode ser R$ 100 ou pode ser R$ 500 — o número importa muito menos que a existência dele. A infidelidade financeira quase sempre nasce da sensação de que todo gasto precisa ser justificado diante do outro, e é dessa sensação, muito mais do que de má-fé, que nasce o primeiro gasto escondido de todos. Quem tem uma quantia legitimamente sua não precisa esconder nada, pela razão mais simples possível: não há nada a esconder.
+**O valor livre.** Cada um tem um valor por mês que pode gastar sem prestar contas de nada a ninguém, e pode ser R$ 100 ou pode ser R$ 500 — o número importa muito menos que a existência dele. A infidelidade financeira quase sempre nasce da sensação de que todo gasto precisa ser justificado diante do outro, e é dessa sensação, muito mais do que de má-fé, que nasce o primeiro gasto escondido de todos. Quem tem uma quantia legitimamente sua não precisa esconder nada, pela razão mais simples possível: não há nada a esconder. Como calcular o valor de cada um está em [dinheiro pessoal no casal](/blog/dinheiro-pessoal-no-casal).
 
 **O teto da conversa.** Acima de um valor combinado — comum ser algo entre 5% e 10% da renda do casal —, qualquer compra ou dívida nova é avisada antes. Não é pedir permissão. É avisar. A diferença entre as duas coisas é o que faz o acordo sobreviver.
 

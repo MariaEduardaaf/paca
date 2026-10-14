@@ -57,7 +57,7 @@ Um valor que entra na conta pessoal de quem parou, todo mês, na mesma data em q
 
 **O silêncio.** Ninguém pergunta no que foi gasto — nem por curiosidade. A pergunta inocente ("comprou o quê?") é exatamente o que devolve a prestação de contas pela porta dos fundos, e ela mata o acordo em dois meses.
 
-**O tamanho.** Tem que ser suficiente para uma decisão de verdade, não só para o cafezinho. Se o valor só cobre o essencial, ele é orçamento doméstico com outro nome, e a autonomia continua não existindo. Um jeito honesto de calibrar é perguntar quanto quem trabalha gasta por mês em coisas que não presta contas a ninguém — e partir dali.
+**O tamanho.** Tem que ser suficiente para uma decisão de verdade, não só para o cafezinho. Se o valor só cobre o essencial, ele é orçamento doméstico com outro nome, e a autonomia continua não existindo. Um jeito honesto de calibrar é perguntar quanto quem trabalha gasta por mês em coisas que não presta contas a ninguém — e partir dali. O passo a passo para chegar ao valor livre de cada um está em [dinheiro pessoal no casal](/blog/dinheiro-pessoal-no-casal).
 
 Vale combinar isso junto com o resto da estrutura de contas: se vocês ainda não decidiram como o dinheiro comum e o individual convivem, o mapa dos três modelos está em [conta conjunta vale a pena](/blog/conta-conjunta-vale-a-pena), e o híbrido é quase sempre o que serve neste caso.
 

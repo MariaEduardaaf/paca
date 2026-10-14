@@ -122,7 +122,7 @@ Não existe modelo certo em abstrato; existe modelo certo para a fase em que voc
 2. **O aporte de cada um, com a conta na mesa.** Exemplo: renda de R$ 3.500 + R$ 6.500 = R$ 10.000; despesas comuns de R$ 4.000. Meio a meio, cada um põe R$ 2.000 — o que consome 57% da renda menor (2.000 ÷ 3.500) e só 31% da maior (2.000 ÷ 6.500). Proporcional, quem ganha R$ 3.500 contribui com 35% de R$ 4.000 = **R$ 1.400**, e quem ganha R$ 6.500 contribui com 65% = **R$ 2.600**. Escolham conscientemente, não por inércia.
 3. **Teto para gasto sem consulta.** Por exemplo: acima de R$ 300 saindo da conta comum, conversa antes. Abaixo disso, ninguém pede licença.
 4. **Colchão mínimo.** Um valor que a conta nunca desce abaixo — idealmente perto de um mês de despesas — para boleto surpresa não virar cheque especial (que, lembrem, negativa os dois).
-5. **Dinheiro pessoal continua pessoal.** O que sobra na conta individual de cada um não se justifica nem se fiscaliza.
+5. **Dinheiro pessoal continua pessoal.** O que sobra na conta individual de cada um não se justifica nem se fiscaliza. Como calcular quanto fica para cada um está em [dinheiro pessoal no casal](/blog/dinheiro-pessoal-no-casal).
 6. **Revisão mensal de 20 minutos.** Extrato aberto, ajustes combinados, sem tom de auditoria.
 
 A regra de bolso final: conta conjunta vale a pena quando ela **formaliza uma parceria que já funciona** — e sai cara quando é usada para forçar uma parceria que ainda não existe. Se a conversa sobre dinheiro ainda trava, comecem por ela; o banco pode esperar.

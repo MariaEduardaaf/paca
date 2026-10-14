@@ -293,6 +293,8 @@ export const MOTIF_BY_SLUG = {
   // o regime; sem esta linha o slug cai no motivo da categoria (stack-two), que
   // ja e do "conta-conjunta-nubank", e as duas capas de ORGANIZACAO ficam iguais.
   "regime-de-bens-antes-de-casar": "circles-overlap",
+  // conversas-sobre-dinheiro: o orcamento repartido, com a fatia livre de cada um
+  "dinheiro-pessoal-no-casal": "bar-thirds",
 };
 
 /**
@@ -576,6 +578,10 @@ export const THEME_BY_SLUG = {
   // mesma busca, rodada de novo em 2026-09-15 com as datas de publicação reais:
   // "rosa" era o ÚNICO fundo que fechava sem mexer em nenhum dos 22 acima.
   "regime-de-bens-antes-de-casar": "rosa", // organizacao
+  // 2026-10-14: creme e o unico fundo que fecha (conversas ja tem 2 rosa e
+  // 2 preto). melhor-app saiu de creme para rosa: com o boas-vindas em
+  // rascunho desde 01/10, ele ficou vizinho do proporcional, tambem creme.
+  "dinheiro-pessoal-no-casal": "creme", // conversas-sobre-dinheiro
   // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
   // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
   // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e
@@ -590,7 +596,7 @@ export const THEME_BY_SLUG = {
   "conta-conjunta-nubank": "preto", // organizacao
   "dividir-contas-proporcional-ao-salario": "creme", // dividir-contas
   "bem-vindos-ao-blog-do-paca": "rosa", // organizacao
-  "melhor-app-financas-casal": "creme", // ferramentas
+  "melhor-app-financas-casal": "rosa", // ferramentas
   "planilha-gastos-casal": "preto", // ferramentas
   "como-dividir-contas-casal": "rosa", // dividir-contas
   "brigas-por-dinheiro-relacionamento": "preto", // conversas-sobre-dinheiro
@@ -719,8 +725,11 @@ export function coverArt({
  * @returns {{ rows: object[], problems: string[] }}
  */
 export function auditCovers(posts) {
+  // Desempate por slug: a MESMA ordem de sortByDateDesc (src/lib/posts.ts).
+  // Sem ele, datas iguais seguiam a ordem de entrada, que difere aqui e no site.
   const sorted = [...posts].sort(
-    (a, b) => new Date(b.pubDate) - new Date(a.pubDate),
+    (a, b) =>
+      new Date(b.pubDate) - new Date(a.pubDate) || a.slug.localeCompare(b.slug),
   );
   const rows = sorted.map((p) => ({
     slug: p.slug,

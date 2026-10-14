@@ -24,7 +24,9 @@ export function formatDate(date: Date): string {
 
 export function sortByDateDesc(posts: BlogPost[]): BlogPost[] {
   return [...posts].sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+    (a, b) =>
+      b.data.pubDate.valueOf() - a.data.pubDate.valueOf() ||
+      a.id.localeCompare(b.id), // desempate igual ao de auditCovers()
   );
 }
 
