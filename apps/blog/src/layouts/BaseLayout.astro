@@ -18,6 +18,8 @@ interface Props {
    * OG image is produced (public/og-default.svg is a branded draft).
    */
   ogImage?: string;
+  /** Keep the page out of search results (utility pages like /descadastro). */
+  noindex?: boolean;
 }
 
 const {
@@ -25,6 +27,7 @@ const {
   description = SITE_DESCRIPTION,
   type = "website",
   ogImage = "/og-default.png",
+  noindex = false,
 } = Astro.props;
 
 /*
@@ -192,8 +195,9 @@ const siteJsonLd = {
       tamanho pequeno e o card do Discover sai sem a imagem grande, que é o
       formato de maior clique. Discover é o canal de volume barato em finanças
       pessoais, então isso anda junto com as imagens indexáveis dos artigos.
+      Exceção: página que passa a prop `noindex` (hoje só /descadastro).
     */}
-    <meta name="robots" content="max-image-preview:large" />
+    <meta name="robots" content={noindex ? "noindex" : "max-image-preview:large"} />
 
     <meta property="og:type" content={type} />
     <meta property="og:title" content={fullTitle} />

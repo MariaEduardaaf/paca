@@ -123,6 +123,8 @@ export default defineConfig({
     // directives + hand-rolled prose styles) from BaseLayout.
     tailwind({ applyBaseStyles: false }),
     sitemap({
+      // /descadastro é noindex (página de serviço do e-mail): fora do sitemap também.
+      filter: (page) => new URL(page).pathname.replace(/\/+$/, "") !== "/descadastro",
       // Sem `serialize` o sitemap sai só com <loc>. Atualizar um artigo antigo é
       // a alavanca de tráfego orgânico mais barata que existe, e sem lastmod o
       // Google não fica sabendo — pode levar semanas para recrawlear sozinho.
