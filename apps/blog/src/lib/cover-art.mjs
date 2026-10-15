@@ -298,6 +298,8 @@ export const MOTIF_BY_SLUG = {
   // dividir-contas: a conversa que o namoro ainda nao teve; formato bem longe
   // do circles-overlap do um-dos-dois, o outro "DIVIDIR CONTAS" em rosa
   "namorados-dividem-a-conta": "bubble-dots",
+  // metas-e-sonhos: as duas parcelas do 13o, a segunda menor pelos descontos
+  "13-salario-casal": "bars-duo",
 };
 
 /**
@@ -590,6 +592,9 @@ export const THEME_BY_SLUG = {
   // exaustiva: com ate 3 trocas, zero solucoes; com 4, uma so, a aplicada
   // abaixo (brigas, como-dividir, como-falar e planilha).
   "namorados-dividem-a-conta": "rosa", // dividir-contas
+  // 2026-10-21: preto fecha sem trocar nenhuma capa publicada (creme tambem
+  // fecharia); escolhido porque deixa creme livre para a viagem de 23/10.
+  "13-salario-casal": "preto", // metas-e-sonhos
   // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
   // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
   // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e

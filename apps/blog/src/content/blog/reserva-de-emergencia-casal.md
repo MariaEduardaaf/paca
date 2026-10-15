@@ -111,7 +111,7 @@ Trinta meses assusta — por isso o próximo movimento existe.
 
 ### Usem o dinheiro que não está no orçamento mensal
 
-13º, restituição do imposto de renda, bônus, férias vendidas, o Pix de aniversário. É dinheiro que chega de uma vez e não estava sendo contado.
+13º, restituição do imposto de renda, bônus, férias vendidas, o Pix de aniversário. É dinheiro que chega de uma vez e não estava sendo contado. Se o 13º dos dois ainda não tem destino, o guia de [o que fazer com o 13º salário em casal](/blog/13-salario-casal) mostra em que ordem dividir a parcela entre dívida, reserva e janeiro.
 
 Se cada um destinar o 13º inteiro à reserva, entram R$ 4.000 + R$ 6.000 = **R$ 10.000 por ano**. A conta muda de figura: R$ 1.300 × 12 + R$ 10.000 = **R$ 25.600 por ano**, e os R$ 39.000 saem em cerca de **19 meses** em vez de 30. Só cuidado com um detalhe brasileiro: se janeiro de vocês vem pesado, com IPVA, IPTU e material escolar, separem essa parte antes — reserva construída com dinheiro que faz falta em janeiro é reserva que será sacada em janeiro.
 

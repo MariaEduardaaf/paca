@@ -156,4 +156,4 @@ Três defesas: (1) tenham reserva de emergência separada — é ela que absorve
 
 ### Vale a pena usar o 13º pra meta?
 
-É provavelmente o maior acelerador disponível: dinheiro que não está no orçamento mensal e chega de uma vez. Uma divisão comum é usar parte pra despesas de fim de ano (que sempre vêm) e destinar o restante à meta — no nosso exemplo, R$ 5.000 do casal adiantam 7,5 meses de aporte da viagem. Só evitem comprometer o 13º inteiro se janeiro de vocês costuma vir pesado, com IPVA, IPTU e material escolar batendo na porta.
+É provavelmente o maior acelerador disponível: dinheiro que não está no orçamento mensal e chega de uma vez. Uma divisão comum é usar parte pra despesas de fim de ano (que sempre vêm) e destinar o restante à meta — no nosso exemplo, R$ 5.000 do casal adiantam 7,5 meses de aporte da viagem. Só evitem comprometer o 13º inteiro se janeiro de vocês costuma vir pesado, com IPVA, IPTU e material escolar batendo na porta. A fila completa, da dívida cara ao valor livre de cada um, está no guia de [o que fazer com o 13º salário em casal](/blog/13-salario-casal).

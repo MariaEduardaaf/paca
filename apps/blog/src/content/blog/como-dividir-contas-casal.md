@@ -181,4 +181,4 @@ Se há diferença grande de renda, vale adaptar a lógica proporcional até nos 
 
 Revisão leve mensal (no dia do acerto: bateu com o combinado?) e revisão de verdade a cada 3 meses, somando o que cada um pagou de fato. Além do calendário, revisem sempre que um gatilho disparar: aumento ou queda de salário, mudança de casa, filho, dívida nova.
 
-Um caso que quase todo casal esquece: o 13º e bônus. Combinem antes de novembro se entram na conta do casal, se vão para um objetivo comum ou se são de cada um — é uma das discussões mais fáceis de evitar com uma frase, e das mais chatas de resolver depois.
+Um caso que quase todo casal esquece: o 13º e bônus. Combinem antes de novembro se entram na conta do casal, se vão para um objetivo comum ou se são de cada um — é uma das discussões mais fáceis de evitar com uma frase, e das mais chatas de resolver depois. Para decidir a ordem do 13º, o guia do [13º salário em casal](/blog/13-salario-casal) monta a fila com um exemplo em números.
