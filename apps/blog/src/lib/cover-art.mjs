@@ -300,6 +300,8 @@ export const MOTIF_BY_SLUG = {
   "namorados-dividem-a-conta": "bubble-dots",
   // metas-e-sonhos: as duas parcelas do 13o, a segunda menor pelos descontos
   "13-salario-casal": "bars-duo",
+  // metas-e-sonhos: duas faixas desiguais, o que cada um pagou antes do acerto
+  "viagem-a-dois-dividir-gastos": "stack-step",
 };
 
 /**
@@ -595,6 +597,9 @@ export const THEME_BY_SLUG = {
   // 2026-10-21: preto fecha sem trocar nenhuma capa publicada (creme tambem
   // fecharia); escolhido porque deixa creme livre para a viagem de 23/10.
   "13-salario-casal": "preto", // metas-e-sonhos
+  // 2026-10-23: creme fecha sem trocar nenhuma capa publicada (rosa estoura o
+  // teto de metas-e-sonhos e preto bate no 13-salario, vizinho nas duas listas).
+  "viagem-a-dois-dividir-gastos": "creme", // metas-e-sonhos
   // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
   // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
   // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e

@@ -38,7 +38,7 @@ Não é caso de cobrar aluguel de quem ainda não mora junto. Dois arranjos reso
 
 Viagem e presente apertam mais, porque neles ninguém quer parecer que economiza no outro, e há sinal de que gastar pelo outro além da conta não é raro: uma pesquisa da Serasa com o Instituto Opinion Box, que ouviu 1.732 pessoas em maio de 2024, encontrou que 32% dos entrevistados já se endividaram por causa de um parceiro e 25% já precisaram tomar crédito motivados pela pessoa amada ([Serasa, 2024](https://www.serasa.com.br/imprensa/3-em-cada-10-brasileiros-ja-se-endividaram-por-conta-de-namorado/)).
 
-Para a viagem, combinem o valor total antes de reservar qualquer coisa, e depois quem paga o quê: passagem, hospedagem e o gasto do dia a dia lá. Para os presentes, um teto por data, dito em voz alta, tira de cima de quem ganha menos a obrigação silenciosa de acompanhar o outro.
+Para a viagem, combinem o valor total antes de reservar qualquer coisa, e depois quem paga o quê: passagem, hospedagem e o gasto do dia a dia lá. O acerto da volta, com parcela e tudo, está no guia de [viagem a dois](/blog/viagem-a-dois-dividir-gastos). Para os presentes, um teto por data, dito em voz alta, tira de cima de quem ganha menos a obrigação silenciosa de acompanhar o outro.
 
 ## Quanto fica cada parte num mês de namoro?
 

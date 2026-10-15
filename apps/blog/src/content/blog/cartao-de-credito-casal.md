@@ -97,7 +97,7 @@ Dividir a fatura resolve o passado. O que evita o susto é combinar o futuro: at
 | Folga do limite | O usado não passa de 70% (R$ 5.600 dos R$ 8.000) | Deixa margem para o imprevisto dos dois |
 | Compra grande | Aviso no mesmo dia, não no fim do mês | Surpresa na fatura é o que mais gera briga |
 
-A regra do parcelamento é a mais subestimada. Uma TV de R$ 3.600 em 12x parece R$ 300 — mas reserva R$ 300 de todas as faturas do casal por um ano, inclusive no mês em que o IPTU e o seguro do carro chegam juntos. Parcelamento não é desconto: é compromisso com o futuro dos dois.
+A regra do parcelamento é a mais subestimada. Uma TV de R$ 3.600 em 12x parece R$ 300 — mas reserva R$ 300 de todas as faturas do casal por um ano, inclusive no mês em que o IPTU e o seguro do carro chegam juntos. Parcelamento não é desconto: é compromisso com o futuro dos dois. Quando a parcela é de uma viagem a dois no cartão de um só, o guia de [viagem a dois](/blog/viagem-a-dois-dividir-gastos) mostra como o outro acerta a sua parte fatura a fatura.
 
 E teto de gasto não é controle, é previsibilidade. Se para um dos dois isso soa como vigilância, o problema não está no cartão — está na conversa, e o guia sobre [como falar de dinheiro no relacionamento](/blog/como-falar-de-dinheiro-relacionamento) ajuda mais que qualquer regra numérica.
 
