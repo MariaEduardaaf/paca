@@ -23,7 +23,7 @@ Só que o "não" do Nubank não é um esquecimento. Conta conjunta é um produto
 
 ### Espaço Família e saldo compartilhado (Ultravioleta)
 
-O recurso mais próximo de uma conta compartilhada dentro do Nubank é o [Espaço Família](https://nubank.com.br/ultravioleta/beneficios/espaco-familia), disponível no Nubank Ultravioleta — a linha de alta renda do banco, com critérios próprios de elegibilidade e mensalidade sujeita a condições. Dentro dele existe um **saldo compartilhado**: uma área separada da conta pessoal, onde mais de uma pessoa deposita e de onde saem as despesas do grupo.
+O recurso mais próximo de uma conta compartilhada dentro do Nubank é o [Espaço Família](https://international.nubank.com.br/pt-br/consumidores/espaco-familia-nubank-ultravioleta-lanca-recurso-de-saldo-compartilhado/), disponível no Nubank Ultravioleta — a linha de alta renda do banco, com critérios próprios de elegibilidade e mensalidade sujeita a condições. Dentro dele existe um **saldo compartilhado**: uma área separada da conta pessoal, onde mais de uma pessoa deposita e de onde saem as despesas do grupo.
 
 É o desenho mais parecido com o "pote comum" que os casais montam na mão. Mas repare nas diferenças em relação a uma conta conjunta de verdade: não são dois titulares de uma conta, é um espaço vinculado a quem administra; o acesso depende de ser cliente Ultravioleta; e as regras de quem movimenta o quê são do produto, não do Código Civil. Antes de contar com isso, confirmem no app quem pode entrar, quem pode movimentar e o que muda se um dos dois sair do Ultravioleta.
 
