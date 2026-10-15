@@ -163,7 +163,7 @@ O efeito composto aparece rápido: quando existe um espaço garantido todo mês 
 
 ### Devo falar de dinheiro logo no início do namoro?
 
-Nos primeiros meses, não é preciso abrir salário nem extrato — mas o estilo financeiro já aparece nos pequenos sinais: como a pessoa divide a conta do bar, se paga as coisas em dia, como fala das próprias contas. Observem e conversem sobre o que surgir naturalmente. A abertura completa (salários, dívidas, metas) deve acompanhar os marcos: virou sério, aprofunda; vai morar junto, abre tudo.
+Nos primeiros meses, não é preciso abrir salário nem extrato — mas o estilo financeiro já aparece nos pequenos sinais: como a pessoa divide a conta do bar, se paga as coisas em dia, como fala das próprias contas. Observem e conversem sobre o que surgir naturalmente. A abertura completa (salários, dívidas, metas) deve acompanhar os marcos: virou sério, aprofunda; vai morar junto, abre tudo. O primeiro combinado prático dessa fase, de quem paga programa, viagem e presente, está em [namorados dividem a conta?](/blog/namorados-dividem-a-conta).
 
 ### E se meu parceiro se recusar a falar de dinheiro?
 

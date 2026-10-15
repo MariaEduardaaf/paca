@@ -295,6 +295,9 @@ export const MOTIF_BY_SLUG = {
   "regime-de-bens-antes-de-casar": "circles-overlap",
   // conversas-sobre-dinheiro: o orcamento repartido, com a fatia livre de cada um
   "dinheiro-pessoal-no-casal": "bar-thirds",
+  // dividir-contas: a conversa que o namoro ainda nao teve; formato bem longe
+  // do circles-overlap do um-dos-dois, o outro "DIVIDIR CONTAS" em rosa
+  "namorados-dividem-a-conta": "bubble-dots",
 };
 
 /**
@@ -582,6 +585,11 @@ export const THEME_BY_SLUG = {
   // 2 preto). melhor-app saiu de creme para rosa: com o boas-vindas em
   // rascunho desde 01/10, ele ficou vizinho do proporcional, tambem creme.
   "dinheiro-pessoal-no-casal": "creme", // conversas-sobre-dinheiro
+  // 2026-10-16: nenhum fundo fecha sozinho (creme bate no dinheiro-pessoal,
+  // preto no renda-extra, rosa estoura o teto de 2 de dividir-contas). Busca
+  // exaustiva: com ate 3 trocas, zero solucoes; com 4, uma so, a aplicada
+  // abaixo (brigas, como-dividir, como-falar e planilha).
+  "namorados-dividem-a-conta": "rosa", // dividir-contas
   // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
   // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
   // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e
@@ -597,14 +605,14 @@ export const THEME_BY_SLUG = {
   "dividir-contas-proporcional-ao-salario": "creme", // dividir-contas
   "bem-vindos-ao-blog-do-paca": "rosa", // organizacao
   "melhor-app-financas-casal": "rosa", // ferramentas
-  "planilha-gastos-casal": "preto", // ferramentas
-  "como-dividir-contas-casal": "rosa", // dividir-contas
-  "brigas-por-dinheiro-relacionamento": "preto", // conversas-sobre-dinheiro
+  "planilha-gastos-casal": "creme", // ferramentas
+  "como-dividir-contas-casal": "preto", // dividir-contas
+  "brigas-por-dinheiro-relacionamento": "rosa", // conversas-sobre-dinheiro
   "conta-conjunta-vale-a-pena": "creme", // organizacao
   "como-juntar-dinheiro-casal": "rosa", // metas-e-sonhos
   "regra-50-30-20-casal": "preto", // organizacao
   "morar-junto-dividir-despesas": "creme", // dividir-contas
-  "como-falar-de-dinheiro-relacionamento": "rosa", // conversas-sobre-dinheiro
+  "como-falar-de-dinheiro-relacionamento": "preto", // conversas-sobre-dinheiro
 
   // capas das PÁGINAS de categoria (Cover é chamado com slug = id da categoria),
   // na ordem em que a lista de /categorias as mostra

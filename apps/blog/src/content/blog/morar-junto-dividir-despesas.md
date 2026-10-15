@@ -25,7 +25,7 @@ O roteiro mínimo dessa conversa:
 - **Quanto sobra de verdade** pra assumir a casa nova — de cada lado.
 - **Expectativas de rotina** — quem cozinha, quem faz o mercado, o que é "essencial" pra cada um (pra um, ar-condicionado; pro outro, internet rápida).
 
-Se o assunto travar — e é comum travar —, o guia sobre [como falar de dinheiro no relacionamento](/blog/como-falar-de-dinheiro-relacionamento) tem um roteiro pra essa primeira conversa sem clima de DR.
+Se o assunto travar — e é comum travar —, o guia sobre [como falar de dinheiro no relacionamento](/blog/como-falar-de-dinheiro-relacionamento) tem um roteiro pra essa primeira conversa sem clima de DR. Ainda no namoro, sem data pra mudança? Comecem por [como namorados dividem a conta](/blog/namorados-dividem-a-conta), que trata dos gastos de antes do aluguel.
 
 ## Lista completa de despesas de quem mora junto
 

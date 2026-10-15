@@ -175,7 +175,7 @@ Duas coisas evitam que essa fase corroa a relação: prazo de revisão (a cada 2
 
 Contas fixas, não — mas os gastos de casal (restaurante, cinema, viagens, delivery) já merecem um combinado simples, porque é neles que nasce o padrão "um sempre paga, o outro sempre deixa". Alternar quem paga o programa ou dividir na hora via Pix já resolve na maioria dos casos.
 
-Se há diferença grande de renda, vale adaptar a lógica proporcional até nos programas: quem ganha mais escolhe pagar mais vezes, sem transformar isso em planilha. O importante nessa fase é criar o hábito de falar de dinheiro sem constrangimento — ele vale mais que qualquer fórmula.
+Se há diferença grande de renda, vale adaptar a lógica proporcional até nos programas: quem ganha mais escolhe pagar mais vezes, sem transformar isso em planilha. O importante nessa fase é criar o hábito de falar de dinheiro sem constrangimento — ele vale mais que qualquer fórmula. Para a casa de quem recebe, a viagem e o presente, o guia [namorados dividem a conta?](/blog/namorados-dividem-a-conta) detalha cada combinado.
 
 ### Com que frequência devemos revisar a divisão?
 
