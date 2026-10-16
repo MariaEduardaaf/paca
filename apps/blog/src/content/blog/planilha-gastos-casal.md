@@ -122,7 +122,7 @@ Sete categorias bastam. Com vinte, cada lançamento vira um debate filosófico s
 
 **Para definir os tetos por categoria**, um bom ponto de partida é a regra 50/30/20 popularizada por Elizabeth Warren: até 50% da renda para necessidades, 30% para desejos, 20% para poupar. No exemplo de renda total de R$ 10.000, isso significa até R$ 5.000 em moradia, mercado e contas, até R$ 3.000 em lazer e desejos, e R$ 2.000 guardados. Explicamos [como adaptar a regra 50/30/20 para a realidade de casal](/blog/regra-50-30-20-casal) em outro artigo. Os tetos da tabela acima são só um exemplo, ajustem à renda de vocês.
 
-**O que entra na planilha:** só gastos conjuntos. O gasto pessoal de cada um (academia, presente para amigo, hobby) fica fora; cada um administra o seu. Misturar tudo é o caminho mais rápido para um fiscalizar o cafezinho do outro.
+**O que entra na planilha:** só gastos conjuntos. O gasto pessoal de cada um (academia, presente para amigo, hobby) fica fora; cada um administra o seu. Misturar tudo é o caminho mais rápido para um fiscalizar o cafezinho do outro. No mercado, onde essa fronteira mais se confunde, a regra para os itens só de um está em [quanto custa o mercado de um casal por mês](/blog/mercado-do-casal).
 
 ## Rotina de 10 minutos por semana
 

@@ -303,6 +303,8 @@ export const MOTIF_BY_SLUG = {
   // conversas-sobre-dinheiro: duas faixas de larguras diferentes, os dois
   // padroes de vida que a renda desigual puxa para lados diferentes
   "quando-um-ganha-mais-que-o-outro": "stack-step",
+  // organizacao: a grade alternada lida como a lista de compras riscada
+  "mercado-do-casal": "grid-checker",
 };
 
 /**
@@ -602,6 +604,10 @@ export const THEME_BY_SLUG = {
   // categoria; rosa tambem fecharia). Preto para nao repetir o rosa do
   // quando-um-sustenta, o artigo mais parecido da mesma categoria.
   "quando-um-ganha-mais-que-o-outro": "preto", // conversas-sobre-dinheiro
+  // 2026-11-04: creme e o unico fundo que fecha (preto bate no
+  // quando-um-ganha, vizinho na grade; rosa bate no regime-de-bens, vizinho na
+  // categoria), e fecharia tambem em dividir-contas.
+  "mercado-do-casal": "creme", // organizacao
   // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
   // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
   // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e

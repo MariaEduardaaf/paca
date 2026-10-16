@@ -153,7 +153,7 @@ Comecem pelo híbrido e evoluam se fizer sentido: o formato do pote (conta conju
 
 Mercado é despesa da casa: sai do fundo comum ou entra na divisão combinada, igual ao aluguel. O atrito real está nos itens "de um só": suplemento, cerveja, cosmético. Regra prática: o que os dois consomem entra na conta da casa; o que é claramente individual, cada um paga o seu ou entra num teto combinado (até R$ 100 de "mimos" de cada lado no carrinho, por exemplo).
 
-Guardar a notinha do mercado ajuda a fechar essa fronteira com fato, e não com memória, que é onde a discussão costuma começar.
+Guardar a notinha do mercado ajuda a fechar essa fronteira com fato, e não com memória, que é onde a discussão costuma começar. Quanto o mercado de dois custa hoje, capital por capital, e como dividir sem um Pix a cada compra está em [quanto custa o mercado de um casal por mês](/blog/mercado-do-casal).
 
 ### E as dívidas que cada um trouxe de antes de morar junto?
 

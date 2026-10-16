@@ -98,7 +98,7 @@ Distribuindo nos gastos reais do mês:
 | Amortização da dívida do cartão | R$ 200 |
 | **Total** | **R$ 1.600** |
 
-Os valores são ilustrativos: o aluguel de vocês pode ser maior, o transporte menor. O que importa é o formato: cada gasto tem um balde, cada balde tem um teto (ou um piso, no caso dos objetivos), e a soma bate com a renda.
+Os valores são ilustrativos: o aluguel de vocês pode ser maior, o transporte menor, e o mercado de dois passa bem dos R$ 950 nas capitais mais caras: a conta com a cesta básica de cada capital está em [quanto custa o mercado de um casal por mês](/blog/mercado-do-casal). O que importa é o formato: cada gasto tem um balde, cada balde tem um teto (ou um piso, no caso dos objetivos), e a soma bate com a renda.
 
 ## Salários muito diferentes: 50/30/20 individual ou conjunto?
 
