@@ -12,7 +12,7 @@ O momento não é o boleto. É outro, bem menor, e é ele que fica na memória: 
 
 Quem parou de trabalhar quase nunca reclama de falta de dinheiro em casa — reclama de **precisar pedir**. E essa diferença, que parece detalhe de sentimento, é na verdade a coisa mais concreta desta história inteira, porque ela não se resolve aumentando o valor que entra: resolve-se mudando o combinado sobre de quem é aquele dinheiro.
 
-⚠️ **Antes de tudo, uma distinção que muda o que você deve ler.** Se a renda de um de vocês acabou de sumir e a expectativa é que volte em alguns meses, isso é uma crise, e o caminho é outro — está no guia sobre [desemprego no casal](/blog/um-dos-dois-desempregado-financas-casal), que trata do choque e da volta. Este texto aqui é sobre o **arranjo**: alguém parou porque vocês combinaram, para cuidar de filho, para estudar, para tocar um projeto, ou porque a conta fechava melhor assim — e isso pode durar anos.
+⚠️ **Antes de tudo, uma distinção que muda o que você deve ler.** Se a renda de um de vocês acabou de sumir e a expectativa é que volte em alguns meses, isso é uma crise, e o caminho é outro — está no guia sobre [desemprego no casal](/blog/um-dos-dois-desempregado-financas-casal), que trata do choque e da volta. Este texto aqui é sobre o **arranjo**: alguém parou porque vocês combinaram, para cuidar de filho, para estudar, para tocar um projeto, ou porque a conta fechava melhor assim — e isso pode durar anos. Se os dois têm renda, só que uma bem maior que a outra, o assunto é outro, e está em [quando um ganha mais que o outro](/blog/quando-um-ganha-mais-que-o-outro).
 
 ## O que a lei diz, e quase ninguém sabe
 

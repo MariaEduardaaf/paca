@@ -81,7 +81,7 @@ Um paga o aluguel no Pix, o outro passa o mercado do mês no cartão, o boleto d
 
 ### 4. Desequilíbrio de poder
 
-Quando um ganha bem mais (ou controla todas as contas), é fácil escorregar para um padrão em que um decide e o outro pede permissão. Quem pede permissão se sente criança; quem decide sozinho se sente carregando tudo. Os dois se ressentem — por motivos opostos.
+Quando um ganha bem mais (ou controla todas as contas), é fácil escorregar para um padrão em que um decide e o outro pede permissão. Quem pede permissão se sente criança; quem decide sozinho se sente carregando tudo. Os dois se ressentem — por motivos opostos. O combinado que separa quem decide de quem paga mais está em [quando um ganha mais que o outro](/blog/quando-um-ganha-mais-que-o-outro).
 
 ### 5. Histórias familiares diferentes
 

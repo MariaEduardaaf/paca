@@ -148,7 +148,7 @@ Algumas táticas que reduzem o atrito:
 - **Proponham como teste, não como sentença.** "Vamos rodar assim por 3 meses e ver como fica?" tira o peso de decisão definitiva e dá espaço para ajustar.
 - **Deixem claro o que NÃO é.** Proporcional não é favor de quem ganha mais nem dependência de quem ganha menos. É o mesmo esforço relativo — os dois abrem mão do mesmo pedaço da própria renda.
 
-Uma ressalva honesta: a proporcional pura também tem limite. Se a diferença de renda for muito grande, quem ganha muito mais pode acabar bancando um padrão de vida que sozinho escolheria diferente — nesse caso, vale combinar um teto de gastos conjunto antes de aplicar a proporção. E se a conversa sobre dinheiro em si ainda é travada aí na casa de vocês, começar por ela vem antes de qualquer fórmula.
+Uma ressalva honesta: a proporcional pura também tem limite. Se a diferença de renda for muito grande, quem ganha muito mais pode acabar bancando um padrão de vida que sozinho escolheria diferente — nesse caso, vale combinar um teto de gastos conjunto antes de aplicar a proporção. Que padrão de vida a casa segue, e quem decide os gastos grandes quando as rendas são tão diferentes, está em [quando um ganha mais que o outro](/blog/quando-um-ganha-mais-que-o-outro). E se a conversa sobre dinheiro em si ainda é travada aí na casa de vocês, começar por ela vem antes de qualquer fórmula.
 
 ## Como automatizar o cálculo todo mês
 

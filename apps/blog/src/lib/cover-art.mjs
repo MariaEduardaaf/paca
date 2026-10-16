@@ -302,6 +302,9 @@ export const MOTIF_BY_SLUG = {
   "13-salario-casal": "bars-duo",
   // metas-e-sonhos: duas faixas desiguais, o que cada um pagou antes do acerto
   "viagem-a-dois-dividir-gastos": "stack-step",
+  // conversas-sobre-dinheiro: duas faixas de larguras diferentes, os dois
+  // padroes de vida que a renda desigual puxa para lados diferentes
+  "quando-um-ganha-mais-que-o-outro": "stack-step",
 };
 
 /**
@@ -600,6 +603,11 @@ export const THEME_BY_SLUG = {
   // 2026-10-23: creme fecha sem trocar nenhuma capa publicada (rosa estoura o
   // teto de metas-e-sonhos e preto bate no 13-salario, vizinho nas duas listas).
   "viagem-a-dois-dividir-gastos": "creme", // metas-e-sonhos
+  // 2026-10-28: preto fecha sem trocar nenhuma capa publicada (creme bate no
+  // viagem-a-dois, vizinho na grade, e no dinheiro-pessoal, vizinho na
+  // categoria; rosa tambem fecharia). Preto para nao repetir o rosa do
+  // quando-um-sustenta, o artigo mais parecido da mesma categoria.
+  "quando-um-ganha-mais-que-o-outro": "preto", // conversas-sobre-dinheiro
   // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
   // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
   // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e
