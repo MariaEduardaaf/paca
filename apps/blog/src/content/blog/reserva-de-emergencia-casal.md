@@ -129,7 +129,7 @@ Reserva sem regra de uso vira conta corrente com passos extras. Combinem antes:
 
 **É emergência:** perda de renda de um dos dois, problema de saúde, conserto sem o qual a casa ou o trabalho param (geladeira, carro usado para trabalhar, computador), emergência com família próxima, mudança forçada.
 
-**Não é emergência:** viagem que apareceu, promoção imperdível, presente, troca de celular que ainda funciona, entrada de carro novo. Isso é meta, e meta tem outra caixinha.
+**Não é emergência:** viagem que apareceu, promoção imperdível, presente, troca de celular que ainda funciona, entrada de carro novo. Isso é meta, e meta tem outra caixinha. IPVA, IPTU e matrícula também não são emergência: conta com data marcada pede caixinha própria, como a das [contas do começo do ano](/blog/contas-do-comeco-do-ano).
 
 **A regra de reposição** é a parte que quase todo mundo esquece: usou, reponha. Definam no mesmo mês do saque quanto vai voltar por mês e em quanto tempo, e tratem esse aporte como conta fixa até zerar. Reserva usada e não reposta é a razão número um de casal ser pego duas vezes pelo mesmo tipo de imprevisto.
 

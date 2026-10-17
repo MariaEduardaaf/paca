@@ -305,6 +305,9 @@ export const MOTIF_BY_SLUG = {
   "quando-um-ganha-mais-que-o-outro": "stack-step",
   // organizacao: a grade alternada lida como a lista de compras riscada
   "mercado-do-casal": "grid-checker",
+  // dividir-contas: a grade de 12 meses com a primeira linha cheia, o comeco
+  // do ano que concentra IPVA, IPTU e escola
+  "contas-do-comeco-do-ano": "grid-progress",
 };
 
 /**
@@ -608,6 +611,9 @@ export const THEME_BY_SLUG = {
   // quando-um-ganha, vizinho na grade; rosa bate no regime-de-bens, vizinho na
   // categoria), e fecharia tambem em dividir-contas.
   "mercado-do-casal": "creme", // organizacao
+  // 2026-11-11: em dividir-contas so preto fecha (creme bate no mercado-do-casal,
+  // vizinho na grade; rosa no namorados-dividem-a-conta, vizinho na categoria).
+  "contas-do-comeco-do-ano": "preto", // dividir-contas
   // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
   // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
   // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e
