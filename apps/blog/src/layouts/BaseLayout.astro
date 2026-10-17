@@ -285,6 +285,17 @@ const siteJsonLd = {
       )
     }
 
+    {/* Vercel Web Analytics — conta visitas por página e origem (Google,
+        Pinterest, Instagram), coisa que o Search Console não vê: ele só conta
+        clique de busca. Sem cookie e sem dado pessoal, então não entra no
+        opt-out do Pixel; está descrito em /privacidade. O script só existe nos
+        deploys da Vercel com Web Analytics ligado no painel; fora disso dá 404
+        e não quebra nada. */}
+    <script is:inline>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script is:inline defer src="/_vercel/insights/script.js"></script>
+
     <slot name="head" />
   </head>
   <body class="flex min-h-full flex-col bg-cream dark:bg-gray-900">
