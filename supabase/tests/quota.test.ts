@@ -174,10 +174,11 @@ describe("checkMonthlyQuota — a cota mensal do casal", () => {
     assert.equal(result.allowed, true);
   });
 
-  test("erro ao contar libera o uso (falha aberto) e não inventa consumo", async () => {
+  test("erro ao contar BLOQUEIA o uso (falha fechado) e marca failed", async () => {
     const [client] = createFakeSupabase({ count: 999, error: { message: "enum não existe" } });
     const result = await checkMonthlyQuota(client, "couple-1", ["scan_receipt"], 10);
-    assert.equal(result.allowed, true);
+    assert.equal(result.allowed, false);
+    assert.equal(result.failed, true);
     assert.equal(result.used, 0);
     assert.equal(result.limit, 10);
   });
@@ -205,10 +206,11 @@ describe("checkMonthlyQuota — a cota mensal do casal", () => {
     );
   });
 
-  test("sem casal e sem perfil libera o uso sem consultar o banco", async () => {
+  test("sem casal e sem perfil bloqueia (falha fechado) sem consultar o banco", async () => {
     const [client, spy] = createFakeSupabase({ count: 99 });
     const result = await checkMonthlyQuota(client, null, ["translate_category"], 5);
-    assert.equal(result.allowed, true);
+    assert.equal(result.allowed, false);
+    assert.equal(result.failed, true);
     assert.equal(result.used, 0);
     assert.equal(spy.queries.length, 0, "não deveria ter consultado o banco");
   });

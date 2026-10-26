@@ -1,8 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
 import { createAdminClient } from "../_shared/adminClient.ts";
-import { isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
+import { reserveAiCall } from "../_shared/aiGate.ts";
 import { convert } from "../_shared/fx.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
@@ -43,28 +42,18 @@ Deno.serve(async (req) => {
 
     if (!profile?.couple_id) return jsonResponse({ error: "No couple found" }, 403);
 
-    // Throttle the paid Gemini scan per user to prevent runaway billing abuse.
-    // Tighter cap than receipts: statements allow up to 16k output tokens.
-    const rateLimit = await checkRateLimit(supabase, profile.id, {
+    // Reserve the usage row BEFORE the paid Gemini call (concurrent requests see
+    // each other), then rate-limit + free-tier quota (10 AI scans/month per couple;
+    // receipt + statement share the pool; Premium bypasses). A meter that cannot be
+    // read fails CLOSED (503). See _shared/aiGate.ts.
+    const gate = await reserveAiCall(supabase, createAdminClient(), profile, {
       action: "scan_statement",
       windowSeconds: 3600,
       max: 12,
-    });
-    if (!rateLimit.allowed) return rateLimitedResponse(rateLimit, corsHeaders);
-
-    // Free tier: 10 AI scans/month per couple (receipt + statement share the pool).
-    // Premium couples bypass. Counted server-side across both partners (service_role).
-    const admin = createAdminClient();
-    const premium = await isPremium(admin, profile.couple_id);
-    if (!premium) {
-      const quota = await checkMonthlyQuota(
-        admin,
-        profile.couple_id,
-        ["scan_receipt", "scan_statement"],
-        10,
-      );
-      if (!quota.allowed) return quotaExceededResponse(quota, corsHeaders);
-    }
+      quota: { actions: ["scan_receipt", "scan_statement"], limit: 10 },
+    }, corsHeaders);
+    if ("response" in gate) return gate.response;
+    const { premium } = gate;
 
     // Fetch couple's primary currency (target for conversion)
     const { data: couple } = await supabase
@@ -81,9 +70,10 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { image } = body;
     const requestedMode = body?.mode === "personal" ? "personal" : "couple";
-    if (!image) return jsonResponse({ error: "Image required" }, 400);
+    if (!image) { await gate.release(); return jsonResponse({ error: "Image required" }, 400); }
     // Bound the base64 payload (~10MB decoded) before buffering/forwarding it.
     if (typeof image !== "string" || image.length > 14_000_000) {
+      await gate.release();
       return jsonResponse({ error: "Image too large" }, 413);
     }
 
@@ -238,20 +228,13 @@ CRITICAL: SKIP CANCELLED AND DENIED TRANSACTIONS ENTIRELY.
     // torn down, undercounting the quota/rate meters. On insert failure we
     // still return the result (metering must never break the feature).
     // The insert and the FX conversions are independent — run them concurrently.
-    const usagePromise = supabase
-      .from("usage_stats")
-      .insert({
-        profile_id: profile.id,
-        couple_id: profile.couple_id,
-        action: "scan_statement",
-        metadata: {
-          transactions_count: sanitized.length,
-          primary_currency: primaryCurrency,
-          currencies_detected: Array.from(
-            new Set(sanitized.map((t) => t.rawCurrency))
-          ),
-        },
-      });
+    const usagePromise = gate.finalize({
+      transactions_count: sanitized.length,
+      primary_currency: primaryCurrency,
+      currencies_detected: Array.from(
+        new Set(sanitized.map((t) => t.rawCurrency))
+      ),
+    });
 
     // Convert each transaction to the couple's primary currency. On FX failure
     // keep the ORIGINAL currency and amount and flag the row — relabeling
@@ -290,8 +273,7 @@ CRITICAL: SKIP CANCELLED AND DENIED TRANSACTIONS ENTIRELY.
       })
     );
 
-    const [{ error: usageError }, converted] = await Promise.all([usagePromise, convertedPromise]);
-    if (usageError) console.error("usage log failed:", usageError);
+    const [, converted] = await Promise.all([usagePromise, convertedPromise]);
 
     return jsonResponse({ transactions: converted, primary_currency: primaryCurrency });
   } catch (error) {

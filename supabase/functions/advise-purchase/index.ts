@@ -1,8 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
 import { createAdminClient } from "../_shared/adminClient.ts";
-import { isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
+import { reserveAiCall } from "../_shared/aiGate.ts";
 import { advisorFallback, resolveLang } from "../_shared/i18n.ts";
 import { convert } from "../_shared/fx.ts";
 
@@ -148,22 +147,17 @@ Deno.serve(async (req) => {
 
     if (!profile?.couple_id) return jsonResponse({ error: "No couple found" }, 403);
 
-    // Throttle the paid Gemini advice generation per user to cap billing abuse.
-    const rateLimit = await checkRateLimit(supabase, profile.id, {
+    // Reserve the usage row BEFORE the paid Gemini call, then rate-limit + free
+    // tier (3 advisor questions/month per couple; Premium bypasses). Meter errors
+    // fail CLOSED (503). See _shared/aiGate.ts.
+    const gate = await reserveAiCall(supabase, createAdminClient(), profile, {
       action: "advise",
       windowSeconds: 3600,
       max: 20,
-    });
-    if (!rateLimit.allowed) return rateLimitedResponse(rateLimit, corsHeaders);
-
-    // Free tier: 3 advisor questions/month per couple. Premium bypasses.
-    // Counted server-side across both partners (service_role).
-    const admin = createAdminClient();
-    const premium = await isPremium(admin, profile.couple_id);
-    if (!premium) {
-      const quota = await checkMonthlyQuota(admin, profile.couple_id, ["advise"], 3);
-      if (!quota.allowed) return quotaExceededResponse(quota, corsHeaders);
-    }
+      quota: { actions: ["advise"], limit: 3 },
+    }, corsHeaders);
+    if ("response" in gate) return gate.response;
+    const { premium } = gate;
 
     const { data: couple } = await supabase
       .from("couples")
@@ -177,6 +171,7 @@ Deno.serve(async (req) => {
 
     const body = (await req.json()) as AdvisorRequest;
     if (!body?.item?.trim() || !body?.amount || body.amount <= 0) {
+      await gate.release();
       return jsonResponse({ error: "Missing item or amount" }, 400);
     }
     const requestedMode: "couple" | "personal" = body.mode === "personal" ? "personal" : "couple";
@@ -189,6 +184,7 @@ Deno.serve(async (req) => {
     if (!fx.ok) {
       // Without a real rate the verdict would be computed on unconverted money.
       // Fail loudly so the user can retry instead of getting bogus advice.
+      await gate.release();
       return jsonResponse(
         { error: "Currency conversion is temporarily unavailable. Please try again." },
         502
@@ -467,25 +463,13 @@ ${factsForPrompt}`;
       return jsonResponse({ error: "Could not save advice", details: insertError.message }, 500);
     }
 
-    // Log usage AWAITED, only after the advice row saved and before returning:
-    // metering before the save would burn one of the 3 free monthly uses on a
-    // failed request, and a fire-and-forget insert can be dropped when the
-    // isolate is torn down, undercounting the quota/rate meters. On insert
-    // failure we still return the result (metering must never break the feature).
-    const { error: usageError } = await supabase
-      .from("usage_stats")
-      .insert({
-        profile_id: profile.id,
-        couple_id: profile.couple_id,
-        action: "advise",
-        metadata: {
-          verdict,
-          urgency: body.urgency,
-          primary_currency: primaryCurrency,
-          original_currency: rawCurrency,
-        },
-      });
-    if (usageError) console.error("usage log failed:", usageError);
+    // Attach metadata to the reservation (already counted before the Gemini call).
+    await gate.finalize({
+      verdict,
+      urgency: body.urgency,
+      primary_currency: primaryCurrency,
+      original_currency: rawCurrency,
+    });
 
     return jsonResponse(saved);
   } catch (error) {

@@ -41,14 +41,19 @@ export interface MonthlyQuotaResult {
   used: number;
   limit: number;
   resetAt: string; // ISO start of next calendar month (UTC)
+  /** True when the meter could not be read; `allowed` is then false (fail CLOSED). */
+  failed?: boolean;
 }
 
 /**
  * Counts the couple's `actions` usage in the current calendar month (UTC) and
- * decides if another call is allowed. Fails OPEN on a counting error — quota is
- * best-effort and must never block a paying-or-free user on a DB hiccup (this
- * also covers a usage_action enum value that isn't deployed yet: the count
- * errors and the gate opens instead of blocking the feature).
+ * decides if another call is allowed. Fails CLOSED on a counting error (paid AI
+ * must not run on an unreadable meter; callers answer 503). This includes a
+ * usage_action enum value that isn't deployed yet: the feature stays blocked
+ * until the migration is applied.
+ *
+ * `reserved`: the caller already inserted this request's own usage row before
+ * counting (aiGate.ts); it is subtracted so `used` means prior usage.
  *
  * Pass `coupleId: null` with a `profileId` to meter per profile instead —
  * used for actions available to users who haven't joined a couple yet.
@@ -59,6 +64,7 @@ export async function checkMonthlyQuota(
   actions: string[],
   limit: number,
   profileId?: string,
+  reserved = false,
 ): Promise<MonthlyQuotaResult> {
   const now = new Date();
   const startOfMonth = new Date(
@@ -69,8 +75,8 @@ export async function checkMonthlyQuota(
   ).toISOString();
 
   if (coupleId == null && !profileId) {
-    console.error("monthly-quota called with no couple or profile scope; failing open", actions);
-    return { allowed: true, used: 0, limit, resetAt };
+    console.error("monthly-quota called with no couple or profile scope; failing closed", actions);
+    return { allowed: false, used: 0, limit, resetAt, failed: true };
   }
 
   let query = admin
@@ -84,11 +90,11 @@ export async function checkMonthlyQuota(
   const { count, error } = await query;
 
   if (error) {
-    console.error("monthly-quota count failed; failing open", actions, error);
-    return { allowed: true, used: 0, limit, resetAt };
+    console.error("monthly-quota count failed; failing closed", actions, error.code);
+    return { allowed: false, used: 0, limit, resetAt, failed: true };
   }
 
-  const used = count ?? 0;
+  const used = Math.max(0, (count ?? 0) - (reserved ? 1 : 0));
   return { allowed: used < limit, used, limit, resetAt };
 }
 

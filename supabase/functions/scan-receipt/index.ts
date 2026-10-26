@@ -1,8 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
 import { createAdminClient } from "../_shared/adminClient.ts";
-import { isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
+import { reserveAiCall } from "../_shared/aiGate.ts";
 import { convert } from "../_shared/fx.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
@@ -43,27 +42,18 @@ Deno.serve(async (req) => {
 
     if (!profile?.couple_id) return jsonResponse({ error: "No couple found" }, 403);
 
-    // Throttle the paid Gemini scan per user to prevent runaway billing abuse.
-    const rateLimit = await checkRateLimit(supabase, profile.id, {
+    // Reserve the usage row BEFORE the paid Gemini call (concurrent requests see
+    // each other), then rate-limit + free-tier quota (10 AI scans/month per couple;
+    // receipt + statement share the pool; Premium bypasses). A meter that cannot be
+    // read fails CLOSED (503). See _shared/aiGate.ts.
+    const gate = await reserveAiCall(supabase, createAdminClient(), profile, {
       action: "scan_receipt",
       windowSeconds: 3600,
       max: 30,
-    });
-    if (!rateLimit.allowed) return rateLimitedResponse(rateLimit, corsHeaders);
-
-    // Free tier: 10 AI scans/month per couple (receipt + statement share the pool).
-    // Premium couples bypass. Counted server-side across both partners (service_role).
-    const admin = createAdminClient();
-    const premium = await isPremium(admin, profile.couple_id);
-    if (!premium) {
-      const quota = await checkMonthlyQuota(
-        admin,
-        profile.couple_id,
-        ["scan_receipt", "scan_statement"],
-        10,
-      );
-      if (!quota.allowed) return quotaExceededResponse(quota, corsHeaders);
-    }
+      quota: { actions: ["scan_receipt", "scan_statement"], limit: 10 },
+    }, corsHeaders);
+    if ("response" in gate) return gate.response;
+    const { premium } = gate;
 
     const { data: couple } = await supabase
       .from("couples")
@@ -80,9 +70,10 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { image } = body;
     const requestedMode = body?.mode === "personal" ? "personal" : "couple";
-    if (!image) return jsonResponse({ error: "Image required" }, 400);
+    if (!image) { await gate.release(); return jsonResponse({ error: "Image required" }, 400); }
     // Bound the base64 payload (~10MB decoded) before buffering/forwarding it.
     if (typeof image !== "string" || image.length > 14_000_000) {
+      await gate.release();
       return jsonResponse({ error: "Image too large" }, 413);
     }
 
@@ -242,24 +233,16 @@ If you cannot identify a field, use null.`,
     // torn down, undercounting the quota/rate meters. On insert failure we
     // still return the result (metering must never break the feature).
     // The insert and the FX lookup are independent, so run them concurrently.
-    const usagePromise = supabase
-      .from("usage_stats")
-      .insert({
-        profile_id: profile.id,
-        couple_id: profile.couple_id,
-        action: "scan_receipt",
-        metadata: {
-          currency: rawCurrency,
-          primary_currency: primaryCurrency,
-          confidence,
-          converted: rawCurrency !== primaryCurrency,
-        },
-      });
-    const [{ error: usageError }, fx] = await Promise.all([
+    const usagePromise = gate.finalize({
+      currency: rawCurrency,
+      primary_currency: primaryCurrency,
+      confidence,
+      converted: rawCurrency !== primaryCurrency,
+    });
+    const [, fx] = await Promise.all([
       usagePromise,
       autoConvert ? convert(rawAmount, rawCurrency, primaryCurrency) : Promise.resolve(null),
     ]);
-    if (usageError) console.error("usage log failed:", usageError);
 
     let amount = rawAmount;
     let currency = rawCurrency;

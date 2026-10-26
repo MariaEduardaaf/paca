@@ -1,8 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
 import { createAdminClient } from "../_shared/adminClient.ts";
-import { isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
+import { reserveAiCall } from "../_shared/aiGate.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
@@ -54,27 +53,17 @@ Deno.serve(async (req) => {
       ? (sourceLocale as Locale)
       : "en";
 
-    // Throttle the paid Gemini translation per user to prevent runaway billing abuse.
-    const rateLimit = await checkRateLimit(supabase, profile.id, {
+    // Reserve the usage row BEFORE the paid Gemini call, then rate-limit + monthly
+    // ceiling (100/month per couple, per profile without a couple; Premium
+    // bypasses). Meter errors fail CLOSED (503), including a missing 'translate'
+    // enum value (migration 00022 must be applied). See _shared/aiGate.ts.
+    const gate = await reserveAiCall(supabase, createAdminClient(), profile, {
       action: "translate",
       windowSeconds: 3600,
       max: 30,
-    });
-    if (!rateLimit.allowed) return rateLimitedResponse(rateLimit, corsHeaders);
-
-    // Monthly ceiling so this is not the one unmetered Gemini path: 100
-    // translations/month per couple (per profile for users without a couple).
-    // Premium couples bypass. checkMonthlyQuota fails OPEN on a count error —
-    // including when the 'translate' usage_action enum value (migration 00022)
-    // isn't applied yet — so a missing enum can never block the feature.
-    // The two checks are independent reads, so run them concurrently; the
-    // quota count is simply ignored for premium couples.
-    const admin = createAdminClient();
-    const [premium, quota] = await Promise.all([
-      profile.couple_id ? isPremium(admin, profile.couple_id) : Promise.resolve(false),
-      checkMonthlyQuota(admin, profile.couple_id, ["translate"], 100, profile.id),
-    ]);
-    if (!premium && !quota.allowed) return quotaExceededResponse(quota, corsHeaders);
+      quota: { actions: ["translate"], limit: 100 },
+    }, corsHeaders);
+    if ("response" in gate) return gate.response;
 
     const prompt = `Translate the personal finance category name "${name}" (written in ${source}) into each of these languages. Return ONLY a JSON object with exactly these keys and a short localized label for each:
 
@@ -129,19 +118,8 @@ Keep the translation concise (1-3 words). Preserve the original for the source l
       translations[loc] = v || name;
     }
 
-    // Log usage AWAITED, right after the billable Gemini call and before
-    // returning: a fire-and-forget insert can be dropped when the isolate is
-    // torn down, undercounting the meters. On insert failure (e.g. the
-    // 'translate' enum value not applied yet) we still return the result.
-    const { error: usageError } = await supabase
-      .from("usage_stats")
-      .insert({
-        profile_id: profile.id,
-        couple_id: profile.couple_id,
-        action: "translate",
-        metadata: { source },
-      });
-    if (usageError) console.error("usage log failed:", usageError);
+    // Attach metadata to the reservation (already counted before the Gemini call).
+    await gate.finalize({ source });
 
     return jsonResponse({ translations });
   } catch (error) {

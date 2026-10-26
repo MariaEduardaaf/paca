@@ -1,7 +1,7 @@
 import { test, describe, mock } from "node:test";
 import assert from "node:assert/strict";
 
-import { checkRateLimit, rateLimitedResponse } from "../functions/_shared/rateLimit.ts";
+import { checkRateLimit, rateLimitedResponse, meterUnavailableResponse } from "../functions/_shared/rateLimit.ts";
 import { createFakeSupabase } from "./helpers/fakeSupabase.ts";
 
 const CONFIG = { action: "scan_receipt", windowSeconds: 60, max: 5 };
@@ -34,12 +34,12 @@ describe("checkRateLimit — freio por usuário nos endpoints pagos", () => {
     assert.equal(result.used, 0);
   });
 
-  test("erro na contagem libera o uso (falha aberto) sem pedir espera", async () => {
+  test("erro na contagem BLOQUEIA o uso (falha fechado) e marca failed", async () => {
     const [client] = createFakeSupabase({ count: 100, error: { message: "db down" } });
     const result = await checkRateLimit(client, "profile-1", CONFIG);
-    assert.equal(result.allowed, true);
+    assert.equal(result.allowed, false);
+    assert.equal(result.failed, true);
     assert.equal(result.used, 0);
-    assert.equal(result.retryAfterSeconds, 0);
     assert.equal(result.limit, 5);
   });
 
@@ -77,5 +77,14 @@ describe("rateLimitedResponse — o que o app recebe ao ser freado", () => {
     const body = await res.json();
     assert.equal(body.retryAfter, 60);
     assert.equal(typeof body.error, "string");
+  });
+});
+
+describe("meterUnavailableResponse — medidor ilegível", () => {
+  test("responde 503 com CORS e Retry-After", () => {
+    const res = meterUnavailableResponse({ "Access-Control-Allow-Origin": "*" });
+    assert.equal(res.status, 503);
+    assert.equal(res.headers.get("Retry-After"), "5");
+    assert.equal(res.headers.get("Access-Control-Allow-Origin"), "*");
   });
 });
