@@ -8,7 +8,7 @@ export async function GET(context) {
   );
 
   return rss({
-    title: `${SITE_TITLE} — Blog`,
+    title: `${SITE_TITLE}: Blog`,
     description: SITE_DESCRIPTION,
     site: context.site,
     // O site usa trailingSlash "never" (astro.config.mjs) e o canonical sai sem

@@ -647,7 +647,7 @@ const CARD_CLASS =
       var insight;
       if (p.faltaMax === 0) {
         insight =
-          "Vocês já têm mais do que o teto da faixa. O próximo passo é combinar onde ela fica e a regra de uso — e revisar o múltiplo uma vez por ano, ou quando a vida de vocês mudar.";
+          "Vocês já têm mais do que o teto da faixa. O próximo passo é combinar onde ela fica e a regra de uso, e revisar o múltiplo uma vez por ano, ou quando a vida de vocês mudar.";
       } else if (p.mesesMax === null) {
         insight =
           "O alvo é " +
@@ -705,12 +705,12 @@ const CARD_CLASS =
       if (p.faltaDegrau === 0) {
         degrau = "Já passaram dele: " + money(p.degrau) + " cobrem o pneu, o dentista e a geladeira sem cartão.";
       } else if (p.mesesDegrau === null) {
-        degrau = "São " + money(p.degrau) + " — falta " + money(p.faltaDegrau) + ". Com um aporte mensal, a calculadora mostra em quanto tempo.";
+        degrau = "São " + money(p.degrau) + ". Falta " + money(p.faltaDegrau) + ". Com um aporte mensal, a calculadora mostra em quanto tempo.";
       } else {
         degrau =
           "São " +
           money(p.degrau) +
-          " — falta " +
+          ". Falta " +
           money(p.faltaDegrau) +
           ", o que leva " +
           meses(p.mesesDegrau) +

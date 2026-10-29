@@ -508,7 +508,7 @@ export function coverAlt({ slug, category, categoryLabel }) {
   // alta, não só passar no validador.
   if (slug === category) {
     return (
-      `Capa da seção ${label} — ${subject}: fundo ${paint} com o nome ` +
+      `Capa da seção ${label}: ${subject}. Fundo ${paint} com o nome ` +
       `da seção em letra grande e o mascote do Paca.`
     );
   }

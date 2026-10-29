@@ -177,7 +177,7 @@
           </p>
           <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-300">
             O resultado aparece aqui na hora: quanto cada um paga, o percentual de cada
-            um e quanto do salário isso compromete — comparado com o meio a meio.
+            um e quanto do salário isso compromete, comparado com o meio a meio.
           </p>
         </div>
 
@@ -565,7 +565,7 @@
           money(parte1) +
           " para cada um, " +
           (comp1 === null ? "—" : pct(comp1)) +
-          " do salário de cada. Aqui a proporcional não muda nada — o meio a meio já divide o esforço igual.";
+          " do salário de cada. Aqui a proporcional não muda nada: o meio a meio já divide o esforço igual.";
       } else if (menorMeio === null) {
         insight =
           "Sem renda no mês, o meio a meio nem seria possível: " +
@@ -578,7 +578,7 @@
           maiorNome +
           " assume " +
           money(parteMaior) +
-          " — " +
+          ", ou " +
           (compMaior === null ? "—" : pct(compMaior)) +
           " do que ganha.";
       } else {
@@ -593,7 +593,7 @@
           pct(maiorMeio) +
           ". Na proporcional, os dois entregam " +
           pct(comp1) +
-          " — " +
+          ", e " +
           maiorNome +
           " paga " +
           money(cents(parteMaior - meio)) +
@@ -608,11 +608,11 @@
           money(desp) +
           ") somam mais do que as duas rendas juntas (" +
           money(rendaTotal) +
-          "). A divisão continua válida, mas nenhum dos dois consegue pagar a parte sem se endividar — antes de escolher o método, o corte de gastos vem primeiro.";
+          "). A divisão continua válida, mas nenhum dos dois consegue pagar a parte sem se endividar. Antes de escolher o método, o corte de gastos vem primeiro.";
         alerta.hidden = false;
       } else if (r1 === 0 || r2 === 0) {
         alerta.textContent =
-          "Um de vocês está sem renda neste mês, então a parte dele fica em R$ 0,00 e o outro assume as contas. Tratem como fase, com revisão mensal — é para isso que existe a reserva de emergência.";
+          "Um de vocês está sem renda neste mês, então a parte dele fica em R$ 0,00 e o outro assume as contas. Tratem como fase, com revisão mensal: é para isso que existe a reserva de emergência.";
         alerta.hidden = false;
       } else {
         alerta.hidden = true;

@@ -22,7 +22,7 @@ const { url, title, class: className = "" } = Astro.props;
 
 // Texto pronto da mensagem. Sem promessa nem chamariz: título + link, do jeito
 // que a pessoa mandaria. Ela ainda pode editar antes de enviar.
-const shareText = `${title} — ${url}`;
+const shareText = `${title}: ${url}`;
 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
 const uid = `sh-${crypto.randomUUID().slice(0, 8)}`;
