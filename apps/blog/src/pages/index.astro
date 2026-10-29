@@ -47,7 +47,7 @@ function pick(slug: string): BlogPost | undefined {
 
 // O artigo-pilar abre a página: quase toda outra decisão de dinheiro do casal
 // depende de ter resolvido a divisão das contas.
-const featured = pick("como-dividir-contas-casal") ?? posts[0];
+const featured = pick("dividir-contas-proporcional-ao-salario") ?? posts[0];
 const featuredCategory = CATEGORIES[featured.data.category];
 
 /**
@@ -68,7 +68,7 @@ const ENTRY_POINTS = [
     line: "Meio a meio deixa de ser justo quando os salários são diferentes: a saída é cada um entrar com o mesmo percentual da própria renda.",
   },
   {
-    slug: "brigas-por-dinheiro-relacionamento",
+    slug: "como-falar-de-dinheiro-relacionamento",
     situation: "Toda conversa vira discussão",
     line: "Quando o assunto já azedou, método de divisão nenhum resolve sozinho. A raiz da briga costuma vir antes do orçamento.",
   },

@@ -4,7 +4,8 @@ description: "Quem paga a passagem, quem paga a pousada e como fechar a conta qu
 pubDate: 2026-10-23
 category: "metas-e-sonhos"
 tags: ["viagem a dois", "dividir gastos", "viagem de casal", "acerto de contas", "cartão de crédito", "divisão proporcional"]
-author: "mary"
+author: "madu"
+reviewer: "mary"
 draft: false
 ---
 

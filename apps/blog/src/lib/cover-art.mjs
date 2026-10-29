@@ -259,7 +259,6 @@ export const MOTIF_NAMES = Object.keys(MOTIFS);
  */
 export const MOTIF_BY_SLUG = {
   // dividir-contas
-  "como-dividir-contas-casal": "bars-split",
   "dividir-contas-proporcional-ao-salario": "bars-duo",
   "morar-junto-dividir-despesas": "arches",
   "um-dos-dois-desempregado-financas-casal": "circles-overlap",
@@ -280,7 +279,6 @@ export const MOTIF_BY_SLUG = {
   "planilha-gastos-casal": "grid-checker",
   // conversas-sobre-dinheiro
   "como-falar-de-dinheiro-relacionamento": "bubbles-pair",
-  "brigas-por-dinheiro-relacionamento": "circles-overlap",
   // conversas-sobre-dinheiro (novos de setembro; escolhidos pelo sentido e sem
   // repetir vizinho: bars-duo = duas rendas desiguais; circles-pair = o casal e
   // os pais; bubble-dots = a conversa que ainda nao aconteceu)
@@ -423,8 +421,6 @@ export function titleSize(title) {
  */
 export const ALT_SUBJECT_BY_SLUG = {
   // dividir-contas
-  "como-dividir-contas-casal":
-    "as formas de repartir as despesas da casa entre duas pessoas",
   "dividir-contas-proporcional-ao-salario":
     "dividir as despesas na proporção do que cada um ganha",
   "morar-junto-dividir-despesas":
@@ -461,8 +457,6 @@ export const ALT_SUBJECT_BY_SLUG = {
   // conversas-sobre-dinheiro
   "como-falar-de-dinheiro-relacionamento":
     "trazer o assunto dinheiro para a mesa sem virar discussão",
-  "brigas-por-dinheiro-relacionamento":
-    "por que dinheiro vira briga e como sair desse ciclo",
 };
 
 /**
@@ -624,8 +618,6 @@ export const THEME_BY_SLUG = {
   "bem-vindos-ao-blog-do-paca": "rosa", // organizacao
   "melhor-app-financas-casal": "rosa", // ferramentas
   "planilha-gastos-casal": "creme", // ferramentas
-  "como-dividir-contas-casal": "preto", // dividir-contas
-  "brigas-por-dinheiro-relacionamento": "rosa", // conversas-sobre-dinheiro
   "conta-conjunta-vale-a-pena": "creme", // organizacao
   "como-juntar-dinheiro-casal": "rosa", // metas-e-sonhos
   "regra-50-30-20-casal": "preto", // organizacao

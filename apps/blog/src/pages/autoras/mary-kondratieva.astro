@@ -11,14 +11,13 @@
  * ── ⚠️ O QUE NÃO PODE ENTRAR AQUI ────────────────────────────────────────
  * Credencial que não seja verdade. As mesmas diretrizes listam "descrições
  * enganosas de quem cria" como marca de conteúdo de pior qualidade, e finanças
- * é assunto sensível — inventar "planejadora certificada" custa mais caro aqui
+ * é assunto sensível: inventar "planejadora certificada" custa mais caro aqui
  * do que em qualquer outro tema. O que está escrito abaixo é o que se sabe:
- * ela escreve, ela edita, e é ela quem decide o que vai ao ar.
+ * ela lê e avalia os guias antes de irem ao ar. Não escreve nem edita, e não
+ * há profissão nem credencial aqui.
  *
- * Sem biografia, por decisão de 2026-10-01: a seção "Em primeira pessoa"
- * mostrava "entra em breve" no ar, e placeholder na página que prova quem
- * escreve é sinal de site em construção. Se a Mary um dia quiser escrever
- * sobre si, entra aqui com as palavras dela — nunca escrita por outra pessoa.
+ * A divulgação do uso de IA e o checklist de conferência moraram aqui e foram
+ * para a página da Madu (autoras/madu-freire), que é quem escreve.
  */
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
@@ -27,18 +26,18 @@ import { AUTORAS } from "../../lib/autores";
 const autora = AUTORAS.mary;
 
 // Os artigos que ela assina, do mais novo para o mais antigo. Enquanto não
-// houver nenhum, a seção some — lista vazia com título é pior que ausência.
-const artigos = (await getCollection("blog", ({ data }) => !data.draft && data.author === "mary"))
+// houver nenhum, a seção some: lista vazia com título é pior que ausência.
+const artigos = (await getCollection("blog", ({ data }) => !data.draft && data.reviewer === "mary"))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <BaseLayout
   title={autora.nome}
-  description={`${autora.resumo} Quem escreve, como os artigos são produzidos e o que é conferido antes de publicar.`}
+  description={`${autora.resumo}`}
 >
   <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
     <p class="text-xs font-bold tracking-widest text-pink-700 uppercase dark:text-pink-300">
-      Autora
+      Avaliadora
     </p>
     <h1 class="mt-2 font-display text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
       {autora.nome}
@@ -48,48 +47,12 @@ const artigos = (await getCollection("blog", ({ data }) => !data.draft && data.a
     </p>
 
     <div class="prose-paca mt-8">
-      <h2 id="como-os-artigos-sao-feitos">Como os artigos são feitos</h2>
+      <h2 id="o-que-ela-faz">O que ela faz</h2>
       <p>
-        A Mary escreve e edita os guias do blog, e é ela quem decide se um texto
-        está bom o suficiente para ir ao ar. Nenhum artigo é publicado sem essa
-        leitura final.
-      </p>
-      <p>
-        <strong>A gente usa inteligência artificial como ferramenta de
-        rascunho</strong> — para levantar fonte, organizar estrutura e propor a
-        primeira versão. O que sai dali não é o que você lê: cada texto é
-        reescrito, checado e assinado por quem publica. Dizemos isso por aqui
-        porque achamos que é a pergunta que qualquer leitor tem o direito de
-        fazer, e é melhor respondê-la antes de ser perguntada.
-      </p>
-
-      <h2 id="o-que-e-conferido">O que é conferido antes de publicar</h2>
-      <ul>
-        <li>
-          <strong>Todo número tem fonte, e a fonte é aberta e conferida.</strong>
-          Quando o dado vem de lei, a citação é do texto oficial — não de outro
-          blog que citou a lei.
-        </li>
-        <li>
-          <strong>O que não dá para confirmar não vira frase.</strong> Preferimos
-          dizer que não sabemos a arredondar um número que ninguém checou.
-        </li>
-        <li>
-          <strong>Nada de recomendação individual.</strong> O conteúdo é
-          educativo e vale para o caso geral; decisão sobre o seu dinheiro é sua,
-          e caso delicado pede profissional habilitado.
-        </li>
-        <li>
-          <strong>Artigo desatualizado é corrigido, não escondido.</strong> Se
-          algo mudou, o texto muda — e a data de atualização aparece nele.
-        </li>
-      </ul>
-
-      <h2 id="falar-com-ela">Falar com a Mary</h2>
-      <p>
-        Correção, sugestão de pauta ou dúvida sobre um artigo: o caminho é a
-        <a href="/contato">página de contato</a>. Erro apontado por leitor é o
-        e-mail que a gente mais gosta de receber.
+        A Mary lê cada guia como leitora e aponta o que ficou confuso ou pouco
+        convincente antes de publicar. Quem escreve os textos é a
+        <a href="/autoras/madu-freire">Madu Freire</a>; como os artigos são
+        feitos e o que é conferido antes de irem ao ar está na página dela.
       </p>
     </div>
 
@@ -97,7 +60,7 @@ const artigos = (await getCollection("blog", ({ data }) => !data.draft && data.a
       artigos.length > 0 && (
         <section class="mt-12 border-t border-gray-100 pt-8 dark:border-gray-800">
           <h2 class="font-display text-xl font-bold text-gray-900 dark:text-white">
-            Artigos que ela assina
+            Artigos que ela avaliou
           </h2>
           <ul class="mt-5 flex flex-col gap-4">
             {artigos.map((a) => (

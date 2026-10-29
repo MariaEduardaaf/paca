@@ -4,7 +4,8 @@ description: "O 13º chega em duas parcelas e costuma ter mais destino do que va
 pubDate: 2026-10-21
 category: "metas-e-sonhos"
 tags: ["13º salário", "décimo terceiro", "reserva de emergência", "finanças do casal", "fim de ano"]
-author: "mary"
+author: "madu"
+reviewer: "mary"
 draft: false
 ---
 

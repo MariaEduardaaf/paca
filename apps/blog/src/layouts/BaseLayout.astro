@@ -18,7 +18,7 @@ interface Props {
    * OG image is produced (public/og-default.svg is a branded draft).
    */
   ogImage?: string;
-  /** Keep the page out of search results (utility pages like /descadastro). */
+  /** Keep the page out of search results (/descadastro, categories, noindexed posts). */
   noindex?: boolean;
 }
 
@@ -46,7 +46,7 @@ const fullTitle = title
   ? title.length + BRAND_SUFFIX.length <= TITLE_BUDGET
     ? `${title}${BRAND_SUFFIX}`
     : title
-  : `${SITE_TITLE} — Blog de finanças para casais`;
+  : `${SITE_TITLE}: Blog de finanças para casais`;
 
 // trailingSlash: "never" — normalize the canonical the same way (root stays "/").
 const pathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
@@ -195,7 +195,8 @@ const siteJsonLd = {
       tamanho pequeno e o card do Discover sai sem a imagem grande, que é o
       formato de maior clique. Discover é o canal de volume barato em finanças
       pessoais, então isso anda junto com as imagens indexáveis dos artigos.
-      Exceção: página que passa a prop `noindex` (hoje só /descadastro).
+      Exceção: página que passa a prop `noindex` (/descadastro, as categorias e
+      os artigos com `noindex: true` no frontmatter).
     */}
     <meta name="robots" content={noindex ? "noindex" : "max-image-preview:large"} />
 
@@ -217,7 +218,7 @@ const siteJsonLd = {
     <link
       rel="alternate"
       type="application/rss+xml"
-      title={`${SITE_TITLE} — Blog`}
+      title={`${SITE_TITLE}: Blog`}
       href={new URL("/rss.xml", SITE_URL).href}
     />
     <link rel="sitemap" href="/sitemap-index.xml" />

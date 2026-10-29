@@ -4,7 +4,8 @@ description: "Salários diferentes mexem com mais do que a divisão das contas: 
 pubDate: 2026-10-28
 category: "conversas-sobre-dinheiro"
 tags: ["salários diferentes", "quem ganha mais", "padrão de vida", "decisões do casal", "combinados do casal"]
-author: "mary"
+author: "madu"
+reviewer: "mary"
 draft: false
 ---
 
@@ -60,7 +61,7 @@ O outro lado também cansa, e costuma falar menos sobre isso. Quem ganha mais po
 
 O padrão da casa com convite protege também quem ganha mais, por um motivo pouco óbvio: ele separa o que é obrigação do casal do que é escolha de um só. Quem banca um upgrade sabe que está bancando, por vontade própria, e deixa de sentir que paga tudo; e quem ganha menos sabe que a parte dele está paga, e deixa de se sentir em dívida.
 
-Se o ressentimento já virou frase pronta nas discussões, do tipo "no fim, quem paga sou eu", o assunto passou do combinado para o padrão das brigas, e o caminho para sair do ciclo está em [brigas por dinheiro no relacionamento](/blog/brigas-por-dinheiro-relacionamento).
+Se o ressentimento já virou frase pronta nas discussões, do tipo "no fim, quem paga sou eu", o assunto passou do combinado para o padrão das brigas, e o caminho para sair do ciclo está em [brigas por dinheiro no relacionamento](/blog/como-falar-de-dinheiro-relacionamento).
 
 ## E quando a mulher ganha mais que o homem?
 
@@ -84,7 +85,7 @@ Algumas frases ajudam a começar sem acusar ninguém:
 
 Se a conversa sobre dinheiro já é difícil por si só, o roteiro de [como falar de dinheiro sem brigar](/blog/como-falar-de-dinheiro-relacionamento) tem as perguntas para os primeiros encontros e o formato de uma reunião mensal curta, que é onde estes combinados vão ser revistos.
 
-## O combinado para este domingo
+## O combinado sobre decisão, padrão da casa e convite
 
 Uma hora, os dois, com as rendas e os gastos do último mês na frente:
 

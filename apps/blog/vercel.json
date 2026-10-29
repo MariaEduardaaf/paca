@@ -5,7 +5,9 @@
   "framework": null,
   "cleanUrls": true,
   "redirects": [
-    { "source": "/blog/bem-vindos-ao-blog-do-paca", "destination": "/sobre", "permanent": true }
+    { "source": "/blog/bem-vindos-ao-blog-do-paca", "destination": "/sobre", "permanent": true },
+    { "source": "/blog/como-dividir-contas-casal", "destination": "/blog/dividir-contas-proporcional-ao-salario", "permanent": true },
+    { "source": "/blog/brigas-por-dinheiro-relacionamento", "destination": "/blog/como-falar-de-dinheiro-relacionamento", "permanent": true }
   ],
   "headers": [
     {

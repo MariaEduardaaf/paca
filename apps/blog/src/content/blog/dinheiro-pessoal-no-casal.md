@@ -4,7 +4,8 @@ description: "Esconder compra do parceiro é mais comum do que parece. Por que t
 pubDate: 2026-10-14
 category: "conversas-sobre-dinheiro"
 tags: ["dinheiro pessoal", "autonomia financeira", "gastos escondidos", "combinados do casal", "finanças do casal"]
-author: "mary"
+author: "madu"
+reviewer: "mary"
 draft: false
 ---
 
@@ -24,7 +25,7 @@ A própria economista do SPC que comentou a pesquisa na época, Marcela Kawauti,
 
 ## Mas juntar tudo não deixa o casal mais feliz?
 
-Esta é a objeção honesta, e ela tem pesquisa boa por trás.
+Esta é a objeção mais forte, e ela tem pesquisa boa por trás.
 
 Um experimento publicado em 2023 no *Journal of Consumer Research* acompanhou **230 casais** noivos ou recém-casados, sorteados em três grupos: abrir uma conta conjunta, manter as contas separadas ou fazer o que quisessem. Em dois anos, os casais da conta conjunta mantiveram a qualidade da relação, enquanto os outros dois grupos tiveram a queda que costuma acontecer depois do casamento; e quem juntou só uma parte do dinheiro não teve o mesmo benefício de quem juntou tudo ([Kellogg Insight, 09/05/2023](https://insight.kellogg.northwestern.edu/article/key-to-happy-marriage-joint-bank-account), sobre o estudo de Olson, Rick, Small e Finkel).
 
@@ -78,7 +79,7 @@ Um é combinado e o outro é omissão, e a aposta do acordo é que o primeiro di
 
 E se, mesmo com o valor combinado e respeitado, as compras escondidas continuarem, o problema já não é a falta de espaço. Aí vale olhar para o padrão das conversas de vocês, e o caminho começa em [como falar de dinheiro sem que vire discussão](/blog/como-falar-de-dinheiro-relacionamento).
 
-## O combinado para este domingo
+## Como fechar o valor livre em quarenta minutos
 
 Quarenta minutos, os dois, com os números na frente:
 

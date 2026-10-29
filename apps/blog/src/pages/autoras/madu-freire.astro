@@ -1,0 +1,118 @@
+---
+/**
+ * A página da autora dos guias (Madu Freire).
+ *
+ * É daqui que o JSON-LD do artigo tira o `url` do `"@type": "Person"`, e é
+ * aqui que mora a divulgação de como os artigos são feitos, incluindo o uso de
+ * IA. ⚠️ Nada de credencial que não seja verdade: as diretrizes de qualidade do
+ * Google tratam "descrições enganosas de quem cria" como marca de conteúdo
+ * ruim, e finanças é assunto sensível.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { AUTORAS } from "../../lib/autores";
+
+const autora = AUTORAS.madu;
+
+// Os artigos que ela assina, do mais novo para o mais antigo. Enquanto não
+// houver nenhum, a seção some: lista vazia com título é pior que ausência.
+const artigos = (await getCollection("blog", ({ data }) => !data.draft && data.author === "madu"))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout
+  title={autora.nome}
+  description={`${autora.resumo} Quem escreve, como os artigos são produzidos e o que é conferido antes de publicar.`}
+>
+  <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <p class="text-xs font-bold tracking-widest text-pink-700 uppercase dark:text-pink-300">
+      Autora
+    </p>
+    <h1 class="mt-2 font-display text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
+      {autora.nome}
+    </h1>
+    <p class="mt-3 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+      {autora.resumo}
+    </p>
+
+    <div class="prose-paca mt-8">
+      <h2 id="por-que-o-paca-existe">Por que o Paca existe</h2>
+      <p>
+        Construo aplicativos e sites. O Paca nasceu de uma pergunta que todo
+        casal faz em algum momento: como juntar o dinheiro sem brigar e sem
+        planilha. O blog é a parte gratuita disso: guias e calculadoras para
+        combinar as contas a dois.
+      </p>
+
+      <h2 id="como-os-artigos-sao-feitos">Como os artigos são feitos</h2>
+      <p>
+        <strong>Uso inteligência artificial como ferramenta de rascunho</strong>,
+        para levantar fontes, organizar a estrutura e propor uma primeira
+        versão. Eu reviso, confiro cada número na fonte e decido o que vai ao
+        ar. A <a href="/autoras/mary-kondratieva">Mary Kondratieva</a> lê e
+        avalia os guias antes da publicação. Digo isso aqui porque é a pergunta
+        que qualquer leitor tem o direito de fazer.
+      </p>
+
+      <h2 id="o-que-e-conferido">O que é conferido antes de publicar</h2>
+      <ul>
+        <li>
+          <strong>Todo número tem fonte, e a fonte é aberta e conferida.</strong>
+          Quando o dado vem de lei, a citação é do texto oficial, não de outro
+          blog que citou a lei.
+        </li>
+        <li>
+          <strong>O que não dá para confirmar não vira frase.</strong> Prefiro
+          dizer que não sei a arredondar um número que ninguém checou.
+        </li>
+        <li>
+          <strong>Nada de recomendação individual.</strong> O conteúdo é
+          educativo e vale para o caso geral; decisão sobre o seu dinheiro é sua,
+          e caso delicado pede profissional habilitado.
+        </li>
+        <li>
+          <strong>Artigo desatualizado é corrigido, não escondido.</strong> Se
+          algo mudou, o texto muda, e a data de atualização aparece nele.
+        </li>
+      </ul>
+
+      <h2 id="falar-comigo">Falar comigo</h2>
+      <p>
+        Correção, sugestão de pauta ou dúvida sobre um artigo: o caminho é a
+        <a href="/contato">página de contato</a>. Erro apontado por leitor é o
+        e-mail que mais gosto de receber.
+      </p>
+    </div>
+
+    {
+      artigos.length > 0 && (
+        <section class="mt-12 border-t border-gray-100 pt-8 dark:border-gray-800">
+          <h2 class="font-display text-xl font-bold text-gray-900 dark:text-white">
+            Artigos que ela assina
+          </h2>
+          <ul class="mt-5 flex flex-col gap-4">
+            {artigos.map((a) => (
+              <li>
+                <a
+                  href={`/blog/${a.id}`}
+                  class="rounded font-semibold text-gray-800 underline-offset-2 hover:text-pink-700 hover:underline dark:text-gray-100 dark:hover:text-pink-300"
+                >
+                  {a.data.title}
+                </a>
+                <p class="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                  {a.data.description}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <p class="mt-10 border-t border-gray-100 pt-6 text-sm text-gray-600 dark:border-gray-800 dark:text-gray-400">
+      <a href="/blog" class="rounded underline underline-offset-2 hover:text-pink-700 dark:hover:text-pink-300">
+        Ver todos os artigos
+      </a>
+    </p>
+  </div>
+</BaseLayout>

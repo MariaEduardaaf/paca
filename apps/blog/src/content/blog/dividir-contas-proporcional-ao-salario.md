@@ -2,16 +2,15 @@
 title: "Dividir contas com salários diferentes: método proporcional"
 description: "Salários diferentes no casal? Veja a fórmula da divisão proporcional, exemplos com números reais em R$ e como parar de refazer a conta todo mês."
 pubDate: 2026-08-27
+author: "madu"
 category: "dividir-contas"
 tags: ["dividir contas", "divisão proporcional", "finanças de casal", "salários diferentes", "orçamento a dois"]
 draft: false
 ---
 
-Dividir tudo meio a meio parece o acordo mais justo do mundo — até o dia em que vocês colocam os salários lado a lado. Quando um ganha R$ 3.000 e o outro R$ 5.000, o "50/50" cobra um preço bem diferente de cada um: a mesma conta de R$ 2.100 pesa 70% de um salário e só 42% do outro. No papel é igual; na prática, um dos dois termina o mês sempre no aperto.
+Dividir tudo meio a meio parece o acordo mais justo do mundo, até o dia em que vocês colocam os salários lado a lado. Quando um ganha R$ 3.000 e o outro R$ 5.000, o "50/50" cobra um preço bem diferente de cada um: a mesma conta de R$ 2.100 pesa 70% de um salário e só 42% do outro. No papel é igual; na prática, um dos dois termina o mês sempre no aperto.
 
 A divisão proporcional resolve exatamente isso: cada um contribui com o mesmo **percentual** da própria renda, não com o mesmo valor em reais. O esforço fica igual, mesmo com salários diferentes.
-
-Neste artigo vocês vão ver a fórmula passo a passo, um exemplo completo com salários de R$ 3.000 e R$ 5.000, quais contas entram no cálculo (e quais ficam de fora), como propor a mudança sem transformar o assunto em briga — e como parar de refazer essa conta na mão todo mês.
 
 Se preferirem ver o resultado com os números de vocês antes da explicação, a [calculadora de divisão de contas](/calculadora-divisao-de-contas) faz a conta com os dois salários e o total da casa.
 
@@ -21,12 +20,12 @@ O 50/50 funciona bem quando os salários são parecidos. O problema aparece quan
 
 Com o tempo, isso gera dois efeitos ruins:
 
-- **Desequilíbrio financeiro:** um acumula poupança e investimentos enquanto o outro vive no zero a zero — ou entra no rotativo do cartão para cobrir a própria metade.
+- **Desequilíbrio financeiro:** um acumula poupança e investimentos enquanto o outro vive no zero a zero, ou entra no rotativo do cartão para cobrir a própria metade.
 - **Desequilíbrio emocional:** quem ganha menos sente que está sempre devendo; quem ganha mais às vezes nem percebe o aperto do outro. É o tipo de ruído silencioso que cresce até virar discussão.
 
-A lógica da divisão proporcional é outra: **igualdade de esforço, não de valor**. Se os dois comprometem 52% da renda com a casa, os dois sentem o mesmo peso — e sobra um percentual parecido para cada um cuidar da própria vida financeira.
+A lógica da divisão proporcional é outra: **igualdade de esforço, não de valor**. Se os dois comprometem 52% da renda com a casa, os dois sentem o mesmo peso, e sobra um percentual parecido para cada um cuidar da própria vida financeira.
 
-Vale dizer: a proporcional não é a única forma legítima de dividir. Casais com salários próximos podem preferir o 50/50 pela simplicidade, e há quem junte tudo num caixa único. Se quiserem ver todos os modelos comparados, o guia completo de [como dividir as contas do casal](/blog/como-dividir-contas-casal) percorre cada um com prós e contras.
+Vale dizer: a proporcional não é a única forma legítima de dividir. Casais com salários próximos podem preferir o 50/50 pela simplicidade, e há quem junte tudo num caixa único. Os outros modelos, e quando cada um encaixa melhor, estão mais abaixo, em [os outros jeitos de dividir](#os-outros-jeitos-de-dividir-e-quando-cada-um-encaixa).
 
 ## A fórmula da divisão proporcional (passo a passo)
 
@@ -41,20 +40,20 @@ Em fórmula:
 
 > **Parte de cada um = (renda individual ÷ renda total do casal) × total das contas compartilhadas**
 
-Refaçam o passo 2 sempre que a renda de alguém mudar (aumento, troca de emprego, queda de renda). Os passos 3 e 4 mudam todo mês, porque o total de gastos varia — é aí que a conta manual começa a cansar.
+Refaçam o passo 2 sempre que a renda de alguém mudar (aumento, troca de emprego, queda de renda). Os passos 3 e 4 mudam todo mês, porque o total de gastos varia. É aí que a conta manual começa a cansar.
 
 ## Exemplo prático: salários de R$ 3.000 e R$ 5.000
 
 Vamos aos números. Ana ganha R$ 3.000 líquidos e Bruno, R$ 5.000.
 
-**Passo 1 — renda total:** R$ 3.000 + R$ 5.000 = **R$ 8.000**
+**Passo 1, renda total:** R$ 3.000 + R$ 5.000 = **R$ 8.000**
 
-**Passo 2 — percentual de cada um:**
+**Passo 2, percentual de cada um:**
 
 - Ana: R$ 3.000 ÷ R$ 8.000 = **37,5%**
 - Bruno: R$ 5.000 ÷ R$ 8.000 = **62,5%**
 
-**Passo 3 — contas compartilhadas do mês:**
+**Passo 3, contas compartilhadas do mês:**
 
 | Conta | Valor |
 |---|---|
@@ -67,7 +66,7 @@ Vamos aos números. Ana ganha R$ 3.000 líquidos e Bruno, R$ 5.000.
 | Transporte (usado pelos dois) | R$ 200 |
 | **Total** | **R$ 4.200** |
 
-**Passo 4 — a parte de cada um:**
+**Passo 4, a parte de cada um:**
 
 - Ana: R$ 4.200 × 37,5% = **R$ 1.575**
 - Bruno: R$ 4.200 × 62,5% = **R$ 2.625**
@@ -109,7 +108,7 @@ Confere: R$ 1.575 + R$ 2.625 = R$ 4.200, que é exatamente o total das contas.
 <figcaption>Mesmo total de contas (R$ 4.200). No 50/50, Ana entrega 70% do que ganha e Bruno, 42%. Na proporcional, os dois entregam a mesma fatia: 52,5%.</figcaption>
 </figure>
 
-É esse o argumento inteiro da divisão proporcional numa tabela: no 50/50, Ana compromete 70% do salário e Bruno, 42%. Na proporcional, os dois comprometem exatamente 52,5% — o mesmo esforço relativo. Bruno paga mais em reais (R$ 525 a mais que no 50/50), mas nenhum dos dois carrega a casa mais do que o outro.
+É esse o argumento inteiro da divisão proporcional numa tabela: no 50/50, Ana compromete 70% do salário e Bruno, 42%. Na proporcional, os dois comprometem exatamente 52,5%, o mesmo esforço relativo. Bruno paga mais em reais (R$ 525 a mais que no 50/50), mas nenhum dos dois carrega a casa mais do que o outro.
 
 Na prática, o acerto pode ser simples: um Pix mensal de quem deve para quem pagou mais, ou cada um assume boletos específicos que somem perto da sua parte (Ana fica com mercado mais contas de consumo ≈ R$ 1.480, Bruno com aluguel mais o resto).
 
@@ -133,33 +132,69 @@ Regra de bolso: **entra o que serve aos dois; fica de fora o que é de um só.**
 - Celular individual, academia, cursos
 - Assinatura que só um usa
 
-**Zona cinzenta — decidam juntos, uma vez:** carro que está no nome de um mas serve aos dois, almoço fora no fim de semana, presente conjunto para amigos (aquela vaquinha do casamento do amigo em comum). Não existe resposta certa; existe resposta combinada. O que não pode é cada um assumir uma regra diferente em silêncio.
+**Zona cinzenta, para decidirem juntos uma vez:** carro que está no nome de um mas serve aos dois, almoço fora no fim de semana, presente conjunto para amigos (aquela vaquinha do casamento do amigo em comum). Não existe resposta certa; existe resposta combinada. O que não pode é cada um assumir uma regra diferente em silêncio.
 
-Depois de separar o que é conta conjunta, sobra organizar o dinheiro individual de cada um — e para isso a [regra 50/30/20 adaptada para casais](/blog/regra-50-30-20-casal) é um bom ponto de partida: necessidades, desejos e poupança com percentuais claros.
+Depois de separar o que é conta conjunta, sobra organizar o dinheiro individual de cada um, e para isso a [regra 50/30/20 adaptada para casais](/blog/regra-50-30-20-casal) é um bom ponto de partida: necessidades, desejos e poupança com percentuais claros.
+
+## Os outros jeitos de dividir, e quando cada um encaixa
+
+A proporcional é a resposta para salários diferentes, mas não é a única forma que funciona. Há outros três modelos comuns, e eles se combinam com ela.
+
+**50/50.** Somem as contas e dividam por dois. Funciona quando as rendas são parecidas ou quando o casal faz questão de manter as finanças totalmente separadas. O risco é o do exemplo acima: igualdade matemática virar injustiça quando os salários se distanciam.
+
+**Conta conjunta (total ou híbrida).** A pergunta deixa de ser "quem paga o quê" e vira "de onde sai o pagamento". Na versão total, tudo entra e sai de uma conta só. Na híbrida, cada um mantém a conta pessoal e manda um Pix mensal para uma conta comum, de onde saem os boletos da casa. O aporte pode ser meio a meio ou proporcional: com contas de R$ 3.800 e proporção 60/40, um programa R$ 2.280 e o outro R$ 1.520 todo dia 1º, e ninguém transfere mais nada no mês. Antes de abrir a conta, vale ler [se a conta conjunta vale a pena para vocês](/blog/conta-conjunta-vale-a-pena); se o banco de vocês é o Nubank, o que ele oferece no lugar está em [o Nubank tem conta conjunta?](/blog/conta-conjunta-nubank).
+
+**Por responsabilidades.** Cada um "adota" contas inteiras em vez de dividir cada boleto:
+
+| Pessoa A paga | Pessoa B paga |
+|---|---|
+| Aluguel: R$ 1.900 | Mercado do mês: R$ 1.100 |
+| Condomínio: R$ 450 | Luz + água + gás: R$ 380 |
+| | Internet + streamings: R$ 250 |
+| **Total: R$ 2.350** | **Total: R$ 1.730** |
+
+O ganho é operacional: zero transferência entre vocês, cada um põe os próprios boletos no débito automático. O perigo é o **desequilíbrio silencioso**. O aluguel reajusta uma vez por ano, o mercado sobe aos poucos, a conta de luz dobra no verão por causa do ar-condicionado, e quem ficou com as contas variáveis pode acabar pagando bem mais do que o combinado sem que ninguém perceba, porque ninguém está somando. Se escolherem esse modelo, marquem uma revisão trimestral: somem quanto cada lado pagou de fato nos últimos três meses e reequilibrem se a diferença cresceu.
+
+Um atalho para escolher:
+
+| Situação de vocês | Modelo com melhor encaixe |
+|---|---|
+| Rendas parecidas, finanças separadas | 50/50 |
+| Diferença salarial relevante | Proporcional ao salário |
+| Casamento/união estável, visão de "dinheiro nosso" | Conta conjunta (total ou híbrida) |
+| Poucos boletos, aversão a transferência mensal | Por responsabilidades |
+
+Seja qual for o escolhido, três regras para o teste:
+
+1. **Rodem por 3 meses.** Um mês é pouco (todo mês tem uma despesa atípica); três já mostram o padrão.
+2. **Marquem a revisão no calendário.** Uma conversa de 20 minutos ao fim do trimestre: funcionou? Alguém ficou apertado? Ajusta e segue.
+3. **Definam os gatilhos de recálculo.** Mudança de salário, desemprego, mudança de casa, chegada de filho: qualquer um desses reabre a conta, sem precisar que alguém "reclame".
+
+Para quem tem rendas diferentes e quer praticidade, proporcional ao salário com uma conta conjunta híbrida costuma ser o arranjo mais equilibrado.
 
 ## Como propor a divisão proporcional sem virar briga
 
-Dinheiro é assunto sensível: [53% dos brasileiros apontam as finanças como o principal motivo de briga no relacionamento](https://www.cnnbrasil.com.br/economia/financas/mais-de-50-dizem-que-financas-sao-principal-motivo-de-brigas-entre-casais/) (Serasa, 2025). Propor uma mudança na divisão mexe direto nesse nervo — então a forma de propor importa tanto quanto a proposta.
+Propor uma mudança na divisão mexe num nervo sensível, então a forma de propor importa tanto quanto a proposta.
 
 Algumas táticas que reduzem o atrito:
 
 - **Falem em percentual, não em reais.** "Cada um entra com 52% da própria renda" soa como igualdade. "Você paga R$ 525 a mais" soa como cobrança. É a mesma conta, com molduras opostas.
-- **Escolham um momento neutro.** Não no dia do boleto vencido, não no meio de uma discussão. Marquem uma conversa com calma — de preferência com os números já na mesa, como no exemplo acima, com os salários de vocês.
+- **Escolham um momento neutro.** Não no dia do boleto vencido, não no meio de uma discussão. Marquem uma conversa com calma, de preferência com os números já na mesa, como no exemplo acima, com os salários de vocês.
 - **Proponham como teste, não como sentença.** "Vamos rodar assim por 3 meses e ver como fica?" tira o peso de decisão definitiva e dá espaço para ajustar.
-- **Deixem claro o que NÃO é.** Proporcional não é favor de quem ganha mais nem dependência de quem ganha menos. É o mesmo esforço relativo — os dois abrem mão do mesmo pedaço da própria renda.
+- **Deixem claro o que NÃO é.** Proporcional não é favor de quem ganha mais nem dependência de quem ganha menos. É o mesmo esforço relativo: os dois abrem mão do mesmo pedaço da própria renda.
 
-Uma ressalva honesta: a proporcional pura também tem limite. Se a diferença de renda for muito grande, quem ganha muito mais pode acabar bancando um padrão de vida que sozinho escolheria diferente — nesse caso, vale combinar um teto de gastos conjunto antes de aplicar a proporção. Que padrão de vida a casa segue, e quem decide os gastos grandes quando as rendas são tão diferentes, está em [quando um ganha mais que o outro](/blog/quando-um-ganha-mais-que-o-outro). E se a conversa sobre dinheiro em si ainda é travada aí na casa de vocês, começar por ela vem antes de qualquer fórmula.
+Uma ressalva: a proporcional pura também tem limite. Se a diferença de renda for muito grande, quem ganha muito mais pode acabar bancando um padrão de vida que sozinho escolheria diferente. Nesse caso, vale combinar um teto de gastos conjunto antes de aplicar a proporção. Que padrão de vida a casa segue, e quem decide os gastos grandes quando as rendas são tão diferentes, está em [quando um ganha mais que o outro](/blog/quando-um-ganha-mais-que-o-outro). E se a conversa sobre dinheiro em si ainda é travada aí na casa de vocês, [começar por ela](/blog/como-falar-de-dinheiro-relacionamento) vem antes de qualquer fórmula.
 
 ## Como automatizar o cálculo todo mês
 
-A fórmula é simples; chato é o processo que se repete todo mês: juntar comprovantes, lembrar quem pagou o quê no débito, no crédito e no Pix, somar tudo, aplicar os percentuais e calcular quem transfere quanto para quem. É trabalho de meia hora que quase sempre sobra para um dos dois — e quando um mês fica sem fechar, a confiança no sistema desanda.
+A fórmula é simples; chato é o processo que se repete todo mês: juntar comprovantes, lembrar quem pagou o quê no débito, no crédito e no Pix, somar tudo, aplicar os percentuais e calcular quem transfere quanto para quem. É trabalho de meia hora que quase sempre sobra para um dos dois, e quando um mês fica sem fechar, a confiança no sistema desanda.
 
 Dá para automatizar em dois níveis:
 
-- **Planilha com fórmulas:** uma aba com os percentuais fixos e colunas de gastos que calculam a parte de cada um sozinhas. Se vocês já têm uma planilha que funciona e disciplina para lançar tudo, ela resolve — o ponto fraco é justamente o lançamento manual: todo gasto esquecido distorce o acerto do mês.
-- **App que calcula sozinho:** no Paca Finance, vocês registram os gastos compartilhados na hora (dá até para escanear a notinha do mercado com IA), e o app calcula a parte de cada um conforme os gastos entram, já aplicando a proporção que vocês definiram. No fim do mês, em vez de refazer a conta, vocês só conferem o acerto e fazem o Pix — dá para [criar a conta do casal no plano grátis](https://app.pacafinance.com.br/signup) e testar já com o mês atual.
+- **Planilha com fórmulas:** uma aba com os percentuais fixos e colunas de gastos que calculam a parte de cada um sozinhas. Com disciplina para lançar tudo, ela resolve. O ponto fraco é justamente o lançamento manual: todo gasto esquecido distorce o acerto do mês.
+- **App que calcula sozinho:** no Paca Finance, vocês registram os gastos compartilhados na hora (dá até para escanear a notinha do mercado com IA), e o app calcula a parte de cada um conforme os gastos entram, já aplicando a proporção que vocês definiram. No fim do mês, em vez de refazer a conta, vocês só conferem o acerto e fazem o Pix. Dá para [criar a conta do casal no plano grátis](https://app.pacafinance.com.br/signup) e testar já com o mês atual.
 
-O critério para escolher é o histórico de vocês: se a planilha nunca chegou ao dia 30 preenchida, o problema não é a fórmula — é a fricção de lançar. Nesse caso, um app compartilhado tende a durar mais que a força de vontade. O artigo sobre o [melhor app de finanças para casal](/blog/melhor-app-financas-casal) compara as principais opções.
+O critério para escolher é o histórico de vocês: se a planilha nunca chegou ao dia 30 preenchida, o problema não é a fórmula, é a fricção de lançar. Nesse caso, um app compartilhado tende a durar mais que a força de vontade. O artigo sobre o [melhor app de finanças para casal](/blog/melhor-app-financas-casal) compara as principais opções.
 
 Seja qual for a ferramenta, o combinado importa mais que o software: revisem os percentuais a cada mudança de renda e fechem o acerto todo mês, sempre no mesmo dia.
 
@@ -167,20 +202,20 @@ Seja qual for a ferramenta, o combinado importa mais que o software: revisem os 
 
 ### E se um dos dois ficar desempregado ou sem renda?
 
-A proporção acompanha a renda: se um dos dois fica temporariamente sem ganhar, a parte dele na fórmula tende a zero e o outro assume as contas compartilhadas nesse período. O importante é tratar como fase, não como novo normal — combinem revisões mensais e o que a pessoa sem renda assume em contrapartida (tarefas, busca ativa de trabalho, corte de gastos). Se houver reserva de emergência conjunta, é exatamente para isso que ela existe.
+A proporção acompanha a renda: se um dos dois fica temporariamente sem ganhar, a parte dele na fórmula tende a zero e o outro assume as contas compartilhadas nesse período. O importante é tratar como fase, não como novo normal: combinem revisões mensais e o que a pessoa sem renda assume em contrapartida (tarefas, busca ativa de trabalho, corte de gastos). Se houver reserva de emergência conjunta, é exatamente para isso que ela existe. O roteiro completo, que refaz o orçamento por prioridade antes de refazer a divisão, está em [quando um dos dois fica desempregado](/blog/um-dos-dois-desempregado-financas-casal).
+
+### Quem ganha mais deve pagar todas as contas?
+
+Como regra, não. Quando um paga tudo, o outro perde participação nas decisões financeiras da casa e a relação pode escorregar para uma dinâmica de dependência: quem paga sente peso, quem não paga sente que deve satisfação. A divisão proporcional atinge o mesmo objetivo (quem ganha mais contribui com mais) sem tirar ninguém do jogo. A exceção é temporária e combinada: desemprego, licença, transição de carreira, com conversa aberta sobre até quando.
 
 ### O 13º, bônus e comissões entram no cálculo da proporção?
 
-Para o percentual mensal, use a renda recorrente líquida — o que cai todo mês. O 13º e bônus pontuais funcionam melhor fora da fórmula: combinem previamente um destino para eles (reserva de emergência, quitar dívida, objetivo do casal), em vez de recalcular a proporção num mês atípico. Se um dos dois tem comissão relevante todo mês, aí sim ela é renda recorrente e entra na média.
+Para o percentual mensal, use a renda recorrente líquida, o que cai todo mês. O 13º e bônus pontuais funcionam melhor fora da fórmula: combinem previamente um destino para eles (reserva de emergência, quitar dívida, objetivo do casal), em vez de recalcular a proporção num mês atípico. Se um dos dois tem comissão relevante todo mês, aí sim ela é renda recorrente e entra na média. Para decidir a ordem do 13º, o guia do [13º salário em casal](/blog/13-salario-casal) monta a fila com um exemplo em números.
 
 ### Divisão proporcional funciona para quem tem renda variável (autônomo, freelancer)?
 
-Funciona, com um ajuste: em vez do valor do mês, use a **média dos últimos 3 a 6 meses** como renda de referência e recalculem a proporção a cada trimestre. Isso evita que a divisão mude bruscamente a cada mês bom ou ruim. Nos meses muito abaixo da média, vale um acordo de exceção — reduzir temporariamente a parte de quem teve queda e compensar depois.
+Funciona, com um ajuste: em vez do valor do mês, use a **média dos últimos 3 a 6 meses** como renda de referência e recalculem a proporção a cada trimestre. Isso evita que a divisão mude bruscamente a cada mês bom ou ruim. Nos meses muito abaixo da média, vale um acordo de exceção: reduzir temporariamente a parte de quem teve queda e compensar depois.
 
 ### A fatura do cartão entra na divisão?
 
-Depende do que tem dentro dela. Fatura não é uma conta — é um pacote de compras. Se o mercado do mês foi no cartão de um dos dois, essa compra específica entra na divisão proporcional; a parcela do tênis novo, não. Por isso o ideal é dividir por **gasto**, não por fatura: separem item a item o que foi compartilhado e o que foi pessoal antes de fechar o acerto do mês.
-
-### De quanto em quanto tempo devemos refazer o cálculo?
-
-Os **percentuais** só mudam quando a renda muda: aumento, troca de emprego, queda de renda — revisem na hora, e façam um check-up a cada 6 meses de qualquer forma. O caso extremo é uma das rendas ir a zero: aí a fórmula proporcional deixa de fechar sozinha, e o caminho é o do guia sobre [quando um dos dois fica desempregado](/blog/um-dos-dois-desempregado-financas-casal), que refaz o orçamento por prioridade antes de refazer a divisão. Já o **acerto** (quem transfere quanto) é mensal, porque o total de gastos varia todo mês. Se estiverem fazendo na mão, marquem um dia fixo — todo dia 5, por exemplo — para fechar o mês anterior juntos.
+Depende do que tem dentro dela. Fatura não é uma conta, é um pacote de compras. Se o mercado do mês foi no cartão de um dos dois, essa compra específica entra na divisão proporcional; a parcela do tênis novo, não. Por isso o ideal é dividir por **gasto**, não por fatura: separem item a item o que foi compartilhado e o que foi pessoal antes de fechar o acerto do mês.

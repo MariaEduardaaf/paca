@@ -4,7 +4,8 @@ description: "No namoro sério, o gasto que pesa não é o jantar: é a casa de 
 pubDate: 2026-10-16
 category: "dividir-contas"
 tags: ["namoro", "dividir a conta", "dividir contas", "finanças do casal", "antes de morar junto"]
-author: "mary"
+author: "madu"
+reviewer: "mary"
 draft: false
 ---
 
@@ -50,9 +51,9 @@ Essa conta pressupõe que cada um sabe quanto o outro ganha, e isso não é gara
 
 ## O que o namoro ensina para a casa
 
-O jeito como vocês dividem agora é um ensaio. Se hoje um sempre paga e o outro sempre deixa, esse hábito se muda junto, e a conversa fica mais difícil quando o assunto deixa de ser um jantar e passa a ser o aluguel. Quando vocês forem morar juntos, as contas fixas entram em cena, e para essa fase o guia de [como dividir as despesas desde o primeiro mês](/blog/morar-junto-dividir-despesas) e a comparação dos [quatro métodos de dividir as contas do casal](/blog/como-dividir-contas-casal) pegam de onde este texto para.
+O jeito como vocês dividem agora é um ensaio. Se hoje um sempre paga e o outro sempre deixa, esse hábito se muda junto, e a conversa fica mais difícil quando o assunto deixa de ser um jantar e passa a ser o aluguel. Quando vocês forem morar juntos, as contas fixas entram em cena, e para essa fase o guia de [como dividir as despesas desde o primeiro mês](/blog/morar-junto-dividir-despesas) e a comparação dos [quatro métodos de dividir as contas do casal](/blog/dividir-contas-proporcional-ao-salario) pegam de onde este texto para.
 
-## O combinado para este domingo
+## Três passos para a conversa de domingo
 
 1. **Olhem o último mês.** Cada um abre o próprio extrato e marca o que foi gasto do casal: programas, delivery, mercado a mais, transporte, sinal da viagem.
 2. **Escolham dois jeitos, não um.** Um para os programas (na hora, revezamento anotado ou proporcional) e outro para a casa de quem recebe (dividir a diferença ou o visitante assumir uma parte fixa).

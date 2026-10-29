@@ -22,7 +22,7 @@ const BLOG_CONTENT_DIR = fileURLToPath(new URL("./src/content/blog", import.meta
  * inteiro quando pega datas inconsistentes, então URL sem lastmod é melhor que
  * URL com lastmod errado.
  *
- * @returns {{ slug: string; category: string | null; lastmod: Date }[]}
+ * @returns {{ slug: string; category: string | null; noindex: boolean; lastmod: Date }[]}
  */
 function readPublishedPosts() {
   const posts = [];
@@ -54,6 +54,7 @@ function readPublishedPosts() {
     posts.push({
       slug: file.replace(/\.md$/, ""),
       category: field("category"),
+      noindex: field("noindex") === "true",
       lastmod,
     });
   }
@@ -115,6 +116,21 @@ function buildLastmodByPath() {
 
 const LASTMOD_BY_PATH = buildLastmodByPath();
 
+// Páginas com <meta name="robots" content="noindex">: sitemap que lista URL
+// noindex manda sinal contraditório ao Google. As categorias são noindex no
+// próprio componente; os artigos, pelo campo `noindex: true` do frontmatter.
+const NOINDEX_PATHS = new Set([
+  "/descadastro",
+  ...readPublishedPosts()
+    .filter((post) => post.noindex)
+    .map((post) => `/blog/${post.slug}`),
+]);
+
+/** @param {string} path */
+function isNoindex(path) {
+  return NOINDEX_PATHS.has(path) || path === "/categorias" || path.startsWith("/categorias/");
+}
+
 export default defineConfig({
   site: SITE_URL,
   trailingSlash: "never",
@@ -123,8 +139,8 @@ export default defineConfig({
     // directives + hand-rolled prose styles) from BaseLayout.
     tailwind({ applyBaseStyles: false }),
     sitemap({
-      // /descadastro é noindex (página de serviço do e-mail): fora do sitemap também.
-      filter: (page) => new URL(page).pathname.replace(/\/+$/, "") !== "/descadastro",
+      // Página noindex fica fora do sitemap também (ver NOINDEX_PATHS).
+      filter: (page) => !isNoindex(new URL(page).pathname.replace(/\/+$/, "")),
       // Sem `serialize` o sitemap sai só com <loc>. Atualizar um artigo antigo é
       // a alavanca de tráfego orgânico mais barata que existe, e sem lastmod o
       // Google não fica sabendo — pode levar semanas para recrawlear sozinho.

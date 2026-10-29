@@ -10,9 +10,9 @@ import NewsletterForm from "../components/NewsletterForm.astro";
 import PostCard from "../components/PostCard.astro";
 import RecirculationPanel from "../components/RecirculationPanel.astro";
 import ShareBox from "../components/ShareBox.astro";
-import { SITE_TITLE, SITE_URL, APP_URL } from "../consts";
+import { SITE_TITLE, SITE_URL } from "../consts";
 import { CATEGORIES } from "../lib/categories";
-import { autoraDe } from "../lib/autores";
+import { autoraDe, AUTORAS } from "../lib/autores";
 import { ctaFor } from "../lib/ctas";
 import type { BlogPost } from "../lib/posts";
 import {
@@ -31,6 +31,7 @@ const { Content, headings } = await render(post);
 
 const { title, description, pubDate, updatedDate, category } = post.data;
 const autora = autoraDe(post.data.author);
+const revisora = post.data.reviewer ? AUTORAS[post.data.reviewer] : undefined;
 const categoryInfo = CATEGORIES[category];
 const minutes = readingTimeMinutes(post.body);
 
@@ -302,7 +303,18 @@ const blogPostingJsonLd = {
   datePublished: pubDate.toISOString(),
   dateModified: (updatedDate ?? pubDate).toISOString(),
   inLanguage: "pt-BR",
-  mainEntityOfPage: { "@type": "WebPage", "@id": postUrl },
+  // reviewedBy só é válido em WebPage, por isso fica aqui e não no BlogPosting.
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": postUrl,
+    ...(revisora && {
+      reviewedBy: {
+        "@type": "Person",
+        name: revisora.nome,
+        url: new URL(revisora.url ?? "/sobre", SITE_URL).href,
+      },
+    }),
+  },
   /*
    * ⚠️ Person quando há pessoa, Organization quando é a equipe. A diretriz de
    * qualidade pede byline COM link para o histórico de quem escreve — o `url`
@@ -311,7 +323,7 @@ const blogPostingJsonLd = {
   author:
     autora.url && autora.url !== "/sobre"
       ? { "@type": "Person", name: autora.nome, url: new URL(autora.url, SITE_URL).href }
-      : { "@type": "Organization", name: SITE_TITLE, url: APP_URL },
+      : { "@type": "Organization", name: SITE_TITLE, url: new URL("/sobre", SITE_URL).href },
   publisher: {
     "@type": "Organization",
     name: SITE_TITLE,
@@ -363,7 +375,7 @@ const faqJsonLd =
     : null;
 ---
 
-<BaseLayout title={title} description={description} type="article" ogImage={ogImage}>
+<BaseLayout title={title} description={description} type="article" ogImage={ogImage} noindex={post.data.noindex}>
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(blogPostingJsonLd)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
@@ -438,6 +450,19 @@ const faqJsonLd =
             >
               {autora.nome}
             </a>
+            {
+              revisora && (
+                <span class="block text-gray-600 dark:text-gray-400">
+                  Avaliado por{" "}
+                  <a
+                    href={revisora.url ?? "/sobre"}
+                    class="rounded font-semibold text-gray-800 hover:text-pink-700 dark:text-gray-100 dark:hover:text-pink-300"
+                  >
+                    {revisora.nome}
+                  </a>
+                </span>
+              )
+            }
             <span class="block text-gray-600 sm:inline dark:text-gray-400">
               <span class="hidden sm:inline" aria-hidden="true"> · </span>
               Publicado em <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
