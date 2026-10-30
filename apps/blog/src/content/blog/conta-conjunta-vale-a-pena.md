@@ -2,6 +2,7 @@
 title: "Conta conjunta vale a pena? Prós, contras e alternativas"
 description: "Conta conjunta vale a pena para o casal? Vantagens, riscos, o que acontece na separação e o modelo híbrido que mais funciona na prática."
 pubDate: 2026-08-21
+updatedDate: 2026-10-30
 author: "madu"
 category: "organizacao"
 tags: ["conta conjunta", "finanças do casal", "organização financeira", "dividir contas"]
@@ -65,6 +66,8 @@ Quando um é poupador e o outro é gastador, dividir o mesmo saldo transforma ca
 | **Híbrido** | Cada um mantém sua conta + uma conta comum só para as despesas da casa | A maioria dos casais que moram juntos | Exige definir regras de aporte e do que "entra" na conta |
 
 O **híbrido** é o meio-termo que mais aparece na prática, e por um bom motivo: a conta comum recebe um aporte definido de cada um (meio a meio ou proporcional à renda) e paga só as despesas compartilhadas (aluguel, mercado, contas). O resto da renda fica na conta individual de cada um, sem prestação de contas. Vocês ganham a logística da conta conjunta e mantêm a autonomia das contas separadas. Como definir o que é despesa compartilhada e o que é pessoal é uma conversa em si, e o guia de [como dividir as contas do casal](/blog/dividir-contas-proporcional-ao-salario) percorre essa decisão passo a passo.
+
+Em casa, é o modelo que a gente escolheu: a conta conjunta existe só para o dinheiro da casa, cada salário entra nela com a sua proporção, e as contas pessoais continuam separadas.
 
 <figure class="diagram">
 <svg viewBox="0 0 640 240" role="img" aria-label="O que muda entre os três modelos: na conjunta total existe uma conta só, que recebe a renda dos dois e paga tudo; nas contas separadas cada um mantém a sua e acerta sua parte das despesas; no híbrido as duas contas individuais continuam existindo e ganham ao lado uma conta comum que paga só aluguel, mercado e contas.">
