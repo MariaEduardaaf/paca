@@ -2,6 +2,7 @@
 title: "Dividir contas com salários diferentes: método proporcional"
 description: "Salários diferentes no casal? Veja a fórmula da divisão proporcional, exemplos com números reais em R$ e como parar de refazer a conta todo mês."
 pubDate: 2026-08-27
+updatedDate: 2026-10-30
 author: "madu"
 category: "dividir-contas"
 tags: ["dividir contas", "divisão proporcional", "finanças de casal", "salários diferentes", "orçamento a dois"]
@@ -11,6 +12,8 @@ draft: false
 Dividir tudo meio a meio parece o acordo mais justo do mundo, até o dia em que vocês colocam os salários lado a lado. Quando um ganha R$ 3.000 e o outro R$ 5.000, o "50/50" cobra um preço bem diferente de cada um: a mesma conta de R$ 2.100 pesa 70% de um salário e só 42% do outro. No papel é igual; na prática, um dos dois termina o mês sempre no aperto.
 
 A divisão proporcional resolve exatamente isso: cada um contribui com o mesmo **percentual** da própria renda, não com o mesmo valor em reais. O esforço fica igual, mesmo com salários diferentes.
+
+É o jeito que a gente usa em casa: na conta conjunta, cada salário entra com a sua proporção, e o resto fica na conta pessoal de quem ganhou.
 
 Se preferirem ver o resultado com os números de vocês antes da explicação, a [calculadora de divisão de contas](/calculadora-divisao-de-contas) faz a conta com os dois salários e o total da casa.
 
