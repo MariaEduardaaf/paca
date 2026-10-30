@@ -2,6 +2,7 @@
 title: "Nubank tem conta conjunta? Não. Veja o que usar no lugar"
 description: "O Nubank não oferece conta conjunta nem caixinha compartilhada. Veja o saldo compartilhado do Ultravioleta e como o casal divide contas com Pix agendado."
 pubDate: 2026-08-28
+updatedDate: 2026-10-30
 author: "madu"
 category: "organizacao"
 tags: ["nubank", "conta conjunta", "finanças do casal", "organização financeira", "bancos digitais"]
@@ -41,6 +42,8 @@ Esse é gratuito, existe em praticamente qualquer banco e resolve 80% da dor. Ca
 ## Como montar a conta do casal sem conta conjunta
 
 O modelo que mais funciona é o **híbrido operado por Pix**: uma das contas (do Nubank mesmo) vira a "conta da casa", e os dois abastecem ela todo mês.
+
+Em casa, a gente usa esse mesmo desenho, com uma diferença: a conta da casa é uma conta conjunta, num banco que oferece o produto. As contas pessoais continuam separadas, e na conjunta entra só o dinheiro da casa.
 
 Um exemplo com números fechados. As despesas comuns do casal:
 
