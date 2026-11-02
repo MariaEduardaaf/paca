@@ -2,6 +2,7 @@
 title: "Reserva de emergência para casal: quanto e onde guardar"
 description: "Quanto o casal precisa de reserva, se vale uma ou duas, o que olhar na hora de guardar e como construir com duas rendas, com as contas em R$."
 pubDate: 2026-08-30
+updatedDate: 2026-11-02
 author: "madu"
 category: "metas-e-sonhos"
 tags: ["reserva de emergência", "finanças do casal", "poupar junto", "planejamento", "imprevistos"]
@@ -45,6 +46,8 @@ Essa pergunta gera desconforto porque parece uma pergunta sobre confiança. Não
 | **Híbrido: uma comum + um colchão de cada** | O grosso na reserva da casa, um valor menor na conta de cada um | Cobre a emergência grande e mantém autonomia | Exige combinar o que é "emergência da casa" e o que é pessoal |
 
 O **híbrido** é o que funciona para a maioria. No nosso exemplo, uma reserva comum de R$ 33.000 (cinco meses) mais R$ 3.000 no colchão pessoal de cada um dá os R$ 39.000 de seis meses, e garante que nenhum dos dois fique sem acesso a dinheiro nenhum se, por qualquer motivo, o outro não estiver disponível.
+
+Em casa, a gente usa duas reservas: cada pessoa tem a sua, e quando a de uma acaba, a outra ajuda. É o modelo de duas reservas com um combinado por cima, e esse combinado tira o ponto fraco da tabela: nenhuma emergência fica só nas costas de quem foi pego por ela.
 
 Um ponto prático que vale dizer sem rodeio: **se a reserva está numa conta de um titular só, o outro precisa de um acesso combinado.** Não é desconfiança, é continuidade: hospitalização, viagem, celular perdido, qualquer coisa que deixe uma pessoa incomunicável não pode congelar o dinheiro da casa. Combinem isso enquanto está tudo calmo.
 
