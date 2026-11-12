@@ -308,6 +308,9 @@ export const MOTIF_BY_SLUG = {
   // dividir-contas: a grade de 12 meses com a primeira linha cheia, o comeco
   // do ano que concentra IPVA, IPTU e escola
   "contas-do-comeco-do-ano": "grid-progress",
+  // organizacao: quatro barras divididas em duas cores, os itens da lista com
+  // a parte de cada um
+  "black-friday-casal": "bars-split",
 };
 
 /**
@@ -614,6 +617,10 @@ export const THEME_BY_SLUG = {
   // 2026-11-11: em dividir-contas so preto fecha (creme bate no mercado-do-casal,
   // vizinho na grade; rosa no namorados-dividem-a-conta, vizinho na categoria).
   "contas-do-comeco-do-ano": "preto", // dividir-contas
+  // 2026-11-13: so rosa fecha (preto bate no contas-do-comeco-do-ano, vizinho
+  // na grade; creme bate no mercado-do-casal, vizinho na categoria, e estoura
+  // o teto de 3 em organizacao).
+  "black-friday-casal": "rosa", // organizacao
   // ordem de publicação, do mais novo para o mais antigo (= ordem da listagem).
   // Resolvido por busca, não à mão: as regras (vizinho na grade, vizinho DENTRO
   // da categoria, e teto de ceil(n/3) por fundo em cada categoria) se cruzam, e

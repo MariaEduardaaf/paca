@@ -69,7 +69,7 @@ Um valor livre que precisa ser lembrado, pedido ou explicado não é livre, e o 
 
 **3. O que sobra é de quem sobrou.** Se um dos dois guarda o valor por seis meses para comprar uma bicicleta, a bicicleta é dele, e o dinheiro acumulado não vira, no meio do caminho, reserva do casal porque "estava parado".
 
-**4. O limite é o próprio valor.** O acordo cobre o que cabe nele, e não cobre parcelamento que compromete os meses seguintes, empréstimo, nem dívida nova. Se o que está escondido já não é uma blusa e sim uma dívida, a conversa é outra, e o roteiro dela está em [descobri que meu parceiro tem dívidas escondidas](/blog/divida-escondida-do-parceiro).
+**4. O limite é o próprio valor.** O acordo cobre o que cabe nele, e não cobre parcelamento que compromete os meses seguintes, empréstimo, nem dívida nova. Numa Black Friday, é essa regra que mantém o tênis no valor livre e a geladeira na conta da casa, como mostra o guia de [Black Friday a dois](/blog/black-friday-casal). Se o que está escondido já não é uma blusa e sim uma dívida, a conversa é outra, e o roteiro dela está em [descobri que meu parceiro tem dívidas escondidas](/blog/divida-escondida-do-parceiro).
 
 ## Privado não é o mesmo que secreto
 
