@@ -2,7 +2,7 @@
 title: "Dividir contas com salários diferentes: método proporcional"
 description: "Salários diferentes no casal? Veja a fórmula da divisão proporcional, exemplos com números reais em R$ e como parar de refazer a conta todo mês."
 pubDate: 2026-08-27
-updatedDate: 2026-10-30
+updatedDate: 2026-11-12
 author: "madu"
 category: "dividir-contas"
 tags: ["dividir contas", "divisão proporcional", "finanças de casal", "salários diferentes", "orçamento a dois"]
@@ -195,7 +195,7 @@ A fórmula é simples; chato é o processo que se repete todo mês: juntar compr
 Dá para automatizar em dois níveis:
 
 - **Planilha com fórmulas:** uma aba com os percentuais fixos e colunas de gastos que calculam a parte de cada um sozinhas. Com disciplina para lançar tudo, ela resolve. O ponto fraco é justamente o lançamento manual: todo gasto esquecido distorce o acerto do mês.
-- **App que calcula sozinho:** no Paca Finance, vocês registram os gastos compartilhados na hora (dá até para escanear a notinha do mercado com IA), e o app calcula a parte de cada um conforme os gastos entram, já aplicando a proporção que vocês definiram. No fim do mês, em vez de refazer a conta, vocês só conferem o acerto e fazem o Pix. Dá para [criar a conta do casal no plano grátis](https://app.pacafinance.com.br/signup) e testar já com o mês atual.
+- **App compartilhado:** no Paca Finance, vocês registram os gastos da casa na hora (dá até para escanear a notinha do mercado com IA), e cada lançamento fica com o nome de quem pagou. No fim do mês, o filtro por pessoa mostra quanto cada um já pagou, sem caçar comprovante. A proporção continua com vocês: o app não aplica os percentuais sozinho, então é só comparar os dois totais com a parte de cada um pela fórmula acima e fazer o Pix da diferença. Dá para [criar a conta do casal no plano grátis](https://app.pacafinance.com.br/signup) e testar já com o mês atual.
 
 O critério para escolher é o histórico de vocês: se a planilha nunca chegou ao dia 30 preenchida, o problema não é a fórmula, é a fricção de lançar. Nesse caso, um app compartilhado tende a durar mais que a força de vontade. O artigo sobre o [melhor app de finanças para casal](/blog/melhor-app-financas-casal) compara as principais opções.
 
