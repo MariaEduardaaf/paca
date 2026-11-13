@@ -42,6 +42,13 @@ export const CALCULADORAS: Calculadora[] = [
       "Viagem, casa, carro: informe o valor e o prazo e veja quanto guardar por mês, quanto cada um põe e se isso cabe no orçamento do casal.",
     artigos: ["como-juntar-dinheiro-casal", "comprar-casa-juntos-financiamento", "regra-50-30-20-casal", "renda-extra-no-casal"],
   },
+  {
+    href: "/calculadora-desconto-real",
+    titulo: "Calculadora de desconto real e parcelado sem juros",
+    resumo:
+      "Compare o desconto anunciado com o menor preço dos últimos 60 dias e descubra quanto juro o parcelado sem juros esconde.",
+    artigos: ["black-friday-casal"],
+  },
 ];
 
 export function calculadoraPara(artigo: string | undefined): Calculadora {

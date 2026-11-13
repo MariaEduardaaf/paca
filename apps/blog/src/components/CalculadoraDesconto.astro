@@ -1,0 +1,337 @@
+---
+/**
+ * Calculadora de desconto real e parcelado sem juros.
+ *
+ * Mesma conta do artigo /blog/black-friday-casal (seções "Como saber se o
+ * desconto é de verdade?" e "Parcelado sem juros é mesmo sem juros?"). A conta
+ * mora em src/lib/desconto.mjs, que o scripts/testa-desconto.mjs também testa.
+ *
+ * Tudo roda no navegador e nada é enviado nem guardado: os valores existem só
+ * enquanto a aba estiver aberta (sem localStorage, como nas outras calculadoras).
+ */
+const MONEY_INPUT_CLASS =
+  "w-full rounded-xl border border-gray-500 bg-white py-2.5 pl-10 pr-3 text-lg font-semibold tabular-nums text-gray-900 placeholder:font-normal placeholder:text-gray-550 dark:border-gray-500 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400";
+const PREFIX_CLASS =
+  "pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-semibold text-gray-600 dark:text-gray-400";
+const LABEL_CLASS = "block font-display text-sm font-bold text-gray-800 dark:text-white";
+const HELP_CLASS = "mt-1.5 text-xs text-gray-600 dark:text-gray-400";
+const ERROR_CLASS = "mt-1.5 text-xs font-medium text-pink-700 dark:text-pink-300";
+const CARD_CLASS =
+  "rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900";
+const SECTION_CLASS =
+  "rounded-3xl border border-gray-200 bg-gray-50 p-5 sm:p-7 dark:border-gray-700 dark:bg-gray-800/60";
+const VAZIO_CLASS =
+  "flex min-h-[12rem] flex-col justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white/60 px-6 py-10 text-center dark:border-gray-600 dark:bg-gray-900/40";
+const BTN_EXEMPLO_CLASS =
+  "rounded-xl border border-gray-500 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-pink-300 hover:text-pink-700 dark:border-gray-500 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-pink-500 dark:hover:text-pink-300";
+const BTN_LIMPAR_CLASS =
+  "rounded px-1 py-1 text-sm font-medium text-gray-600 underline underline-offset-2 transition-colors hover:text-pink-700 dark:text-gray-300 dark:hover:text-pink-300";
+const TEXTO_CLASS =
+  "mt-3 rounded-2xl bg-white p-4 text-sm leading-relaxed text-gray-700 dark:bg-gray-900 dark:text-gray-200";
+---
+
+<div class="space-y-8">
+  <!-- BLOCO A: o desconto é de verdade? -->
+  <section aria-labelledby="dr-titulo" class={SECTION_CLASS}>
+    <h2 id="dr-titulo" class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+      O desconto é de verdade?
+    </h2>
+    <div class="mt-5 grid gap-6 lg:grid-cols-5 lg:gap-8">
+      <form id="dr-form" novalidate autocomplete="off" class="lg:col-span-2">
+        <div class={CARD_CLASS}>
+          <label for="dr-de" class={LABEL_CLASS}>Preço "de" anunciado</label>
+          <div class="relative mt-2">
+            <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+            <input id="dr-de" type="text" inputmode="decimal" autocomplete="off" placeholder="1.000,00" aria-describedby="dr-erro-de" class={MONEY_INPUT_CLASS} />
+          </div>
+          <p id="dr-erro-de" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+          <label for="dr-por" class={`mt-5 ${LABEL_CLASS}`}>Preço "por", o de agora</label>
+          <div class="relative mt-2">
+            <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+            <input id="dr-por" type="text" inputmode="decimal" autocomplete="off" placeholder="800,00" aria-describedby="dr-erro-por" class={MONEY_INPUT_CLASS} />
+          </div>
+          <p id="dr-erro-por" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+          <label for="dr-menor" class={`mt-5 ${LABEL_CLASS}`}>
+            Menor preço dos últimos 60 dias <span class="font-normal text-gray-600 dark:text-gray-400">(opcional)</span>
+          </label>
+          <div class="relative mt-2">
+            <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+            <input id="dr-menor" type="text" inputmode="decimal" autocomplete="off" placeholder="820,00" aria-describedby="dr-dica-menor dr-erro-menor" class={MONEY_INPUT_CLASS} />
+          </div>
+          <p id="dr-dica-menor" class={HELP_CLASS}>
+            Anote o preço do item nas semanas antes da promoção, ou veja o gráfico de um comparador de preços.
+          </p>
+          <p id="dr-erro-menor" hidden aria-live="polite" class={ERROR_CLASS}></p>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <button type="button" id="dr-btn-exemplo" class={BTN_EXEMPLO_CLASS}>Preencher com o exemplo</button>
+          <button type="button" id="dr-btn-limpar" class={BTN_LIMPAR_CLASS}>Limpar</button>
+        </div>
+        <p class="mt-3 text-xs text-gray-600 dark:text-gray-400">
+          A conta acontece no seu navegador. Nada é enviado para a gente nem fica salvo.
+        </p>
+      </form>
+
+      <div class="lg:col-span-3">
+        <div id="dr-saida" role="status" aria-live="polite">
+          <div id="dr-vazio" class={VAZIO_CLASS}>
+            <p class="font-display text-lg font-bold text-gray-800 dark:text-white">Comece pelos dois preços</p>
+            <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              O resultado aparece aqui na hora: o desconto anunciado e, com o menor preço recente, o desconto real.
+            </p>
+          </div>
+          <div id="dr-resultado" hidden>
+            <div class={CARD_CLASS}>
+              <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Desconto anunciado</p>
+              <p id="dr-anunciado" class="mt-2 font-display text-3xl font-bold tabular-nums text-gray-900 dark:text-white"></p>
+              <p id="dr-anunciado-nota" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+            </div>
+            <div id="dr-real-card" hidden class={`mt-3 ${CARD_CLASS}`}>
+              <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Desconto real, sobre o menor preço</p>
+              <p id="dr-real" class="mt-2 font-display text-3xl font-bold tabular-nums text-gray-900 dark:text-white"></p>
+              <p id="dr-real-nota" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+            </div>
+            <p id="dr-veredito" class={TEXTO_CLASS}></p>
+          </div>
+        </div>
+        <p class="mt-3 text-xs leading-relaxed text-gray-600 dark:text-gray-400">
+          A régua de 60 dias vem de uma recomendação do Procon-SP: recomendação, não lei.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCO B: o parcelado sem juros tem juros? -->
+  <section aria-labelledby="pj-titulo" class={SECTION_CLASS}>
+    <h2 id="pj-titulo" class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+      O parcelado sem juros tem juros?
+    </h2>
+    <div class="mt-5 grid gap-6 lg:grid-cols-5 lg:gap-8">
+      <form id="pj-form" novalidate autocomplete="off" class="lg:col-span-2">
+        <div class={CARD_CLASS}>
+          <label for="pj-avista" class={LABEL_CLASS}>Preço à vista (Pix ou boleto)</label>
+          <div class="relative mt-2">
+            <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+            <input id="pj-avista" type="text" inputmode="decimal" autocomplete="off" placeholder="3.040,00" aria-describedby="pj-erro-avista" class={MONEY_INPUT_CLASS} />
+          </div>
+          <p id="pj-erro-avista" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+          <label for="pj-n" class={`mt-5 ${LABEL_CLASS}`}>Número de parcelas</label>
+          <div class="relative mt-2">
+            <span aria-hidden="true" class={PREFIX_CLASS}>vezes</span>
+            <input id="pj-n" type="text" inputmode="numeric" autocomplete="off" placeholder="10" aria-describedby="pj-erro-n" class={`${MONEY_INPUT_CLASS} !pl-16`} />
+          </div>
+          <p id="pj-erro-n" hidden aria-live="polite" class={ERROR_CLASS}></p>
+
+          <label for="pj-parcela" class={`mt-5 ${LABEL_CLASS}`}>Valor de cada parcela</label>
+          <div class="relative mt-2">
+            <span aria-hidden="true" class={PREFIX_CLASS}>R$</span>
+            <input id="pj-parcela" type="text" inputmode="decimal" autocomplete="off" placeholder="320,00" aria-describedby="pj-dica-parcela pj-erro-parcela" class={MONEY_INPUT_CLASS} />
+          </div>
+          <p id="pj-dica-parcela" class={HELP_CLASS}>
+            A conta supõe a primeira parcela um mês depois da compra. Se há entrada, o juro real é maior.
+          </p>
+          <p id="pj-erro-parcela" hidden aria-live="polite" class={ERROR_CLASS}></p>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <button type="button" id="pj-btn-exemplo" class={BTN_EXEMPLO_CLASS}>Preencher com o exemplo</button>
+          <button type="button" id="pj-btn-limpar" class={BTN_LIMPAR_CLASS}>Limpar</button>
+        </div>
+        <p class="mt-3 text-xs text-gray-600 dark:text-gray-400">
+          A conta acontece no seu navegador. Nada é enviado para a gente nem fica salvo.
+        </p>
+      </form>
+
+      <div class="lg:col-span-3">
+        <div id="pj-saida" role="status" aria-live="polite">
+          <div id="pj-vazio" class={VAZIO_CLASS}>
+            <p class="font-display text-lg font-bold text-gray-800 dark:text-white">Comece pelo preço à vista</p>
+            <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              O resultado aparece aqui na hora: quanto custa a mais parcelar e o juro que vem embutido.
+            </p>
+          </div>
+          <div id="pj-resultado" hidden>
+            <div class={CARD_CLASS}>
+              <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Total parcelado</p>
+              <p id="pj-total" class="mt-2 font-display text-3xl font-bold tabular-nums text-gray-900 dark:text-white"></p>
+              <p id="pj-extra" class="mt-1 text-sm text-gray-600 dark:text-gray-300"></p>
+            </div>
+            <div id="pj-taxas" hidden class={`mt-3 ${CARD_CLASS}`}>
+              <p class="font-display text-sm font-bold text-gray-800 dark:text-white">Juro embutido</p>
+              <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Ao mês</p>
+                  <p id="pj-mensal" class="mt-1 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white"></p>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">Ao ano, equivalente</p>
+                  <p id="pj-anual" class="mt-1 font-display text-2xl font-bold tabular-nums text-gray-900 dark:text-white"></p>
+                </div>
+              </div>
+            </div>
+            <p id="pj-veredito" class={TEXTO_CLASS}></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  /* O atributo `hidden` precisa vencer as utilitárias de display do Tailwind. */
+  [hidden] {
+    display: none !important;
+  }
+</style>
+
+<script>
+  import { parseBR, descontoReal, parcelado } from "../lib/desconto.mjs";
+
+  const byId = (id: string) => document.getElementById(id) as HTMLElement;
+  const input = (id: string) => byId(id) as HTMLInputElement;
+
+  const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+  const pctFmt = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  const money = (n: number) => brl.format(n);
+  const pct = (n: number) => pctFmt.format(n) + "%";
+
+  function marcarErro(id: string, msg: string) {
+    const campo = input(id);
+    const alvo = byId(id.replace("-", "-erro-"));
+    // Mostra ANTES de escrever: região viva escondida não anuncia o que já
+    // estava escrito quando reaparece.
+    alvo.hidden = !msg;
+    alvo.textContent = msg;
+    if (msg) campo.setAttribute("aria-invalid", "true");
+    else campo.removeAttribute("aria-invalid");
+    campo.classList.toggle("border-pink-600", !!msg);
+  }
+
+  /** null = vazio, NaN = inválido, número = ok. `inteiro` = parcelas. */
+  function ler(id: string, inteiro = false): number | null {
+    const v = parseBR(input(id).value) as number | null;
+    if (v === null) return marcarErro(id, ""), null;
+    if (isNaN(v) || v <= 0) return marcarErro(id, "Use um número maior que zero, como 3.000 ou 3000,50."), NaN;
+    if (inteiro && (v !== Math.floor(v) || v < 2 || v > 120))
+      return marcarErro(id, "Use de 2 a 120 parcelas, em número inteiro."), NaN;
+    marcarErro(id, "");
+    return v;
+  }
+
+  function mostrar(prefixo: string, resultado: boolean) {
+    byId(prefixo + "-vazio").hidden = resultado;
+    byId(prefixo + "-resultado").hidden = !resultado;
+  }
+
+  function agendar(ids: string[], fn: () => void) {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    ids.forEach((id) =>
+      ["input", "change"].forEach((ev) =>
+        input(id).addEventListener(ev, () => {
+          clearTimeout(timer);
+          timer = setTimeout(fn, 250);
+        }),
+      ),
+    );
+    // Enter só recalcula; não há botão "calcular".
+    byId(ids[0].split("-")[0] + "-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      fn();
+    });
+  }
+
+  function ligar(prefixo: string, ids: string[], exemplo: string[], calcular: () => void) {
+    agendar(ids, calcular);
+    byId(prefixo + "-btn-exemplo").addEventListener("click", () => {
+      ids.forEach((id, i) => (input(id).value = exemplo[i]));
+      calcular();
+    });
+    byId(prefixo + "-btn-limpar").addEventListener("click", () => {
+      ids.forEach((id) => {
+        input(id).value = "";
+        marcarErro(id, "");
+      });
+      mostrar(prefixo, false);
+      input(ids[0]).focus();
+    });
+    calcular(); // reidrata o que o navegador restaurou (voltar/atualizar)
+  }
+
+  // ---- Bloco A
+  function calcularDesconto() {
+    const de = ler("dr-de");
+    const por = ler("dr-por");
+    const menor = ler("dr-menor");
+    if (de === null || por === null || [de, por, menor].some((v) => v !== null && isNaN(v))) return mostrar("dr", false);
+    const r = descontoReal({ de, por, menor });
+    if (!r) return mostrar("dr", false);
+
+    byId("dr-anunciado").textContent = r.anunciadoRs > 0 ? pct(r.anunciadoPct) : "Sem desconto";
+    byId("dr-anunciado-nota").textContent =
+      r.anunciadoRs > 0
+        ? `De ${money(de)} por ${money(por)}: ${money(r.anunciadoRs)} a menos.`
+        : `O preço de agora (${money(por)}) não está abaixo do "de" (${money(de)}).`;
+
+    const temReal = r.realPct !== null && r.realRs !== null;
+    byId("dr-real-card").hidden = !temReal;
+    if (temReal) {
+      byId("dr-real").textContent = pct(r.realPct as number);
+      byId("dr-real-nota").textContent =
+        (r.realRs as number) > 0
+          ? `Contra o menor preço de ${money(menor as number)}: ${money(r.realRs as number)} a menos.`
+          : `Contra o menor preço de ${money(menor as number)}: ${money(Math.abs(r.realRs as number))} a mais, ou o mesmo preço.`;
+    }
+
+    const texto = {
+      real: "O desconto se sustenta: o preço \"de\" não passa do menor preço recente, então a economia é real.",
+      inflado: `É o "metade do dobro": o preço "de" está acima do menor preço recente, então o desconto anunciado (${pct(r.anunciadoPct)}) é maior que o real (${pct(r.realPct ?? 0)}).`,
+      "sem-desconto": temReal
+        ? "Não é desconto: o preço de agora não está abaixo do menor preço dos últimos 60 dias."
+        : "Não é desconto: o preço de agora não está abaixo do preço anunciado.",
+      "so-anunciado": "Este é o desconto sobre o preço anunciado. Para saber se é de verdade, informe o menor preço dos últimos 60 dias.",
+    }[r.veredito as "real" | "inflado" | "sem-desconto" | "so-anunciado"];
+    byId("dr-veredito").textContent = texto;
+    mostrar("dr", true);
+  }
+
+  // ---- Bloco B
+  function calcularParcelado() {
+    const avista = ler("pj-avista");
+    const n = ler("pj-n", true);
+    const parcela = ler("pj-parcela");
+    if (avista === null || n === null || parcela === null || [avista, n, parcela].some(isNaN)) return mostrar("pj", false);
+    const r = parcelado({ avista, n, parcela });
+    if (!r) return mostrar("pj", false);
+
+    byId("pj-total").textContent = money(r.total);
+    byId("pj-extra").textContent =
+      r.extra > 0
+        ? `${n} x ${money(parcela)}. Parcelar custa ${money(r.extra)} a mais que pagar à vista.`
+        : r.extra < 0
+          ? `${n} x ${money(parcela)}. Parcelar custa ${money(-r.extra)} a menos que pagar à vista.`
+          : `${n} x ${money(parcela)}, o mesmo valor do preço à vista.`;
+
+    const temTaxa = r.mensal !== null && r.anual !== null;
+    byId("pj-taxas").hidden = !temTaxa;
+    if (temTaxa) {
+      byId("pj-mensal").textContent = pct(r.mensal as number);
+      byId("pj-anual").textContent = pct(r.anual as number);
+    }
+
+    byId("pj-veredito").textContent = {
+      "sem-juros": "Sem juros de verdade: a soma das parcelas é igual ao preço à vista.",
+      "mais-barato": "Parcelar sai mais barato que pagar à vista. Vale conferir se o valor à vista e as parcelas foram digitados certos.",
+      "juro-absurdo": "O juro embutido passa de 100% ao mês. Confira se os valores foram digitados certos.",
+      "com-juros":
+        "O \"sem juros\" tem juro embutido. Se o dinheiro para pagar à vista já está separado e rende menos que essa taxa, pagar à vista ganha. Se pagar à vista esvazia a reserva que cobriria o começo do ano, a parcela é o preço da folga, e pode valer pagar por ela.",
+    }[r.veredito as "sem-juros" | "mais-barato" | "juro-absurdo" | "com-juros"];
+    mostrar("pj", true);
+  }
+
+  ligar("dr", ["dr-de", "dr-por", "dr-menor"], ["1.000", "800", "820"], calcularDesconto);
+  ligar("pj", ["pj-avista", "pj-n", "pj-parcela"], ["3.040", "10", "320"], calcularParcelado);
+</script>

@@ -1,0 +1,137 @@
+---
+/**
+ * Ferramenta: calculadora de desconto real e parcelado sem juros.
+ *
+ * Mira as buscas "calculadora de desconto real", "desconto é de verdade" e
+ * "parcelado sem juros tem juros". A conta é a do artigo
+ * /blog/black-friday-casal: se um dos dois mudar, o outro precisa mudar junto.
+ * O nome da página não cita a Black Friday de propósito: vale o ano todo.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CalculadoraDesconto from "../components/CalculadoraDesconto.astro";
+import AdSlot from "../components/AdSlot.astro";
+import NewsletterForm from "../components/NewsletterForm.astro";
+import { SITE_URL, SITE_TITLE } from "../consts";
+
+const title = "Calculadora de desconto real e parcelado sem juros";
+// Máximo ~155 caracteres, para o Google não cortar a frase no meio.
+const description =
+  "Calculadora grátis: veja se o desconto é de verdade comparando com o menor preço dos últimos 60 dias e quanto juro o parcelado sem juros esconde.";
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: SITE_TITLE,
+      item: SITE_URL,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: title,
+      item: new URL("/calculadora-desconto-real", SITE_URL).href,
+    },
+  ],
+};
+
+const LINK_CLASS =
+  "rounded font-medium text-pink-700 underline decoration-pink-300 underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:decoration-pink-600 dark:hover:text-pink-200";
+---
+
+<BaseLayout title={title} description={description}>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  </Fragment>
+
+  <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+    <nav aria-label="Você está aqui" class="text-sm text-gray-600 dark:text-gray-400">
+      <a
+        href="/"
+        class="rounded font-medium text-pink-700 underline underline-offset-2 hover:text-pink-800 dark:text-pink-300 dark:hover:text-pink-200"
+        >Início</a
+      >
+      <span aria-hidden="true" class="px-1.5">/</span>
+      <span>Calculadora de desconto real</span>
+    </nav>
+
+    <header class="mt-4 max-w-3xl">
+      <p class="text-xs font-semibold uppercase tracking-wider text-pink-700 dark:text-pink-300">
+        Ferramenta grátis
+      </p>
+      <h1 class="mt-2 font-display text-3xl font-bold leading-tight text-gray-900 sm:text-4xl dark:text-white">
+        Calculadora de desconto real e parcelado sem juros
+      </h1>
+      <p class="mt-4 text-base leading-relaxed text-gray-700 sm:text-lg dark:text-gray-200">
+        Antes de comprar, duas perguntas:
+        <strong class="font-semibold text-gray-900 dark:text-white">o desconto é de verdade</strong>
+        e <strong class="font-semibold text-gray-900 dark:text-white">o parcelado sem juros tem juros</strong>?
+        Coloquem os preços que viram: a calculadora compara o anunciado com o menor preço recente e
+        mostra o juro que fica escondido nas parcelas.
+      </p>
+    </header>
+
+    <div class="mt-8">
+      <CalculadoraDesconto />
+    </div>
+
+    {/* O anúncio entra DEPOIS da ferramenta, como nas outras calculadoras. */}
+    <AdSlot placement="first-fold" />
+
+    <section aria-labelledby="como-conta" class="mt-14 max-w-3xl">
+      <h2 id="como-conta" class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+        Como a conta é feita
+      </h2>
+
+      <ol class="mt-4 list-decimal space-y-2 pl-6 leading-relaxed text-gray-700 dark:text-gray-200">
+        <li>
+          <strong class="font-semibold text-gray-900 dark:text-white">Desconto anunciado:</strong>
+          o preço "de" menos o preço "por", dividido pelo "de". De R$ 1.000 por R$ 800, são 20%.
+        </li>
+        <li>
+          <strong class="font-semibold text-gray-900 dark:text-white">Desconto real:</strong>
+          o mesmo cálculo, mas sobre o menor preço dos últimos 60 dias. Se esse preço foi R$ 820, o desconto
+          real é de R$ 20, ou 2,44%. A régua de 60 dias vem de uma recomendação do Procon-SP, não de uma lei.
+        </li>
+        <li>
+          <strong class="font-semibold text-gray-900 dark:text-white">Juro do parcelado:</strong>
+          a taxa mensal que faz as parcelas valerem o preço à vista, com a primeira parcela um mês depois da
+          compra. Em R$ 3.040 à vista ou 10 parcelas de R$ 320, parcelar custa R$ 160 a mais: cerca de 0,94% ao
+          mês, ou 11,9% ao ano.
+        </li>
+      </ol>
+
+      <p class="mt-6 leading-relaxed text-gray-700 dark:text-gray-200">
+        O guia
+        <a href="/blog/black-friday-casal" class={LINK_CLASS}>Black Friday para casal</a>
+        mostra os dois exemplos no contexto de uma lista de compras combinada e explica o que olhar antes de
+        parcelar. Para dividir a compra entre os dois, use a
+        <a href="/calculadora-divisao-de-contas" class={LINK_CLASS}>calculadora de divisão de contas</a>.
+      </p>
+
+      <div
+        class="mt-8 rounded-2xl border-l-4 border-pink-300 bg-pink-50 py-4 pl-5 pr-4 dark:border-pink-600 dark:bg-gray-800"
+      >
+        <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+          <strong class="font-semibold text-gray-900 dark:text-white">O que a calculadora não faz:</strong>
+          ela não consulta preços de loja nem histórico: usa só o que foi digitado. Não indica produto, banco
+          ou onde guardar o dinheiro, e não conhece a vida de vocês. Frete, cashback e prazo de entrega ficam
+          de fora da conta.
+        </p>
+      </div>
+    </section>
+
+    {/* Fim da página na mesma ordem do fim do artigo: conteúdo, anúncio, e-mail. */}
+    <AdSlot placement="in-content" />
+
+    <p class="mt-14 max-w-3xl leading-relaxed text-gray-700 dark:text-gray-200">
+      Com os dois números na mão, a decisão fica mais simples: o item que passa nas duas perguntas
+      entra na lista, e o que não passa espera o próximo preço.
+    </p>
+
+    {/* `source` = a página, para separar o lead da calculadora do lead de artigo (ESTRATEGIA §6). */}
+    <NewsletterForm source="calculadora-desconto-real" class="mt-6" />
+  </div>
+</BaseLayout>
